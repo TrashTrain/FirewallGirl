@@ -11,6 +11,7 @@ public class StageMgr : MonoBehaviour
 
     public GameObject[] StageList;
     private int StageCount = 0;
+    private int OutLineCount = 0;
 
     GameObject player;
     
@@ -49,6 +50,7 @@ public class StageMgr : MonoBehaviour
         StageCount++;
         player.transform.position = StageList[StageCount].transform.position;
 
+        OutLineCount++;
     }
 
     private void BackBtnClick()
