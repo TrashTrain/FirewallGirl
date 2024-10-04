@@ -10,6 +10,9 @@ public class StageMgr : MonoBehaviour
     public Button StageChangeBtn;
 
     public GameObject[] StageList;
+    public Image[] StageImg;
+    private Outline StageOutline;
+
     private int StageCount = 0;
     private int OutLineCount = 0;
 

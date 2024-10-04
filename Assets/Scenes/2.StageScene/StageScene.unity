@@ -602,6 +602,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BackBtn: {fileID: 650739746}
+  StageChangeBtn: {fileID: 2055494451}
+  StageList:
+  - {fileID: 1109273443}
+  - {fileID: 1270855360}
+  - {fileID: 1441903814}
+  - {fileID: 538272599}
 --- !u!1 &650739744
 GameObject:
   m_ObjectHideFlags: 0
