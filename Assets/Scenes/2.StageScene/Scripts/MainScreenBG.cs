@@ -25,4 +25,13 @@ public class MainScreenBG : MonoBehaviour
         }
         
     }
+
+    public void ExitButtonClick()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Apllication.Quit();
+#endif
+    }
 }
