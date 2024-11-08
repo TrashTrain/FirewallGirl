@@ -608,6 +608,7 @@ MonoBehaviour:
   - {fileID: 1270855360}
   - {fileID: 1441903814}
   - {fileID: 538272599}
+  StageImg: []
 --- !u!1 &650739744
 GameObject:
   m_ObjectHideFlags: 0

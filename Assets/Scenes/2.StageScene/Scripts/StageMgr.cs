@@ -13,6 +13,7 @@ public class StageMgr : MonoBehaviour
     public Image[] StageImg;
     private Outline StageOutline;
 
+
     private int StageCount = 0;
     private int OutLineCount = 0;
 
@@ -27,6 +28,7 @@ public class StageMgr : MonoBehaviour
 
         player = GameObject.Find("Player"); //플레이어 찾기 
 
+
         if (BackBtn != null)
         {
             BackBtn.onClick.AddListener(BackBtnClick);
@@ -37,7 +39,8 @@ public class StageMgr : MonoBehaviour
             StageChangeBtn.onClick.AddListener(StageChangeBtnClick);
         }
 
-        
+        StageOutline = StageImg[StageImg.Length].GetComponent<Outline>();
+        StageOutline.enabled = false;
 
     }
 
@@ -53,7 +56,7 @@ public class StageMgr : MonoBehaviour
         StageCount++;
         player.transform.position = StageList[StageCount].transform.position;
 
-        OutLineCount++;
+        StageOutline.enabled = !StageOutline.enabled;
     }
 
     private void BackBtnClick()
