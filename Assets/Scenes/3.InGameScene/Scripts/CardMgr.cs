@@ -1,42 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class CardMgr : MonoBehaviour
 {
-    // 싱글톤 
-    public static CardMgr Inst { get; private set; }
-    void Awake() => Inst = this;
+    public GameObject[] CardObject;
 
-    [SerializeField] ItemSO itemSO;
-
-    //아이템 버퍼 리스트
-    List<Item> itemBuffer;
-
-    void SetupItemBuffer()
-    {
-        for (int i = 0; i < itemSO.items.Length; i++)
-        {
-            Item item = itemSO.items[i];
-            for (int j = 0; j < item.percent; j++)
-            {
-                itemBuffer.Add(item);
-            }
-        }
-
-        //나오는 순서를 랜덤하게
-        for (int i = 0; i < itemBuffer.Count; i++)
-        {
-            int rand = Random.Range(i, itemBuffer.Count);
-            Item temp = itemBuffer[i];
-            itemBuffer[i] = itemBuffer[rand];
-            itemBuffer[rand] = temp;
-        }
-    }
     // Start is called before the first frame update
     void Start()
     {
-        SetupItemBuffer();
+
     }
 
+    // Update is called once per frame
+    void Update()
+    {
+        // 마우스 클릭시 
+        if (Input.GetMouseButtonDown(0))
+        {
+            Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            RaycastHit2D hit = Physics2D.Raycast(pos, Vector2.zero);
+
+            if (hit.collider != null)
+            {
+                GameObject click_obj = hit.transform.gameObject;
+                Transform nameTMPTransform = click_obj.transform.Find("NameTMP");
+                TMP_Text tmpText = nameTMPTransform.GetComponentInChildren<TMP_Text>();
+
+                Debug.Log(hit.collider.gameObject+" \n"+tmpText);
+            }
+        }
+    }
 }
