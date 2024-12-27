@@ -6,7 +6,7 @@ using TMPro;
 
 public class CardMgr : MonoBehaviour
 {
-    public GameObject[] CardObject;
+    public PlayerCardObject[] CardObject;
 
     // Start is called before the first frame update
     void Start()
@@ -27,7 +27,7 @@ public class CardMgr : MonoBehaviour
             {
                 GameObject click_obj = hit.transform.gameObject;
                 Transform nameTMPTransform = click_obj.transform.Find("NameTMP");
-                TMP_Text tmpText = nameTMPTransform.GetComponentInChildren<TMP_Text>();
+                TextMeshProUGUI tmpText = nameTMPTransform.GetComponentInChildren<TextMeshProUGUI>();
 
                 Debug.Log(hit.collider.gameObject+" \n"+tmpText);
             }
