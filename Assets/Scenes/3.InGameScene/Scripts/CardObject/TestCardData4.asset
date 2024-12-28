@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3077d1d8b43998c48b3f9f480855d853, type: 3}
   m_Name: TestCardData4
   m_EditorClassIdentifier: 
+  cardIndex: 4
   cardImage: {fileID: 21300004, guid: 56d84991286850f428b4e7df0cca7380, type: 3}
   cardName: "\uAE4D\uB450\uAE30"
   positiveNum: 5
   negativeNum: 5
-  description: 
+  description: test
   type: 2

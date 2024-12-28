@@ -72,7 +72,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300006, guid: 56d84991286850f428b4e7df0cca7380, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -96,7 +96,7 @@ GameObject:
   - component: {fileID: 1749186268312184528}
   - component: {fileID: 469107726835876204}
   m_Layer: 0
-  m_Name: HealthTMP
+  m_Name: NegativeTMP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -267,7 +267,7 @@ GameObject:
   - component: {fileID: 7787107845302768582}
   - component: {fileID: 6083683812961898297}
   m_Layer: 0
-  m_Name: AttackTMP
+  m_Name: PositiveTMP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -608,6 +608,7 @@ GameObject:
   - component: {fileID: 2640156307739605050}
   - component: {fileID: 8879635317906648100}
   - component: {fileID: 4831546056313289593}
+  - component: {fileID: 2816985010567502309}
   m_Layer: 0
   m_Name: Card
   m_TagString: Untagged
@@ -731,3 +732,21 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.47, y: 0.62}
   m_EdgeRadius: 0
+--- !u!114 &2816985010567502309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6519930660117127958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adb9a01f82b30304eba2ec5c7b0b1864, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardNum: 1
+  cardImage: {fileID: 3162399515626156451}
+  cardName: {fileID: 5713876018144940490}
+  positiveNum: {fileID: 6083683812961898297}
+  negativeNum: {fileID: 469107726835876204}
+  description: {fileID: 0}

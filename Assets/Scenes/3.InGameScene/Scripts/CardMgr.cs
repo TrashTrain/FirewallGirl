@@ -5,39 +5,38 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 
-public enum CardExType { TestCardData1, TestCardData2, TestCardData3, TestCardData4 }
 public class CardMgr : MonoBehaviour
 {
-    List<Card> CardInventory = new List<Card>();
+    //List<Card> CardInventory = new List<Card>();
     public PlayerCardObject[] CardObject;
+    public static CardMgr instance;
+
+    public List<CardData> cardDatas = new List<CardData>();
+
     // 현재 출력할 CardObject의 인덱스
     private int currentIndex = 0;
 
-    public void CardCreate(CardExType inputType)
+    public CardData CardCreate(PlayerCardObject cardObject)
     {
-        int cardIndex = (int)inputType;
-
-        GameObject cardGo = new GameObject(inputType.ToString());
-        cardGo.transform.parent = this.gameObject.transform;
-
-
-        Card card = cardGo.AddComponent<Card>();
-        BoxCollider2D collider = cardGo.AddComponent<BoxCollider2D>();
-        collider.isTrigger = true;
-
-        card.cardName = CardObject[cardIndex].cardName;
-        card.positiveNum = CardObject[cardIndex].positiveNum;
-        card.negativeNum = CardObject[cardIndex].negativeNum;
-        card.type = CardObject[cardIndex].type;
-
-
-        CardInventory.Add(card);
+        CardData cardData = new CardData(cardObject.cardIndex, cardObject.cardImage, cardObject.cardName, cardObject.positiveNum, cardObject.negativeNum , cardObject.description);
+        return cardData;
     }
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        
+        if(instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+
+        foreach(PlayerCardObject card in CardObject)
+        {
+            cardDatas.Add(CardCreate(card));
+        }
     }
 
     // Update is called once per frame
@@ -53,25 +52,22 @@ public class CardMgr : MonoBehaviour
             if (hit.collider != null)
             {
                 // 충돌한 객체의 Card 컴포넌트 가져오기
-                CardMgr hitCard = hit.collider.GetComponent<CardMgr>();
+                Card hitCard = hit.collider.GetComponent<Card>();
 
-                for(int i = 0; i <= currentIndex; i++)
+                if (hitCard != null)
                 {
-                    if (hitCard != null)
-                    {
-                        Debug.Log($"{hitCard.CardObject[i].cardName}");
-                        Debug.Log($"{hitCard.CardObject[i].positiveNum}");
-                        Debug.Log($"{hitCard.CardObject[i].negativeNum}");
-                        Debug.Log($"{hitCard.CardObject[i].type}");
-                        currentIndex = (currentIndex + 1) % hitCard.CardObject.Length;
-                    }
-                    else
-                    {
-                        Debug.Log("해당 객체에 연결된 카드 데이터를 찾을 수 없습니다.");
-                    }
-                    
+                    Debug.Log($"{hitCard.cardName.text}");
+                    Debug.Log($"{hitCard.positiveNum.text}");
+                    Debug.Log($"{hitCard.negativeNum.text}");
+                    if(hitCard.description != null)
+                        Debug.Log($"{hitCard.description.text}");
+
                 }
-               
+                else
+                {
+                    Debug.Log("해당 객체에 연결된 카드 데이터를 찾을 수 없습니다.");
+                }
+
             }
         }
 

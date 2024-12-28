@@ -10,6 +10,7 @@ public enum CardType
 [CreateAssetMenu(fileName = "CardData", menuName = "CreateCardData/CardData")]
 public class PlayerCardObject : ScriptableObject
 {
+    public int cardIndex;
     public Sprite cardImage;
     public string cardName;
     
