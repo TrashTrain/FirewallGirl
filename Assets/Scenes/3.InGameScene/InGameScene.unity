@@ -560,6 +560,7 @@ GameObject:
   - component: {fileID: 38182861}
   - component: {fileID: 38182860}
   - component: {fileID: 38182863}
+  - component: {fileID: 38182864}
   m_Layer: 0
   m_Name: Card (2)
   m_TagString: Untagged
@@ -640,7 +641,7 @@ Transform:
   m_GameObject: {fileID: 38182859}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -6, y: 0, z: 0.3}
+  m_LocalPosition: {x: 5, y: 0, z: 0.3}
   m_LocalScale: {x: 12.1, y: 12.1, z: 12.1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -695,6 +696,20 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.47, y: 0.62}
   m_EdgeRadius: 0
+--- !u!114 &38182864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 38182859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0139f87a0d31ab248ba8567e258ff240, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CardObject:
+  - {fileID: 11400000, guid: 72c7be8ff102b7f47a31b10df1b56d70, type: 2}
 --- !u!1 &57674987
 GameObject:
   m_ObjectHideFlags: 0
@@ -966,7 +981,6 @@ GameObject:
   - component: {fileID: 703526086}
   - component: {fileID: 703526085}
   - component: {fileID: 703526084}
-  - component: {fileID: 703526087}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -1024,23 +1038,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &703526087
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 703526083}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0139f87a0d31ab248ba8567e258ff240, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CardObject:
-  - {fileID: 1025446343}
-  - {fileID: 1671058841}
-  - {fileID: 38182859}
-  - {fileID: 2134210824}
 --- !u!1 &761709460
 GameObject:
   m_ObjectHideFlags: 0
@@ -1671,6 +1668,20 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 6519930660117127958, guid: 54fef2a010739434aa7aa2f3ae097a70, type: 3}
   m_PrefabInstance: {fileID: 5141387789136116344}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1025446347
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1025446343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0139f87a0d31ab248ba8567e258ff240, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CardObject:
+  - {fileID: 11400000, guid: 764c38f930c04604a80bb097e37acae2, type: 2}
 --- !u!1 &1235318646
 GameObject:
   m_ObjectHideFlags: 0
@@ -2091,7 +2102,7 @@ Transform:
   m_GameObject: {fileID: 1387654195}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.4}
+  m_LocalPosition: {x: 0, y: 0, z: 0.3}
   m_LocalScale: {x: 5.38, y: 5.38, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2280,6 +2291,7 @@ GameObject:
   - component: {fileID: 1671058844}
   - component: {fileID: 1671058843}
   - component: {fileID: 1671058845}
+  - component: {fileID: 1671058846}
   m_Layer: 0
   m_Name: Card (1)
   m_TagString: Untagged
@@ -2296,7 +2308,7 @@ Transform:
   m_GameObject: {fileID: 1671058841}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6.05, y: 0, z: 0.3}
+  m_LocalPosition: {x: -5, y: 0, z: 0.3}
   m_LocalScale: {x: 12.1, y: 12.1, z: 12.1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -2415,6 +2427,20 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.47, y: 0.62}
   m_EdgeRadius: 0
+--- !u!114 &1671058846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1671058841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0139f87a0d31ab248ba8567e258ff240, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CardObject:
+  - {fileID: 11400000, guid: f8da1dd9daf10b6439a353b61fe9efe4, type: 2}
 --- !u!1 &1677411890
 GameObject:
   m_ObjectHideFlags: 0
@@ -3111,6 +3137,7 @@ GameObject:
   - component: {fileID: 2134210826}
   - component: {fileID: 2134210825}
   - component: {fileID: 2134210828}
+  - component: {fileID: 2134210829}
   m_Layer: 0
   m_Name: Card (3)
   m_TagString: Untagged
@@ -3191,7 +3218,7 @@ Transform:
   m_GameObject: {fileID: 2134210824}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -12.03, y: 0, z: 0.3}
+  m_LocalPosition: {x: 15, y: 0, z: 0.3}
   m_LocalScale: {x: 12.1, y: 12.1, z: 12.1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -3246,6 +3273,20 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.47, y: 0.62}
   m_EdgeRadius: 0
+--- !u!114 &2134210829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2134210824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0139f87a0d31ab248ba8567e258ff240, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CardObject:
+  - {fileID: 11400000, guid: d8c2d32e8ca0e0749ace54f8932520af, type: 2}
 --- !u!1001 &5141387789136116344
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3256,7 +3297,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2640156307739605050, guid: 54fef2a010739434aa7aa2f3ae097a70, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -15
       objectReference: {fileID: 0}
     - target: {fileID: 2640156307739605050, guid: 54fef2a010739434aa7aa2f3ae097a70, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3302,6 +3343,9 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6519930660117127958, guid: 54fef2a010739434aa7aa2f3ae097a70, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1025446347}
     - targetCorrespondingSourceObject: {fileID: 6120398502864035606, guid: 54fef2a010739434aa7aa2f3ae097a70, type: 3}
       insertIndex: -1
       addedObject: {fileID: 0}
@@ -3317,10 +3361,10 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 853260848}
+  - {fileID: 703526086}
   - {fileID: 57674990}
   - {fileID: 1015528189}
   - {fileID: 850220561}
-  - {fileID: 703526086}
   - {fileID: 1387654197}
   - {fileID: 5141387789136116344}
   - {fileID: 1671058842}

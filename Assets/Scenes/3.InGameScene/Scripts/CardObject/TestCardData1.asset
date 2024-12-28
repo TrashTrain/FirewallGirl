@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TestCardData1
   m_EditorClassIdentifier: 
   cardImage: {fileID: 21300020, guid: 56d84991286850f428b4e7df0cca7380, type: 3}
-  cardName: "\uAE4D\uB450\uAE30"
+  cardName: "\uB450\uB8E8\uBBF8"
   positiveNum: 3
   negativeNum: 3
   description: 

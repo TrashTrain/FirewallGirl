@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: TestCardData4
   m_EditorClassIdentifier: 
   cardImage: {fileID: 21300004, guid: 56d84991286850f428b4e7df0cca7380, type: 3}
-  cardName: "\uAC00\uB098\uB514"
+  cardName: "\uAE4D\uB450\uAE30"
   positiveNum: 5
   negativeNum: 5
   description: 
-  type: 0
+  type: 2
