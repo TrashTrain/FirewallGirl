@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
-public enum CardExType { TestCardData1 }
+public enum CardExType { TestCardData1, TestCardData2, TestCardData3, TestCardData4 }
 public class CardMgr : MonoBehaviour
 {
     List<Card> CardInventory = new List<Card>();
     public PlayerCardObject[] CardObject;
+    // 현재 출력할 CardObject의 인덱스
+    private int currentIndex = 0;
 
     public void CardCreate(CardExType inputType)
     {
@@ -19,8 +22,14 @@ public class CardMgr : MonoBehaviour
 
 
         Card card = cardGo.AddComponent<Card>();
+        BoxCollider2D collider = cardGo.AddComponent<BoxCollider2D>();
+        collider.isTrigger = true;
 
         card.cardName = CardObject[cardIndex].cardName;
+        card.positiveNum = CardObject[cardIndex].positiveNum;
+        card.negativeNum = CardObject[cardIndex].negativeNum;
+        card.type = CardObject[cardIndex].type;
+
 
         CardInventory.Add(card);
     }
@@ -28,23 +37,13 @@ public class CardMgr : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //카드 생성
-        CardCreate(CardExType.TestCardData1);
-    }
-
-    void ShowInventoryItems()
-    {
-        //CardInventory에 저장된 카드 이름 출력
-        foreach (Card c in CardInventory)
-        {
-            Debug.Log(c.cardName);
-        }
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        // 마우스 클릭시 
+        // 마우스 좌클릭시 
         if (Input.GetMouseButtonDown(0))
         {
             Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -53,7 +52,26 @@ public class CardMgr : MonoBehaviour
             // 충돌시
             if (hit.collider != null)
             {
-                ShowInventoryItems();
+                // 충돌한 객체의 Card 컴포넌트 가져오기
+                CardMgr hitCard = hit.collider.GetComponent<CardMgr>();
+
+                for(int i = 0; i <= currentIndex; i++)
+                {
+                    if (hitCard != null)
+                    {
+                        Debug.Log($"{hitCard.CardObject[i].cardName}");
+                        Debug.Log($"{hitCard.CardObject[i].positiveNum}");
+                        Debug.Log($"{hitCard.CardObject[i].negativeNum}");
+                        Debug.Log($"{hitCard.CardObject[i].type}");
+                        currentIndex = (currentIndex + 1) % hitCard.CardObject.Length;
+                    }
+                    else
+                    {
+                        Debug.Log("해당 객체에 연결된 카드 데이터를 찾을 수 없습니다.");
+                    }
+                    
+                }
+               
             }
         }
 
