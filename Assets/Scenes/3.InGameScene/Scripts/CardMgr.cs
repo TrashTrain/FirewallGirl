@@ -58,15 +58,19 @@ public class CardMgr : MonoBehaviour
                 {
                     Debug.Log($"{hitCard.cardName.text}");
                     Debug.Log($"{hitCard.positiveNum.text}");
-                    Debug.Log($"{hitCard.negativeNum.text}");
+                    Debug.Log($"{hitCard.negativeNum.text}");    
                     if(hitCard.description != null)
                         Debug.Log($"{hitCard.description.text}");
 
+                    Destroy(hitCard.gameObject);
+
                 }
+                
                 else
                 {
                     Debug.Log("해당 객체에 연결된 카드 데이터를 찾을 수 없습니다.");
                 }
+
 
             }
         }
