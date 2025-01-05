@@ -17,6 +17,8 @@ public class PlayerCardObject : ScriptableObject
     public int positiveNum;
     public int negativeNum;
 
+    public int costNum;
+
     [TextArea]
     public string description;
     public CardType type;

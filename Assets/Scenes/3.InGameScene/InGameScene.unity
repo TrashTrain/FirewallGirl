@@ -298,6 +298,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &89486879 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 659658148474759576, guid: 54fef2a010739434aa7aa2f3ae097a70, type: 3}
+  m_PrefabInstance: {fileID: 1919189975}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &618257367 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 659658148474759576, guid: 54fef2a010739434aa7aa2f3ae097a70, type: 3}
+  m_PrefabInstance: {fileID: 1849951529}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &661888515
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -350,6 +372,10 @@ PrefabInstance:
       propertyPath: cardNum
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 3162399515626156451, guid: 54fef2a010739434aa7aa2f3ae097a70, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300006, guid: 56d84991286850f428b4e7df0cca7380, type: 3}
     - target: {fileID: 6519930660117127958, guid: 54fef2a010739434aa7aa2f3ae097a70, type: 3}
       propertyPath: m_Name
       value: Card (3)
@@ -365,6 +391,9 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 0}
     - targetCorrespondingSourceObject: {fileID: 1440710990272523609, guid: 54fef2a010739434aa7aa2f3ae097a70, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
+    - targetCorrespondingSourceObject: {fileID: 3621574414685053175, guid: 54fef2a010739434aa7aa2f3ae097a70, type: 3}
       insertIndex: -1
       addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 54fef2a010739434aa7aa2f3ae097a70, type: 3}
@@ -612,6 +641,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1015528189}
+  - component: {fileID: 1015528190}
   m_Layer: 0
   m_Name: MyPlayer
   m_TagString: Untagged
@@ -636,6 +666,22 @@ Transform:
   - {fileID: 1780382892}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1015528190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1015528188}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84366a3bb7a2fb14eb3c1666825b577d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stats:
+    attackPower: 10
+    defensePower: 5
+    cost: 100
 --- !u!1 &1235318646
 GameObject:
   m_ObjectHideFlags: 0
@@ -1114,6 +1160,10 @@ PrefabInstance:
       propertyPath: cardNum
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 2816985010567502309, guid: 54fef2a010739434aa7aa2f3ae097a70, type: 3}
+      propertyPath: costNum
+      value: 
+      objectReference: {fileID: 618257367}
     - target: {fileID: 6519930660117127958, guid: 54fef2a010739434aa7aa2f3ae097a70, type: 3}
       propertyPath: m_Name
       value: Card (1)
@@ -1129,6 +1179,9 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 0}
     - targetCorrespondingSourceObject: {fileID: 1440710990272523609, guid: 54fef2a010739434aa7aa2f3ae097a70, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
+    - targetCorrespondingSourceObject: {fileID: 3621574414685053175, guid: 54fef2a010739434aa7aa2f3ae097a70, type: 3}
       insertIndex: -1
       addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 54fef2a010739434aa7aa2f3ae097a70, type: 3}
@@ -1184,6 +1237,10 @@ PrefabInstance:
       propertyPath: cardNum
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 2816985010567502309, guid: 54fef2a010739434aa7aa2f3ae097a70, type: 3}
+      propertyPath: costNum
+      value: 
+      objectReference: {fileID: 89486879}
     - target: {fileID: 6519930660117127958, guid: 54fef2a010739434aa7aa2f3ae097a70, type: 3}
       propertyPath: m_Name
       value: Card (2)
@@ -1199,6 +1256,9 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 0}
     - targetCorrespondingSourceObject: {fileID: 1440710990272523609, guid: 54fef2a010739434aa7aa2f3ae097a70, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
+    - targetCorrespondingSourceObject: {fileID: 3621574414685053175, guid: 54fef2a010739434aa7aa2f3ae097a70, type: 3}
       insertIndex: -1
       addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 54fef2a010739434aa7aa2f3ae097a70, type: 3}
@@ -1265,6 +1325,9 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 0}
     - targetCorrespondingSourceObject: {fileID: 1440710990272523609, guid: 54fef2a010739434aa7aa2f3ae097a70, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
+    - targetCorrespondingSourceObject: {fileID: 3621574414685053175, guid: 54fef2a010739434aa7aa2f3ae097a70, type: 3}
       insertIndex: -1
       addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 54fef2a010739434aa7aa2f3ae097a70, type: 3}
