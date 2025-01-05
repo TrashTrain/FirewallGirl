@@ -12,6 +12,8 @@ public class Card : MonoBehaviour
     public TextMeshPro positiveNum;
     public TextMeshPro negativeNum;
 
+    public TextMeshPro costNum;
+
     public TextMeshPro description;
 
 
@@ -23,6 +25,7 @@ public class Card : MonoBehaviour
         cardName.text = cardData.CardName;
         positiveNum.text = cardData.PositiveNum.ToString();
         negativeNum.text = cardData.NegativeNum.ToString();
+        costNum.text = cardData.CostNum.ToString();
 
         // 지금은 설명칸이 비어있어서 빼놓음.
         //description.text = cardData.Description;

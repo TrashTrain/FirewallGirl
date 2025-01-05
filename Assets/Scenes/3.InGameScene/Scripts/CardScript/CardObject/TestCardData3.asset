@@ -16,6 +16,7 @@ MonoBehaviour:
   cardImage: {fileID: 21300006, guid: 56d84991286850f428b4e7df0cca7380, type: 3}
   cardName: "\uBE44\uB458\uAE30"
   positiveNum: 4
-  negativeNum: 4
+  negativeNum: 3
+  costNum: 3
   description: test
   type: 1
