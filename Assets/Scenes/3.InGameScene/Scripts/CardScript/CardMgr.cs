@@ -63,8 +63,6 @@ public class CardMgr : MonoBehaviour
                     if (hitCard.description != null)
                         Debug.Log($"{hitCard.description.text}");
 
-
-
                 }
                 
                 else
