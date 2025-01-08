@@ -19,8 +19,16 @@ public class Card : MonoBehaviour
 
     public void Start()
     {
+        if (CardMgr.instance == null)
+        {
+            Debug.LogError("CardMgr.instance가 초기화되지 않았습니다.");
+            return;
+        }
+
         //dataset.data.FindIndex(card => card.CardNum.Equals(cardNum));
         CardData cardData = CardMgr.instance.cardDatas.Find(card => card.CardNum == cardNum);
+
+
         cardImage.sprite = cardData.CardImage;
         cardName.text = cardData.CardName;
         positiveNum.text = cardData.PositiveNum.ToString();
