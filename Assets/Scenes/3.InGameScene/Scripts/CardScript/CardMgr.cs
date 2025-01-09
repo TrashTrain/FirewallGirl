@@ -7,14 +7,10 @@ using System;
 
 public class CardMgr : MonoBehaviour
 {
-    //List<Card> CardInventory = new List<Card>();
     public PlayerCardObject[] CardObject;
     public static CardMgr instance;
 
     public List<CardData> cardDatas = new List<CardData>();
-
-    // 현재 출력할 CardObject의 인덱스
-    private int currentIndex = 0;
 
     public CardData CardCreate(PlayerCardObject cardObject)
     {
@@ -56,10 +52,13 @@ public class CardMgr : MonoBehaviour
                 hitCard.costNum.text = currentCost.ToString();
 
                 Debug.Log($"카드 {hitCard.cardName.text}의 코스트가 {currentCost}로 감소했습니다.");
+
+
             }
             else
             {
                 Debug.Log($"카드 {hitCard.cardName.text}의 코스트가 이미 0입니다.");
+                Destroy(hitCard.gameObject);
             }
 
         }
