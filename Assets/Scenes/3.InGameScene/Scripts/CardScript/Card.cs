@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEngine.UI;
 using UnityEngine;
 
 public class Card : MonoBehaviour
 {
+    public Image costUI;
     public int cardNum;
     public SpriteRenderer cardImage;
     public TextMeshPro cardName;
@@ -15,7 +17,6 @@ public class Card : MonoBehaviour
     public TextMeshPro costNum;
 
     public TextMeshPro description;
-
 
     public void Start()
     {
