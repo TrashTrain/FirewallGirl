@@ -62,7 +62,6 @@ public class CardMgr : MonoBehaviour
             }
             else
             {
-                
                 Debug.Log("코스트가 부족합니다.");
             }
 
