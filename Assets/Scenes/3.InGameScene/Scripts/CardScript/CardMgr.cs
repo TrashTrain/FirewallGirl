@@ -8,12 +8,13 @@ using System;
 public class CardMgr : MonoBehaviour
 {
     public PlayerCardObject[] CardObject;
-    public TextMeshPro cost;
 
     public static CardMgr instance;
 
+    public CharacterData charData;
+
     public List<CardData> cardDatas = new List<CardData>();
-    private int totalCost = 10;
+    //private int totalCost = 10;
 
     public CardData CardCreate(PlayerCardObject cardObject)
     {
@@ -41,28 +42,28 @@ public class CardMgr : MonoBehaviour
     
     public void ReduceCostOnClick(Card hitCard)
     {
+        //내 코스트 
+        int totalCost = int.Parse(charData.stats.Cost.text);
         // 코스트 감소
         if (hitCard.costNum != null)
         {
-            // 현재 코스트 값을 가져와 정수로 변환
+            // 현재 카드의 코스트 값을 가져와 정수로 변환
             int currentCost = int.Parse(hitCard.costNum.text);
-            if (totalCost > 0)
+            if (totalCost > currentCost)
             {
                 // 코스트 감소
-                totalCost = totalCost - currentCost;
+                totalCost = Mathf.Max(0,totalCost - currentCost);
 
                 // UI 업데이트
-                cost.text = totalCost.ToString();
+                charData.stats.Cost.text = totalCost.ToString();
 
-                Debug.Log($"카드 {hitCard.cardName.text}의 코스트가 {currentCost}로 감소했습니다.");
-
+                Debug.Log($"나의 코스트가 {currentCost}으로 감소했습니다.");
 
             }
             else
             {
-                //Debug.Log($"카드 {hitCard.cardName.text}의 코스트가 이미 0입니다.");
+                
                 Debug.Log("코스트가 부족합니다.");
-                //Destroy(hitCard.gameObject);
             }
 
         }
