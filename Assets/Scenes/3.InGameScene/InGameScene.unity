@@ -880,6 +880,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f8da1dd9daf10b6439a353b61fe9efe4, type: 2}
   - {fileID: 11400000, guid: 72c7be8ff102b7f47a31b10df1b56d70, type: 2}
   - {fileID: 11400000, guid: d8c2d32e8ca0e0749ace54f8932520af, type: 2}
+  cost: {fileID: 0}
   cardDatas: []
 --- !u!4 &853260848
 Transform:
