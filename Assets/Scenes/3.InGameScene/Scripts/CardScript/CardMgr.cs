@@ -42,13 +42,14 @@ public class CardMgr : MonoBehaviour
     
     public void ReduceCostOnClick(Card hitCard)
     {
+        //내 코스트 
         int totalCost = int.Parse(charData.stats.Cost.text);
         // 코스트 감소
         if (hitCard.costNum != null)
         {
-            // 현재 코스트 값을 가져와 정수로 변환
+            // 현재 카드의 코스트 값을 가져와 정수로 변환
             int currentCost = int.Parse(hitCard.costNum.text);
-            if (totalCost > 0)
+            if (totalCost > currentCost)
             {
                 // 코스트 감소
                 totalCost = Mathf.Max(0,totalCost - currentCost);
@@ -61,11 +62,8 @@ public class CardMgr : MonoBehaviour
             }
             else
             {
-                totalCost = 0;
-                charData.stats.Cost.text = totalCost.ToString();
-                //Debug.Log($"카드 {hitCard.cardName.text}의 코스트가 이미 0입니다.");
+                
                 Debug.Log("코스트가 부족합니다.");
-                //Destroy(hitCard.gameObject);
             }
 
         }
