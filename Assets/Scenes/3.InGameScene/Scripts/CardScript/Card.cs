@@ -18,6 +18,7 @@ public class Card : MonoBehaviour
 
     public TextMeshPro description;
 
+
     public void Start()
     {
         if (CardMgr.instance == null)

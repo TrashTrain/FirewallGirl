@@ -14,7 +14,7 @@ public class CardMgr : MonoBehaviour
 
     public CharacterData charData;
 
-    public GameObject[] CardIinfoPanelmage;
+    public GameObject[] CardInfoPanelmage;
 
     public List<CardData> cardDatas = new List<CardData>();
     //private int totalCost = 10;
@@ -76,9 +76,19 @@ public class CardMgr : MonoBehaviour
     public void CardinfoOnClick(Card hitcard)
     {
         int i = hitcard.cardNum;
-        bool isActive = CardIinfoPanelmage[i-1].gameObject.activeSelf; // 현재 활성 상태 확인
-        CardIinfoPanelmage[i-1].gameObject.SetActive(!isActive);
+        bool isActive = CardInfoPanelmage[i-1].gameObject.activeSelf; // 현재 활성 상태 확인
+        CardInfoPanelmage[i-1].gameObject.SetActive(!isActive);
+        
+    }
 
+    private void UpdateCardInfoPanel(Card hitcard)
+    {
+        int i = hitcard.cardNum;
+        bool isActive = CardInfoPanelmage[i - 1].gameObject.activeSelf; // 현재 활성 상태 확인
+        if (isActive == true)
+        {
+            Car
+        }
     }
 
     // Update is called once per frame
@@ -126,6 +136,7 @@ public class CardMgr : MonoBehaviour
                 if (clickCard != null)
                 {
                     CardinfoOnClick(clickCard);
+                    UpdateCardInfoPanel(clickCard);
                 }
 
             }
