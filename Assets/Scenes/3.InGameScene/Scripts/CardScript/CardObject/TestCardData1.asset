@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardIndex: 1
   cardImage: {fileID: 21300020, guid: 56d84991286850f428b4e7df0cca7380, type: 3}
-  cardName: "\uB450\uB8E8\uBBF8"
+  cardName: Durumi
   positiveNum: 2
   negativeNum: 3
   costNum: 1
