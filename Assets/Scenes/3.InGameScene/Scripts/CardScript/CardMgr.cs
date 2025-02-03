@@ -16,6 +16,11 @@ public class CardMgr : MonoBehaviour
 
     public GameObject[] CardInfoPanelmage;
 
+    public TextMeshProUGUI[] cardNameInfo;
+    public TextMeshProUGUI[] cardPositiveInfo;
+    public TextMeshProUGUI[] cardNegativeInfo;
+    public TextMeshProUGUI[] cardCostInfo; 
+
     public List<CardData> cardDatas = new List<CardData>();
     //private int totalCost = 10;
 
@@ -78,16 +83,20 @@ public class CardMgr : MonoBehaviour
         int i = hitcard.cardNum;
         bool isActive = CardInfoPanelmage[i-1].gameObject.activeSelf; // 현재 활성 상태 확인
         CardInfoPanelmage[i-1].gameObject.SetActive(!isActive);
-        
+
     }
 
+    // 좌클릭시 팝업 띄움
     private void UpdateCardInfoPanel(Card hitcard)
     {
         int i = hitcard.cardNum;
         bool isActive = CardInfoPanelmage[i - 1].gameObject.activeSelf; // 현재 활성 상태 확인
         if (isActive == true)
         {
-            Car
+            cardNameInfo[i - 1].text = hitcard.cardName.text;
+            cardPositiveInfo[i - 1].text = "Positive: " + hitcard.positiveNum.text;
+            cardNegativeInfo[i - 1].text = "Negative: "+ hitcard.negativeNum.text;
+            cardCostInfo[i - 1].text = "Cost: "+hitcard.cardNum.ToString();
         }
     }
 
