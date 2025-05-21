@@ -25,6 +25,10 @@ public class UpDownMgr : MonoBehaviour
     [Header("카드 Reload 버튼")]
     public Button ReloadBtn; //카드 리로드 버튼
 
+    //카드 기억 
+    private List<int> recentValues = new List<int>();
+    private const int RECENT_HISTORY_LIMIT = 10; // 기억할 최근 값의 수
+
     void Start()
     {
         foreach (GameObject card in Card)
@@ -70,11 +74,39 @@ public class UpDownMgr : MonoBehaviour
     UpDown GenerateRandomAugment()
     {
         int value = 0;
+        int attempt = 0;
+
         //0 미포함
-        while (value == 0)
+        while (value == 0 && attempt < 100)
         {
-            value = Random.Range(-10, 10);
+            int candidate = Random.Range(-10, 10);
+            attempt++;
+
+            // 최근에 나온 값이 아니거나, 낮은 확률(30%)로 등장 허용
+            if (candidate != 0 &&
+                (!recentValues.Contains(candidate) || Random.value < 0.3f))
+            {
+                value = candidate;
+                break;
+            }
         }
+
+        // value가 여전히 0이면 강제로 0을 제외한 다른 수를 뽑음
+        if (value == 0)
+        {
+            do
+            {
+                value = Random.Range(-10, 10);
+            } while (value == 0);
+        }
+
+        // 최근값 리스트에 저장
+        recentValues.Add(value);
+        if (recentValues.Count > RECENT_HISTORY_LIMIT)
+        {
+            recentValues.RemoveAt(0); 
+        }
+
         string[] descriptions = { "공격력", "방어력", "코스트", "체력", "회피율" };
         string selected = descriptions[Random.Range(0, descriptions.Length)];
 
