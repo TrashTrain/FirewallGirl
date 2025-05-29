@@ -6,28 +6,28 @@ using UnityEngine;
 
 public class UpDownMgr : MonoBehaviour
 {
-    [Header("ì¹´ë“œ UI")]
+    [Header("Ä«µå UI")]
     public GameObject[] Card;
 
-    [Header("ì¹´ë“œ ìš”ì†Œ")]
+    [Header("Ä«µå ¿ä¼Ò")]
     public TextMeshProUGUI[] SkillText;
     public TextMeshProUGUI[] UpDownText;
     public Image[] SkillIcons;
 
-    [Header("ì¹´ë“œ Sprite")]
-    public Sprite swordSprite; //ê³µê²©ë ¥ = ë°©íŒ¨
-    public Sprite shieldSprite; //ë°©ì–´ë ¥ = ì¹¼ 
-    public Sprite costUpSprite; //ì½”ìŠ¤íŠ¸ = ìƒìŠ¹ ê·¸ë˜í”„
-    public Sprite costDownSprite; //ì½”ìŠ¤íŠ¸ = ìƒìŠ¹ ê·¸ë˜í”„
-    public Sprite hpSprite; //ì²´ë ¥ = ë¬¼ì•½ 
-    public Sprite avoidanceSprite; //íšŒí”¼ìœ¨ = ë°”ëŒ
+    [Header("Ä«µå Sprite")]
+    public Sprite swordSprite; //°ø°İ·Â = ¹æÆĞ
+    public Sprite shieldSprite; //¹æ¾î·Â = Ä® 
+    public Sprite costUpSprite; //ÄÚ½ºÆ® = »ó½Â ±×·¡ÇÁ
+    public Sprite costDownSprite; //ÄÚ½ºÆ® = »ó½Â ±×·¡ÇÁ
+    public Sprite hpSprite; //Ã¼·Â = ¹°¾à 
+    public Sprite avoidanceSprite; //È¸ÇÇÀ² = ¹Ù¶÷
 
-    [Header("ì¹´ë“œ Reload ë²„íŠ¼")]
-    public Button ReloadBtn; //ì¹´ë“œ ë¦¬ë¡œë“œ ë²„íŠ¼
+    [Header("Ä«µå Reload ¹öÆ°")]
+    public Button ReloadBtn; //Ä«µå ¸®·Îµå ¹öÆ°
 
-    //ì¹´ë“œ ê¸°ì–µ 
+    //Ä«µå ±â¾ï 
     private List<int> recentValues = new List<int>();
-    private const int RECENT_HISTORY_LIMIT = 10; // ê¸°ì–µí•  ìµœê·¼ ê°’ì˜ ìˆ˜
+    private const int RECENT_HISTORY_LIMIT = 10; // ±â¾ïÇÒ ÃÖ±Ù °ªÀÇ ¼ö
 
     void Start()
     {
@@ -35,8 +35,8 @@ public class UpDownMgr : MonoBehaviour
         {
             card.SetActive(false);
         }
-        UpDownSystem(); //ì²˜ìŒì— ë¦¬ë¡œë“œ ì‹œì‘í•˜ë©´ì„œ ì‹œì‘
-        //ë¦¬ë¡œë“œ ë²„íŠ¼ ì‹œì‘
+        UpDownSystem(); //Ã³À½¿¡ ¸®·Îµå ½ÃÀÛÇÏ¸é¼­ ½ÃÀÛ
+        //¸®·Îµå ¹öÆ° ½ÃÀÛ
         ReloadBtn.onClick.AddListener(ReloadBtnClick);
     }
 
@@ -44,12 +44,12 @@ public class UpDownMgr : MonoBehaviour
     {
         switch (description)
         {
-            case "ê³µê²©ë ¥": return swordSprite;
-            case "ë°©ì–´ë ¥": return shieldSprite;
-            case "ì½”ìŠ¤íŠ¸":
+            case "°ø°İ·Â": return swordSprite;
+            case "¹æ¾î·Â": return shieldSprite;
+            case "ÄÚ½ºÆ®":
                 return value > 0 ? costUpSprite : costDownSprite;
-            case "ì²´ë ¥": return hpSprite;
-            case "íšŒí”¼ìœ¨": return avoidanceSprite;
+            case "Ã¼·Â": return hpSprite;
+            case "È¸ÇÇÀ²": return avoidanceSprite;
             default: return null;
         }
     }
@@ -76,13 +76,13 @@ public class UpDownMgr : MonoBehaviour
         int value = 0;
         int attempt = 0;
 
-        //0 ë¯¸í¬í•¨
+        //0 ¹ÌÆ÷ÇÔ
         while (value == 0 && attempt < 100)
         {
             int candidate = Random.Range(-10, 10);
             attempt++;
 
-            // ìµœê·¼ì— ë‚˜ì˜¨ ê°’ì´ ì•„ë‹ˆê±°ë‚˜, ë‚®ì€ í™•ë¥ (30%)ë¡œ ë“±ì¥ í—ˆìš©
+            // ÃÖ±Ù¿¡ ³ª¿Â °ªÀÌ ¾Æ´Ï°Å³ª, ³·Àº È®·ü(30%)·Î µîÀå Çã¿ë
             if (candidate != 0 &&
                 (!recentValues.Contains(candidate) || Random.value < 0.3f))
             {
@@ -91,7 +91,7 @@ public class UpDownMgr : MonoBehaviour
             }
         }
 
-        // valueê°€ ì—¬ì „íˆ 0ì´ë©´ ê°•ì œë¡œ 0ì„ ì œì™¸í•œ ë‹¤ë¥¸ ìˆ˜ë¥¼ ë½‘ìŒ
+        // value°¡ ¿©ÀüÈ÷ 0ÀÌ¸é °­Á¦·Î 0À» Á¦¿ÜÇÑ ´Ù¸¥ ¼ö¸¦ »ÌÀ½
         if (value == 0)
         {
             do
@@ -100,14 +100,14 @@ public class UpDownMgr : MonoBehaviour
             } while (value == 0);
         }
 
-        // ìµœê·¼ê°’ ë¦¬ìŠ¤íŠ¸ì— ì €ì¥
+        // ÃÖ±Ù°ª ¸®½ºÆ®¿¡ ÀúÀå
         recentValues.Add(value);
         if (recentValues.Count > RECENT_HISTORY_LIMIT)
         {
             recentValues.RemoveAt(0); 
         }
 
-        string[] descriptions = { "ê³µê²©ë ¥", "ë°©ì–´ë ¥", "ì½”ìŠ¤íŠ¸", "ì²´ë ¥", "íšŒí”¼ìœ¨" };
+        string[] descriptions = { "°ø°İ·Â", "¹æ¾î·Â", "ÄÚ½ºÆ®", "Ã¼·Â", "È¸ÇÇÀ²" };
         string selected = descriptions[Random.Range(0, descriptions.Length)];
 
         return new UpDown(value, selected);
@@ -126,7 +126,7 @@ public class UpDownMgr : MonoBehaviour
         }
     }
 
-    //ì¹´ë“œ ë¦¬ë¡œë“œ
+    //Ä«µå ¸®·Îµå
     public void ReloadBtnClick()
     {
         foreach (GameObject card in Card)
