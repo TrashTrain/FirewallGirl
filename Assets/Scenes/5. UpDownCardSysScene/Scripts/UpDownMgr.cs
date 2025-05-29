@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using Unity.VisualScripting;
 
 public class UpDownMgr : MonoBehaviour
 {
     [Header("카드 UI")]
-    public GameObject[] Card;
+    public Button[] Card;
 
     [Header("카드 요소")]
     public TextMeshProUGUI[] SkillText;
@@ -31,13 +33,30 @@ public class UpDownMgr : MonoBehaviour
 
     void Start()
     {
-        foreach (GameObject card in Card)
+        foreach (Button card in Card)
         {
-            card.SetActive(false);
+            card.gameObject.SetActive(false);
         }
         UpDownSystem(); //처음에 리로드 시작하면서 시작
         //리로드 버튼 시작
         ReloadBtn.onClick.AddListener(ReloadBtnClick);
+
+        for (int i = 0; i < Card.Length; i++)
+        {
+            int index = i; 
+            Card[i].onClick.AddListener(() => OnCardClicked());
+        }
+
+    }
+
+    //카드를 선택한 경우 배틀씬으로 
+    void OnCardClicked()
+    {
+        Debug.Log("Clicked");
+        // 필요하면 선택된 카드 인덱스를 저장
+        // GameManager.selectedCardId = cardIndex;
+
+        SceneManager.LoadScene("BattleScene");
     }
 
     Sprite GetSprite(string description, int value)
@@ -104,7 +123,7 @@ public class UpDownMgr : MonoBehaviour
         recentValues.Add(value);
         if (recentValues.Count > RECENT_HISTORY_LIMIT)
         {
-            recentValues.RemoveAt(0); 
+            recentValues.RemoveAt(0);
         }
 
         string[] descriptions = { "공격력", "방어력", "코스트", "체력", "회피율" };
@@ -114,8 +133,8 @@ public class UpDownMgr : MonoBehaviour
     }
 
     public void UpDownSystem()
-    {   
-        for (int i=0; i<3; i++)
+    {
+        for (int i = 0; i < 3; i++)
         {
             UpDown randomAugment = GenerateRandomAugment();
             SkillText[i].text = randomAugment.description;
@@ -129,10 +148,11 @@ public class UpDownMgr : MonoBehaviour
     //카드 리로드
     public void ReloadBtnClick()
     {
-        foreach (GameObject card in Card)
+        foreach (Button card in Card)
         {
-            card.SetActive(true);
+            card.gameObject.SetActive(true);
         }
         UpDownSystem();
     }
+
 }
