@@ -32,6 +32,11 @@ public class Virus : MonoBehaviour
         atkDmgText.text = atkDmg.ToString();
         hpCntText.text = hpCnt.ToString();
     }
+
+    public void UpdateData()
+    {
+        atkDmgText.text = atkDmg.ToString();
+    }
     private enum State
     {
         Idle,
