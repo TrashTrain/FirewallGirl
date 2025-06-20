@@ -8,6 +8,7 @@ public class VirusIdle : BaseState
     public override void OnStateEnter()
     {
         Debug.Log("Idle 상태입니다.");
+        Debug.Log(_virus.virusObjectSO.name);
     }
 
     public override void OnStateUpdate()
@@ -24,7 +25,11 @@ public class VirusIdle : BaseState
 public class VirusAtk : BaseState
 {
     public VirusAtk(Virus virus) : base(virus) { }
-
+    bool inFunc = false;
+    Vector2 oriPos;
+    float rimitTime = 0.3f;
+    float checkTime = 0f;
+    float speed = 100f;
     public override void OnStateEnter()
     {
         Debug.Log("ATK 상태입니다.");
@@ -32,12 +37,33 @@ public class VirusAtk : BaseState
 
     public override void OnStateUpdate()
     {
+        Debug.Log("ATK update 상태입니다.");
+        Vector2 enemyPos = new Vector3(-12, 0);
 
+        if (!inFunc)
+        {
+            oriPos = _virus.transform.position;
+            inFunc = true;
+        }
+        
+        
+        if(checkTime <= rimitTime)
+        {
+            checkTime = checkTime + Time.deltaTime;
+            //Debug.Log(checkTime);
+            _virus.transform.position = Vector2.MoveTowards(_virus.transform.position, enemyPos, speed * Time.deltaTime);
+        }
+        else
+        {
+            _virus.transform.position = Vector2.MoveTowards(_virus.transform.position, oriPos, speed * Time.deltaTime);
+        }
+        
+        GameManager.PlayerTurn = false;
     }
 
     public override void OnStateExit()
     {
-
+        Debug.Log("ATK exit 상태입니다.");
     }
 }
 
@@ -52,7 +78,7 @@ public class VirusDef : BaseState
 
     public override void OnStateUpdate()
     {
-
+        
     }
 
     public override void OnStateExit()

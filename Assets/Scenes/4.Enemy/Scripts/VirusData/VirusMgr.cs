@@ -11,6 +11,8 @@ public class VirusMgr : MonoBehaviour
 
     void Start()
     {
+        var rand = Random.Range(1, 3);
+        Debug.Log(rand);
         if (instance == null)
         {
             instance = this;
