@@ -15,7 +15,7 @@ public class StageMgr : MonoBehaviour
 
 
     private int StageCount = 0;
-    private int OutLineCount = 0;
+    ///private int OutLineCount = 0;
 
     GameObject player;
     
