@@ -20,6 +20,7 @@ public class Troy : Virus
     void Start()
     {
         Debug.Log("InTroy");
+        InitData();
         _curState = State.Idle;
         _fsm = new FSM(new VirusIdle(this));
     }
@@ -27,7 +28,7 @@ public class Troy : Virus
     // Update is called once per frame
     void Update()
     {
-        InitData();
+        //InitData();
         switch (_curState)
         {
             case State.Idle:

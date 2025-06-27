@@ -5,14 +5,14 @@ using UnityEngine;
 public class VirusMgr : MonoBehaviour
 {
  
-    public List<VirusObjectSO> viruses = new ();
+    public List<VirusObjectSO> viruses;
 
     public static VirusMgr instance;
 
     void Start()
     {
-        var rand = Random.Range(1, 3);
-        Debug.Log(rand);
+        //var rand = Random.Range(1, 3);
+        //Debug.Log(rand);
         if (instance == null)
         {
             instance = this;
@@ -23,9 +23,4 @@ public class VirusMgr : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
