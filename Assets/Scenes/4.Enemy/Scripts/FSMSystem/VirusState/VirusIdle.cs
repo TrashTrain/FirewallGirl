@@ -103,8 +103,8 @@ public class VirusSup : BaseState
     public override void OnStateEnter()
     {
         Debug.Log("SUP 상태입니다.");
-        _virus.atkDmg += 3;
-        Debug.Log("atkDmg : "+_virus.atkDmg);
+        _virus.virusData.AtkDmg += 3;
+        Debug.Log("atkDmg : "+ _virus.virusData.AtkDmg);
         _virus.UpdateData();
         GameManager.PlayerTurn = false;
     }

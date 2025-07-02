@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5481278553165050541}
   m_Layer: 0
   m_Name: TestTroy
-  m_TagString: Untagged
+  m_TagString: Virus
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -104,8 +104,6 @@ MonoBehaviour:
   image: {fileID: 894934282596416935}
   atkDmgText: {fileID: 1718583250999378292}
   hpCntText: {fileID: 769023970292890029}
-  atkDmg: 0
-  hpCnt: 10
 --- !u!61 &5481278553165050541
 BoxCollider2D:
   m_ObjectHideFlags: 0

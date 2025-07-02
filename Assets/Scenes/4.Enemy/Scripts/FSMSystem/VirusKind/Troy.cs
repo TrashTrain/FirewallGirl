@@ -32,7 +32,7 @@ public class Troy : Virus
         switch (_curState)
         {
             case State.Idle:
-                if(hpCnt <= 0)
+                if(virusData.HpCnt <= 0)
                 {
                     ChangeState(State.Death);
                 }
@@ -42,7 +42,7 @@ public class Troy : Virus
                 }
                 break;
             case State.Atk:
-                if (hpCnt <= 0)
+                if (virusData.HpCnt <= 0)
                 {
                     ChangeState(State.Death);
                 }
@@ -52,7 +52,7 @@ public class Troy : Virus
                 }
                 break;
             case State.Def:
-                if (hpCnt <= 0)
+                if (virusData.HpCnt <= 0)
                 {
                     ChangeState(State.Death);
                 }
@@ -62,7 +62,7 @@ public class Troy : Virus
                 }
                 break;
             case State.Sup:
-                if (hpCnt <= 0)
+                if (virusData.HpCnt <= 0)
                 {
                     ChangeState(State.Death);
                 }
