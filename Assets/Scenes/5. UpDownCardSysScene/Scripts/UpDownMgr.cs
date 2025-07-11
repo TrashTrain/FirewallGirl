@@ -12,9 +12,14 @@ public class UpDownMgr : MonoBehaviour
     public Button[] Card;
 
     [Header("카드 요소")]
-    public TextMeshProUGUI[] SkillText;
-    public TextMeshProUGUI[] UpDownText;
-    public Image[] SkillIcons;
+    public TextMeshProUGUI[] PositiveSkillText;
+    public TextMeshProUGUI[] NegativeSkillText;
+    public TextMeshProUGUI[] PositiveUpDownText;
+    public TextMeshProUGUI[] NegativeUpDownText;
+
+    public Image[] PositiveSkillIcons;
+    public Image[] NegativeSkillIcons;
+
 
     [Header("카드 Sprite")]
     public Sprite swordSprite; //공격력 = 방패
@@ -27,8 +32,8 @@ public class UpDownMgr : MonoBehaviour
     [Header("카드 Reload 버튼")]
     public Button ReloadBtn; //카드 리로드 버튼
 
-    //카드 기억 
-    private List<int> recentValues = new List<int>();
+    //카드 기억: 중복허용x 자료구조형으로
+    private HashSet<int> recentValues = new HashSet<int>();
     private const int RECENT_HISTORY_LIMIT = 10; // 기억할 최근 값의 수
 
     void Start()
@@ -92,13 +97,17 @@ public class UpDownMgr : MonoBehaviour
 
     UpDown GenerateRandomAugment()
     {
+        //최종적으로 선택될 숫자 
         int value = 0;
+        //시도 획수를 세는 변수
         int attempt = 0;
 
         //0 미포함
-        while (value == 0 && attempt < 100)
+        while (value == 0 && attempt < 100) //루프를 100번만 돌도록 제한
         {
+            //GenerateRandomAugment에서 랜덤으로 도출된 값
             int candidate = Random.Range(-10, 10);
+            //루프를 ++
             attempt++;
 
             // 최근에 나온 값이 아니거나, 낮은 확률(30%)로 등장 허용
@@ -123,7 +132,7 @@ public class UpDownMgr : MonoBehaviour
         recentValues.Add(value);
         if (recentValues.Count > RECENT_HISTORY_LIMIT)
         {
-            recentValues.RemoveAt(0);
+            recentValues.Clear();
         }
 
         string[] descriptions = { "공격력", "방어력", "코스트", "체력", "회피율" };
@@ -134,17 +143,48 @@ public class UpDownMgr : MonoBehaviour
 
     public void UpDownSystem()
     {
+        // 카드 독립 중복방지를 위한 해시셋 
+        HashSet<string> usedDescriptions = new HashSet<string>();
+
         for (int i = 0; i < 3; i++)
         {
-            UpDown randomAugment = GenerateRandomAugment();
-            SkillText[i].text = randomAugment.description;
-            UpDownText[i].text = randomAugment.ToString();
+            // ----------------- 긍정 효과 --------------------
+            UpDown positive;
+            int tryCount = 0;
 
-            Sprite icon = GetSprite(randomAugment.description, randomAugment.value);
-            SkillIcons[i].sprite = icon;
+            do
+            {
+                positive = GenerateRandomAugment();
+                tryCount++;
+            } while (usedDescriptions.Contains(positive.description) && tryCount < 20);
+
+            usedDescriptions.Add(positive.description);
+
+            PositiveSkillText[i].text = positive.description;
+            PositiveUpDownText[i].text = positive.ToString();
+            PositiveSkillIcons[i].sprite = GetSprite(positive.description, positive.value);
+
+            // ----------------- 부정 효과 --------------------
+            UpDown negative;
+            tryCount = 0;
+
+            do
+            {
+                negative = GenerateRandomAugment();
+                tryCount++;
+            } while (
+                (usedDescriptions.Contains(negative.description) || negative.description == positive.description)
+                && tryCount < 20
+            );
+
+            usedDescriptions.Add(negative.description);
+
+            NegativeSkillText[i].text = negative.description;
+            NegativeUpDownText[i].text = negative.ToString();
+            NegativeSkillIcons[i].sprite = GetSprite(negative.description, negative.value);
         }
-    }
 
+    }
     //카드 리로드
     public void ReloadBtnClick()
     {
