@@ -49,6 +49,14 @@ public class UpDownMgr : MonoBehaviour
 
     [Header("카드 Reload 버튼")]
     public Button ReloadBtn; //카드 리로드 버튼
+
+    [Header("카드 리로드 애니메이션")]
+    public Animation OpenAnimtion1; 
+    public Animation OpenAnimtion3; 
+    
+    string Card1openAnimationTrigger = "Card1Open";
+    string Card3openAnimationTrigger = "Card3Open";
+
   
 
     //카드 기억: 중복허용x 자료구조형으로
@@ -170,9 +178,12 @@ public class UpDownMgr : MonoBehaviour
     // 카드 리로드 버튼 
     public void ReloadBtnClick()
     {
-        
         foreach (Button card in Card)
             card.gameObject.SetActive(true);
+
+        OpenAnimtion1.Play(Card1openAnimationTrigger);
+        OpenAnimtion3.Play(Card3openAnimationTrigger);
+
 
         CardSystem();
     }
