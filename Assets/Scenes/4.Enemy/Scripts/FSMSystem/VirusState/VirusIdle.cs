@@ -13,12 +13,12 @@ public class VirusIdle : BaseState
 
     public override void OnStateUpdate()
     {
-        
+        OnStateExit();
     }
 
     public override void OnStateExit()
     {
-        
+        Debug.Log("Idle Exit 입니다.");
     }
 }
 
@@ -70,6 +70,7 @@ public class VirusAtk : BaseState
     public override void OnStateExit()
     {
         SequenceTurn.instance.SetPlusSequenceCheck();
+        Debug.Log("sqcheck : " + SequenceTurn.instance.GetSequenceCheck());
         Debug.Log("ATK exit 상태입니다.");
         if(SequenceTurn.instance.GetSequenceCheck() > VirusSpawn.instance.GetVirusCount())
         {
@@ -77,7 +78,7 @@ public class VirusAtk : BaseState
             GameManager.PlayerTurn = true;
             //Troy.sequenceCheck = 1;
         }
-        
+        SequenceTurn.instance.SetVirusActionChange();
     }
 }
 
@@ -99,6 +100,7 @@ public class VirusDef : BaseState
     public override void OnStateExit()
     {
         SequenceTurn.instance.SetPlusSequenceCheck();
+        Debug.Log("sqcheck : " + SequenceTurn.instance.GetSequenceCheck());
         Debug.Log("def exit 상태입니다.");
         if (SequenceTurn.instance.GetSequenceCheck() > VirusSpawn.instance.GetVirusCount())
         {
@@ -106,6 +108,7 @@ public class VirusDef : BaseState
             GameManager.PlayerTurn = true;
             //Troy.sequenceCheck = 1;
         }
+        SequenceTurn.instance.SetVirusActionChange();
     }
 }
 
@@ -130,6 +133,7 @@ public class VirusSup : BaseState
     public override void OnStateExit()
     {
         SequenceTurn.instance.SetPlusSequenceCheck();
+        Debug.Log("sqcheck : " +  SequenceTurn.instance.GetSequenceCheck());
         Debug.Log("sup exit 상태입니다.");
         if (SequenceTurn.instance.GetSequenceCheck() > VirusSpawn.instance.GetVirusCount())
         {
@@ -137,6 +141,7 @@ public class VirusSup : BaseState
             GameManager.PlayerTurn = true;
             //Troy.sequenceCheck = 1;
         }
+        SequenceTurn.instance.SetVirusActionChange();
     }
 }
 public class VirusDeath : BaseState
@@ -163,5 +168,6 @@ public class VirusDeath : BaseState
             GameManager.PlayerTurn = true;
             //Troy.sequenceCheck = 1;
         }
+        SequenceTurn.instance.SetVirusActionChange();
     }
 }

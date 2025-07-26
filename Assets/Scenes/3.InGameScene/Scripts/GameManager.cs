@@ -6,12 +6,12 @@ public class GameManager : MonoBehaviour
 {
     static public bool PlayerTurn = false;
 
-    private bool checkTurn;
+   // private bool checkTurn;
     // Start is called before the first frame update
     void Start()
     {
         PlayerTurn = true;
-        checkTurn = PlayerTurn;
+        //checkTurn = PlayerTurn;
     }
 
     public void OnTrunButtonClick()
@@ -28,10 +28,10 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(checkTurn != PlayerTurn)
-        {
-            Debug.Log("턴 종료");
-            checkTurn = PlayerTurn;
-        }   
+        //if(checkTurn != PlayerTurn)
+        //{
+        //    Debug.Log("턴 종료");
+        //    checkTurn = PlayerTurn;
+        //}   
     }
 }

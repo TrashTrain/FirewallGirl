@@ -18,6 +18,7 @@ public class Troy : Virus
     private State _curState;
     private FSM _fsm;
     public int sequence;
+    
 
     void Start()
     {
@@ -34,14 +35,19 @@ public class Troy : Virus
     // Update is called once per frame
     void Update()
     {
+        if (GameManager.PlayerTurn)
+            return;
         if (virusData.HpCnt <= 0)
         {
             Destroy(gameObject);
         }
-        Debug.Log("sequenceCheck : " + SequenceTurn.instance.GetSequenceCheck());
-        if (sequence == SequenceTurn.instance.GetSequenceCheck())
+        var sequnce = SequenceTurn.instance;
+        Debug.Log("sequenceCheck : " + sequnce.GetSequenceCheck());
+        Debug.Log("sequence1 : " + sequence);
+        if (sequence == sequnce.GetSequenceCheck() && sequnce.GetVirusAction())
         {
-            Debug.Log("sequence : " + sequence);
+            sequnce.SetVirusActionChange();
+            Debug.Log("sequence2 : " + sequence);
             //InitData();
             switch (_curState)
             {
@@ -52,19 +58,19 @@ public class Troy : Virus
                     }
                     break;
                 case State.Atk:
-                    if (!CanMoveVirus())
+                    if (CanMoveVirus())
                     {
                         ChangeState(State.Idle);
                     }
                     break;
                 case State.Def:
-                    if (!CanMoveVirus())
+                    if (CanMoveVirus())
                     {
                         ChangeState(State.Idle);
                     }
                     break;
                 case State.Sup:
-                    if (!CanMoveVirus())
+                    if (CanMoveVirus())
                     {
                         ChangeState(State.Idle);
                     }
@@ -79,6 +85,7 @@ public class Troy : Virus
 
     private void ChangeState(State nexState)
     {
+        Debug.Log("ChangeState");
         _curState = nexState;
         switch (_curState)
         {
