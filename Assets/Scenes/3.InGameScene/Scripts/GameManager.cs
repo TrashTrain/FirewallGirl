@@ -17,12 +17,14 @@ public class GameManager : MonoBehaviour
     public void OnTrunButtonClick()
     {
         // true -> PlayerTurn으로 바꾸기
-        if (true)
+        if (PlayerTurn)
         {
             Debug.Log("턴 넘기기 성공");
             PlayerTurn = !PlayerTurn;
+            SequenceTurn.instance.SetResetSequenceCheck();
         }
     }
+
     // Update is called once per frame
     void Update()
     {

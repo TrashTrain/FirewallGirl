@@ -11,6 +11,21 @@ public class VirusSpawn : MonoBehaviour
 
     public GameObject prefabVirus;
 
+    public static VirusSpawn instance;
+
+
+    void Start()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+        GetVirusCount();
+    }
 
     public void SpawnVirus()
     {
@@ -28,5 +43,16 @@ public class VirusSpawn : MonoBehaviour
     public void OnButtonSpawnVirus()
     {
 
+    }
+
+    // 몬스터 갯수 세기
+    public int GetVirusCount()
+    {
+        int count = 0;
+        count += spawn1.GetComponent<Transform>().childCount;
+        count += spawn2.GetComponent<Transform>().childCount;
+        count += spawn3.GetComponent<Transform>().childCount;
+        Debug.Log("count : " + count);
+        return count;
     }
 }
