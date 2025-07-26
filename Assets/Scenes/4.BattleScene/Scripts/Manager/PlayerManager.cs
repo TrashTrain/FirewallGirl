@@ -8,12 +8,14 @@ public class PlayerManager : MonoBehaviour
     // Player info
     public int maxHP;
     public int currentHP;
-    public int cost;
+    public int currentCost;
+    public int totalCost;
     public int attackPower;
     public int defensePower;
 
     public HealthBar hpBar;
     public PowerUI powerUI;
+    public CostUI costUI;
 
     private void Start()
     {
@@ -27,10 +29,17 @@ public class PlayerManager : MonoBehaviour
         UpdateUI();
     }
 
+    public void TakeCost()
+    {
+        currentCost = Mathf.Max(0, currentCost - 1);
+        UpdateUI();
+    }
+
     public void UpdateUI()
     {
         hpBar.UpdateHPBar(currentHP, maxHP);
         powerUI.UpdateAttackPowerUI(attackPower);
         powerUI.UpdateDefensePowerUI(defensePower);
+        costUI.UpdateCostUI(currentCost, totalCost);
     }
 }
