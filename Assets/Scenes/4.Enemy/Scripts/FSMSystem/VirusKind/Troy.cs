@@ -44,7 +44,7 @@ public class Troy : Virus
         var sequnce = SequenceTurn.instance;
         Debug.Log("sequenceCheck : " + sequnce.GetSequenceCheck());
         Debug.Log("sequence1 : " + sequence);
-        if (sequence == sequnce.GetSequenceCheck() && sequnce.GetVirusAction())
+        if (sequence == sequnce.GetSequenceCheck())
         {
             sequnce.SetVirusActionChange();
             Debug.Log("sequence2 : " + sequence);
