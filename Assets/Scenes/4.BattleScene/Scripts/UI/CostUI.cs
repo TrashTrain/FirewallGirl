@@ -7,10 +7,11 @@ using TMPro;
 public class CostUI : MonoBehaviour
 {
     public TextMeshProUGUI costText;
+    public PlayerManager playerManager;
     
     void Start()
     {
-        costText.text = "0/0";
+        costText.text = string.Format("{0}/{1}", playerManager.currentCost, playerManager.totalCost);
     }
     
     public void UpdateCostUI(int current, int total)
