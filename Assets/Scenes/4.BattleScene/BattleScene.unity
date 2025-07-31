@@ -690,6 +690,10 @@ PrefabInstance:
       value: Card3
       objectReference: {fileID: 0}
     - target: {fileID: 4631881173365916910, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631881173365916910, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_TagString
       value: Untagged
       objectReference: {fileID: 0}
@@ -2029,6 +2033,10 @@ PrefabInstance:
       value: Card2
       objectReference: {fileID: 0}
     - target: {fileID: 4631881173365916910, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631881173365916910, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_TagString
       value: Untagged
       objectReference: {fileID: 0}
@@ -3012,6 +3020,10 @@ PrefabInstance:
       value: Card4
       objectReference: {fileID: 0}
     - target: {fileID: 4631881173365916910, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4631881173365916910, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_TagString
       value: Untagged
       objectReference: {fileID: 0}
@@ -3138,7 +3150,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 175, y: 240}
+  m_Size: {x: 355, y: 480}
   m_EdgeRadius: 0
 --- !u!114 &909823369
 MonoBehaviour:
@@ -3489,7 +3501,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 175, y: 240}
+  m_Size: {x: 355, y: 480}
   m_EdgeRadius: 0
 --- !u!114 &990088687
 MonoBehaviour:
@@ -3659,8 +3671,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 190, y: 0}
-  m_SizeDelta: {x: 300, y: 130}
+  m_AnchoredPosition: {x: 370, y: 11}
+  m_SizeDelta: {x: 650, y: 194}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1173448140
 MonoBehaviour:
@@ -3712,8 +3724,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6ae0e3b78c26914ea5044338012eb10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spreadOffset: 300
-  spreadSpeed: 10
+  spreadOffset: 250
+  spreadSpeed: 15
   isSpread: 0
 --- !u!61 &1173448143
 BoxCollider2D:
@@ -3808,7 +3820,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 175, y: 240}
+  m_Size: {x: 355, y: 480}
   m_EdgeRadius: 0
 --- !u!114 &1179909018
 MonoBehaviour:
@@ -4009,7 +4021,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 175, y: 240}
+  m_Size: {x: 355, y: 480}
   m_EdgeRadius: 0
 --- !u!114 &1266569456
 MonoBehaviour:
@@ -4431,7 +4443,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b093bceb9ce3da478ad9c20484c42b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  status: {fileID: 0}
   attackPowerText: {fileID: 419046688}
   defensePowerText: {fileID: 1226722479}
 --- !u!1 &1370851091
@@ -4487,7 +4498,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b093bceb9ce3da478ad9c20484c42b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  status: {fileID: 0}
   attackPowerText: {fileID: 55905168}
   defensePowerText: {fileID: 273668041}
 --- !u!114 &1370851094
@@ -4503,6 +4513,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   costText: {fileID: 528238455}
+  playerManager: {fileID: 1286993167}
 --- !u!1 &1411304513
 GameObject:
   m_ObjectHideFlags: 0

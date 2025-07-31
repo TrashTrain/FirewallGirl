@@ -6,7 +6,6 @@ using TMPro;
 
 public class PowerUI : MonoBehaviour
 {
-    public GameObject status;
     public TextMeshProUGUI attackPowerText;
     public TextMeshProUGUI defensePowerText;
 
