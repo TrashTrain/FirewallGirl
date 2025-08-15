@@ -17,6 +17,8 @@ public class Virus : MonoBehaviour
     public TextMeshPro atkDmgText;
     public TextMeshPro hpCntText;
 
+    public Animator animator;
+
     [HideInInspector]
     public VirusData virusData;
 

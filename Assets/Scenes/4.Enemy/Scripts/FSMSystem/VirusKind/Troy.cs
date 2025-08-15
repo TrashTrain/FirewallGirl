@@ -17,7 +17,7 @@ public class Troy : Virus
 
     private State _curState;
     private FSM _fsm;
-    public int sequence;
+    public float sequence;
     
 
     void Start()
@@ -41,46 +41,38 @@ public class Troy : Virus
         {
             Destroy(gameObject);
         }
-        var sequnce = SequenceTurn.instance;
-        Debug.Log("sequenceCheck : " + sequnce.GetSequenceCheck());
-        Debug.Log("sequence1 : " + sequence);
-        if (sequence == sequnce.GetSequenceCheck())
-        {
-            sequnce.SetVirusActionChange();
-            Debug.Log("sequence2 : " + sequence);
-            //InitData();
-            switch (_curState)
-            {
-                case State.Idle:
-                    if (CanMoveVirus())
-                    {
-                        ChangeState((State)ChangeStateRand((int)State.Death));
-                    }
-                    break;
-                case State.Atk:
-                    if (CanMoveVirus())
-                    {
-                        ChangeState(State.Idle);
-                    }
-                    break;
-                case State.Def:
-                    if (CanMoveVirus())
-                    {
-                        ChangeState(State.Idle);
-                    }
-                    break;
-                case State.Sup:
-                    if (CanMoveVirus())
-                    {
-                        ChangeState(State.Idle);
-                    }
-                    break;
-            }
 
-            _fsm.UpdateState();
-            
+
+        switch (_curState)
+        {
+            case State.Idle:
+                if (CanMoveVirus())
+                {
+                    ChangeState((State)ChangeStateRand((int)State.Death));
+                }
+                break;
+            case State.Atk:
+                if (CanMoveVirus())
+                {
+                    ChangeState(State.Idle);
+                }
+                break;
+            case State.Def:
+                if (CanMoveVirus())
+                {
+                    ChangeState(State.Idle);
+                }
+                break;
+            case State.Sup:
+                if (CanMoveVirus())
+                {
+                    ChangeState(State.Idle);
+                }
+                break;
         }
-        
+
+        _fsm.UpdateState();
+
     }
 
     private void ChangeState(State nexState)

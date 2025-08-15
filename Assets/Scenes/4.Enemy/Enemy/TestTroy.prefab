@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 894934282596416935}
   - component: {fileID: 4557037771983816653}
   - component: {fileID: 5481278553165050541}
+  - component: {fileID: 5681695378253590800}
   m_Layer: 0
   m_Name: TestTroy
   m_TagString: Virus
@@ -105,6 +106,7 @@ MonoBehaviour:
   image: {fileID: 894934282596416935}
   atkDmgText: {fileID: 1718583250999378292}
   hpCntText: {fileID: 769023970292890029}
+  animator: {fileID: 5681695378253590800}
   sequence: 0
 --- !u!61 &5481278553165050541
 BoxCollider2D:
@@ -151,6 +153,27 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!95 &5681695378253590800
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1786381171166047068}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 406a9976dddca4b4ea869d0a65635174, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2668089688122718261
 GameObject:
   m_ObjectHideFlags: 0
