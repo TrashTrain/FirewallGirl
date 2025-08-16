@@ -12,30 +12,25 @@ public class Virus : MonoBehaviour
     public VirusObjectSO virusObjectSO;
 
     [Header("내부 데이터")]
-    private int indexNum;
     public SpriteRenderer image;
 
     public TextMeshPro atkDmgText;
     public TextMeshPro hpCntText;
 
-    [Header("실제 데이터")]
-    public int atkDmg;
-    public int hpCnt;
+    [HideInInspector]
+    public VirusData virusData;
 
     public void InitData()
     {
-        // 전부 업데이트에 할당할 필요는 없음.
-        indexNum = virusObjectSO.virusIndex;
-        image.sprite = virusObjectSO.virusImage;
-        atkDmg = virusObjectSO.virusAtk;
-        hpCnt = virusObjectSO.virusHp;
-        atkDmgText.text = atkDmg.ToString();
-        hpCntText.text = hpCnt.ToString();
+        virusData = new VirusData(virusObjectSO.virusIndex, virusObjectSO.virusImage, virusObjectSO.virusName, virusObjectSO.virusAtk, virusObjectSO.virusHp);
+        gameObject.GetComponent<SpriteRenderer>().sprite = virusData.VirusImage;
+        atkDmgText.text = virusData.AtkDmg.ToString();
+        hpCntText.text = virusData.HpCnt.ToString();
     }
 
     public void UpdateData()
     {
-        atkDmgText.text = atkDmg.ToString();
+        atkDmgText.text = virusData.AtkDmg.ToString();
     }
     private enum State
     {

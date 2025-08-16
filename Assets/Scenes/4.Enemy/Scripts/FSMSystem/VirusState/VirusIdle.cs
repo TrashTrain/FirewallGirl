@@ -13,12 +13,12 @@ public class VirusIdle : BaseState
 
     public override void OnStateUpdate()
     {
-        
+        OnStateExit();
     }
 
     public override void OnStateExit()
     {
-        
+        Debug.Log("Idle Exit 입니다.");
     }
 }
 
@@ -69,8 +69,16 @@ public class VirusAtk : BaseState
 
     public override void OnStateExit()
     {
+        SequenceTurn.instance.SetPlusSequenceCheck();
+        Debug.Log("sqcheck : " + SequenceTurn.instance.GetSequenceCheck());
         Debug.Log("ATK exit 상태입니다.");
-        GameManager.PlayerTurn = true;
+        if(SequenceTurn.instance.GetSequenceCheck() > VirusSpawn.instance.GetVirusCount())
+        {
+            Debug.Log("passTurn");
+            GameManager.PlayerTurn = true;
+            //Troy.sequenceCheck = 1;
+        }
+        SequenceTurn.instance.SetVirusActionChange();
     }
 }
 
@@ -86,13 +94,21 @@ public class VirusDef : BaseState
 
     public override void OnStateUpdate()
     {
-        
+        OnStateExit();
     }
 
     public override void OnStateExit()
     {
-        Debug.Log("DEF 상태 종료입니다.");
-        GameManager.PlayerTurn = true;
+        SequenceTurn.instance.SetPlusSequenceCheck();
+        Debug.Log("sqcheck : " + SequenceTurn.instance.GetSequenceCheck());
+        Debug.Log("def exit 상태입니다.");
+        if (SequenceTurn.instance.GetSequenceCheck() > VirusSpawn.instance.GetVirusCount())
+        {
+            Debug.Log("passTurn");
+            GameManager.PlayerTurn = true;
+            //Troy.sequenceCheck = 1;
+        }
+        SequenceTurn.instance.SetVirusActionChange();
     }
 }
 
@@ -103,20 +119,29 @@ public class VirusSup : BaseState
     public override void OnStateEnter()
     {
         Debug.Log("SUP 상태입니다.");
-        _virus.atkDmg += 3;
-        Debug.Log("atkDmg : "+_virus.atkDmg);
+        _virus.virusData.AtkDmg += 3;
+        Debug.Log("atkDmg : "+ _virus.virusData.AtkDmg);
         _virus.UpdateData();
         GameManager.PlayerTurn = false;
     }
 
     public override void OnStateUpdate()
     {
-
+        OnStateExit();
     }
 
     public override void OnStateExit()
     {
-        GameManager.PlayerTurn = true;
+        SequenceTurn.instance.SetPlusSequenceCheck();
+        Debug.Log("sqcheck : " +  SequenceTurn.instance.GetSequenceCheck());
+        Debug.Log("sup exit 상태입니다.");
+        if (SequenceTurn.instance.GetSequenceCheck() > VirusSpawn.instance.GetVirusCount())
+        {
+            Debug.Log("passTurn");
+            GameManager.PlayerTurn = true;
+            //Troy.sequenceCheck = 1;
+        }
+        SequenceTurn.instance.SetVirusActionChange();
     }
 }
 public class VirusDeath : BaseState
@@ -130,11 +155,19 @@ public class VirusDeath : BaseState
 
     public override void OnStateUpdate()
     {
-
+        OnStateExit();
     }
 
     public override void OnStateExit()
     {
-        GameManager.PlayerTurn = true;
+        SequenceTurn.instance.SetPlusSequenceCheck();
+        Debug.Log("death exit 상태입니다.");
+        if (SequenceTurn.instance.GetSequenceCheck() > VirusSpawn.instance.GetVirusCount())
+        {
+            Debug.Log("passTurn");
+            GameManager.PlayerTurn = true;
+            //Troy.sequenceCheck = 1;
+        }
+        SequenceTurn.instance.SetVirusActionChange();
     }
 }

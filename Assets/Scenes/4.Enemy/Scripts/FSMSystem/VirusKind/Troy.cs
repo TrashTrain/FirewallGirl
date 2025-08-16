@@ -2,9 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class Troy : Virus
 {
-    private enum State
+    public enum State
     {
         Idle,
         Atk,
@@ -16,67 +17,75 @@ public class Troy : Virus
 
     private State _curState;
     private FSM _fsm;
+    public int sequence;
+    
 
     void Start()
     {
         Debug.Log("InTroy");
-        _curState = State.Idle;
+        InitData();
+        _curState = (State)ChangeStateRand((int)State.Death);
         _fsm = new FSM(new VirusIdle(this));
     }
 
+    public State GetState()
+    {
+        return _curState;
+    }
     // Update is called once per frame
     void Update()
     {
-        InitData();
-        switch (_curState)
+        if (GameManager.PlayerTurn)
+            return;
+        if (virusData.HpCnt <= 0)
         {
-            case State.Idle:
-                if(hpCnt <= 0)
-                {
-                    ChangeState(State.Death);
-                }
-                if (CanMoveVirus())
-                {
-                    ChangeState((State)ChangeStateRand((int)State.Death));
-                }
-                break;
-            case State.Atk:
-                if (hpCnt <= 0)
-                {
-                    ChangeState(State.Death);
-                }
-                if (!CanMoveVirus())
-                {
-                    ChangeState(State.Idle);
-                }
-                break;
-            case State.Def:
-                if (hpCnt <= 0)
-                {
-                    ChangeState(State.Death);
-                }
-                if (!CanMoveVirus())
-                {
-                    ChangeState(State.Idle);
-                }
-                break;
-            case State.Sup:
-                if (hpCnt <= 0)
-                {
-                    ChangeState(State.Death);
-                }
-                if (!CanMoveVirus())
-                {
-                    ChangeState(State.Idle);
-                }
-                break;
+            Destroy(gameObject);
         }
+        var sequnce = SequenceTurn.instance;
+        Debug.Log("sequenceCheck : " + sequnce.GetSequenceCheck());
+        Debug.Log("sequence1 : " + sequence);
+        if (sequence == sequnce.GetSequenceCheck())
+        {
+            sequnce.SetVirusActionChange();
+            Debug.Log("sequence2 : " + sequence);
+            //InitData();
+            switch (_curState)
+            {
+                case State.Idle:
+                    if (CanMoveVirus())
+                    {
+                        ChangeState((State)ChangeStateRand((int)State.Death));
+                    }
+                    break;
+                case State.Atk:
+                    if (CanMoveVirus())
+                    {
+                        ChangeState(State.Idle);
+                    }
+                    break;
+                case State.Def:
+                    if (CanMoveVirus())
+                    {
+                        ChangeState(State.Idle);
+                    }
+                    break;
+                case State.Sup:
+                    if (CanMoveVirus())
+                    {
+                        ChangeState(State.Idle);
+                    }
+                    break;
+            }
 
-        _fsm.UpdateState();
+            _fsm.UpdateState();
+            
+        }
+        
     }
 
     private void ChangeState(State nexState)
     {
+        Debug.Log("ChangeState");
         _curState = nexState;
         switch (_curState)
         {
@@ -96,6 +105,7 @@ public class Troy : Virus
                 _fsm.ChangeState(new VirusDeath(this));
                 break;
         }
+        
     }
     private bool CanMoveVirus()
     {
