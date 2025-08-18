@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: RewardCardData1
   m_EditorClassIdentifier: 
   cardIndex: 1
-  cardImage: {fileID: -54257304, guid: 766c8a3311a7058478a1a966b10a85e2, type: 3}
+  cardImage: {fileID: 21300000, guid: 2ce3c3a2a5963e64e9170916ff0ff21e, type: 3}
   cardName: "\uACF5\uACA9"
   effectNum: 3
-  description: "\uACF5\uACA9\uB825\uC774 \uC0C1\uC2B9\uD55C\uB2E4."
+  description: Cost increases by 2, and HP decreases by 2.
   effectType: 0

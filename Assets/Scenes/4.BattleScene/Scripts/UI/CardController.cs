@@ -115,10 +115,16 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
                 if (playerManager != null)
                 {
                     Debug.Log($"{hitObj.name}의 현재 체력: {playerManager.currentHP}");
-                    int cardAP = int.Parse(card.transform.Find("AttackPower/Text (TMP)").GetComponent<TextMeshProUGUI>().text);
-                    int cardDP = int.Parse(card.transform.Find("Defense/Text (TMP)").GetComponent<TextMeshProUGUI>().text);
-                    playerManager.attackPower += cardAP;
-                    playerManager.defensePower += cardDP;
+                    int AP = transform.GetComponent<PlayerCard>().ap;
+                    int DP = transform.GetComponent<PlayerCard>().dp;
+                    int cost = transform.GetComponent<PlayerCard>().cost;
+                    // int cardAP = int.Parse(card.transform.Find("AttackPower/Text").GetComponent<TextMeshProUGUI>().text);
+                    // int cardDP = int.Parse(card.transform.Find("Defense/Text").GetComponent<TextMeshProUGUI>().text);
+                    // playerManager.attackPower += cardAP;
+                    // playerManager.defensePower += cardDP;
+                    playerManager.attackPower += AP;
+                    playerManager.defensePower += DP;
+                    playerManager.currentCost -= cost;
                     playerManager.UpdateUI();
                 }
             }

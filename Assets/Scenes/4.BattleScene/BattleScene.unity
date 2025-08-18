@@ -585,6 +585,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Card
       objectReference: {fileID: 0}
+    - target: {fileID: 789818611153621196, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
+      propertyPath: cardData
+      value: 
+      objectReference: {fileID: 11400000, guid: 715d49c913b867e4e842e5bda713df06, type: 2}
     - target: {fileID: 805904331532643527, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_TagString
       value: Card
@@ -697,6 +701,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Untagged
       objectReference: {fileID: 0}
+    - target: {fileID: 5379823822739293572, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 3d27d49d0d157e6489f148af38893bf8, type: 3}
     - target: {fileID: 8161335339346925078, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_text
       value: 5
@@ -734,6 +742,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 843570539}
     m_Modifications:
+    - target: {fileID: 5343626224879305042, guid: 386482768d6aaeb48a89d6ef4c47cb95, type: 3}
+      propertyPath: rewardCardData
+      value: 
+      objectReference: {fileID: 11400000, guid: 518198828fcab3a418ae2d2768a162b2, type: 2}
     - target: {fileID: 5812266232922108194, guid: 386482768d6aaeb48a89d6ef4c47cb95, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -817,10 +829,10 @@ PrefabInstance:
     - target: {fileID: 6567308037746000976, guid: 386482768d6aaeb48a89d6ef4c47cb95, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300022, guid: 56d84991286850f428b4e7df0cca7380, type: 3}
+      objectReference: {fileID: 21300000, guid: 3d27d49d0d157e6489f148af38893bf8, type: 3}
     - target: {fileID: 7328041206499564585, guid: 386482768d6aaeb48a89d6ef4c47cb95, type: 3}
       propertyPath: m_text
-      value: DP increases by 2, and AP decreases by 2.
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8005033655241567113, guid: 386482768d6aaeb48a89d6ef4c47cb95, type: 3}
       propertyPath: m_Name
@@ -1281,7 +1293,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 21300000, guid: 2ce3c3a2a5963e64e9170916ff0ff21e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1357,7 +1369,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 21300000, guid: 9eb52fc80be92c349b5218d77eb1dfb2, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1773,7 +1785,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 21300000, guid: 2ce3c3a2a5963e64e9170916ff0ff21e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1928,6 +1940,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Card
       objectReference: {fileID: 0}
+    - target: {fileID: 789818611153621196, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
+      propertyPath: cardData
+      value: 
+      objectReference: {fileID: 11400000, guid: a215f321f27a4c64ab8377f01c0c9221, type: 2}
     - target: {fileID: 805904331532643527, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_TagString
       value: Card
@@ -2040,6 +2056,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Untagged
       objectReference: {fileID: 0}
+    - target: {fileID: 5379823822739293572, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: bbe29851b3bd97444b3b05512691217f, type: 3}
     - target: {fileID: 8238563170878309267, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_text
       value: 2
@@ -2867,6 +2887,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Card
       objectReference: {fileID: 0}
+    - target: {fileID: 789818611153621196, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
+      propertyPath: cardData
+      value: 
+      objectReference: {fileID: 11400000, guid: 60acc5e1f1aab8f47bb1ae77f32d7b6c, type: 2}
     - target: {fileID: 805904331532643527, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_TagString
       value: Card
@@ -3035,6 +3059,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -35
       objectReference: {fileID: 0}
+    - target: {fileID: 5379823822739293572, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: d91e93f8e08c23c4b9a1254826a9da94, type: 3}
     - target: {fileID: 6728529377318753436, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -43.4
@@ -3271,6 +3299,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 843570539}
     m_Modifications:
+    - target: {fileID: 5343626224879305042, guid: 386482768d6aaeb48a89d6ef4c47cb95, type: 3}
+      propertyPath: rewardCardData
+      value: 
+      objectReference: {fileID: 11400000, guid: 21d6c63b7f2305e46bb9eda06594aed9, type: 2}
     - target: {fileID: 5812266232922108194, guid: 386482768d6aaeb48a89d6ef4c47cb95, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -3354,7 +3386,11 @@ PrefabInstance:
     - target: {fileID: 6567308037746000976, guid: 386482768d6aaeb48a89d6ef4c47cb95, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300012, guid: 56d84991286850f428b4e7df0cca7380, type: 3}
+      objectReference: {fileID: 21300000, guid: bbe29851b3bd97444b3b05512691217f, type: 3}
+    - target: {fileID: 7328041206499564585, guid: 386482768d6aaeb48a89d6ef4c47cb95, type: 3}
+      propertyPath: m_text
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 8005033655241567113, guid: 386482768d6aaeb48a89d6ef4c47cb95, type: 3}
       propertyPath: m_Name
       value: RewardCard (1)
@@ -4131,9 +4167,9 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: 7d60d871e8cc244478bf05715d2c09fc, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 366c185e13e6ff24494539a2acbc643f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 1
+  m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 6.4, y: 6.4}
@@ -4152,7 +4188,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -4.09, y: 2, z: 0}
-  m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
+  m_LocalScale: {x: 0.13, y: 0.13, z: 0.13}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -4210,18 +4246,18 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.67901206, y: 3.1073742}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 6.4, y: 6.4}
+    oldSize: {x: 28.94, y: 40.931713}
     newSize: {x: 6.4, y: 6.4}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 4.85, y: 6.4}
+  m_Size: {x: 10.313702, y: 23.970615}
   m_EdgeRadius: 0
 --- !u!1 &1300587179
 GameObject:
@@ -4445,6 +4481,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackPowerText: {fileID: 419046688}
   defensePowerText: {fileID: 1226722479}
+  playerManager: {fileID: 0}
 --- !u!1 &1370851091
 GameObject:
   m_ObjectHideFlags: 0
@@ -4500,6 +4537,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackPowerText: {fileID: 55905168}
   defensePowerText: {fileID: 273668041}
+  playerManager: {fileID: 1286993167}
 --- !u!114 &1370851094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4951,7 +4989,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 21300000, guid: 9eb52fc80be92c349b5218d77eb1dfb2, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5798,6 +5836,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 843570539}
     m_Modifications:
+    - target: {fileID: 5343626224879305042, guid: 386482768d6aaeb48a89d6ef4c47cb95, type: 3}
+      propertyPath: rewardCardData
+      value: 
+      objectReference: {fileID: 11400000, guid: f78785c1190f9ee439feeb4e8ad8b826, type: 2}
     - target: {fileID: 5812266232922108194, guid: 386482768d6aaeb48a89d6ef4c47cb95, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -5878,9 +5920,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6567308037746000976, guid: 386482768d6aaeb48a89d6ef4c47cb95, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 2ce3c3a2a5963e64e9170916ff0ff21e, type: 3}
     - target: {fileID: 7328041206499564585, guid: 386482768d6aaeb48a89d6ef4c47cb95, type: 3}
       propertyPath: m_text
-      value: Cost increases by 2, and HP decreases by 2.
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8005033655241567113, guid: 386482768d6aaeb48a89d6ef4c47cb95, type: 3}
       propertyPath: m_Name
@@ -5903,6 +5949,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Card
       objectReference: {fileID: 0}
+    - target: {fileID: 789818611153621196, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
+      propertyPath: cardData
+      value: 
+      objectReference: {fileID: 11400000, guid: d89d9687db2d050488e5aba569702e85, type: 2}
     - target: {fileID: 805904331532643527, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_TagString
       value: Card
@@ -6007,6 +6057,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Untagged
       objectReference: {fileID: 0}
+    - target: {fileID: 5379823822739293572, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 2ce3c3a2a5963e64e9170916ff0ff21e, type: 3}
     - target: {fileID: 8161335339346925078, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_text
       value: 3

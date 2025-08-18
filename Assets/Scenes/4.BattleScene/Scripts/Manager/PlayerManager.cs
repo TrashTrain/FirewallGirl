@@ -10,8 +10,8 @@ public class PlayerManager : MonoBehaviour
     public int currentHP;
     public int currentCost;
     public int totalCost;
-    public int attackPower;
-    public int defensePower;
+    public int attackPower = 0;
+    public int defensePower = 0;
 
     public HealthBar hpBar;
     public PowerUI powerUI;
