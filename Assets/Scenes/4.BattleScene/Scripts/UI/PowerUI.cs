@@ -6,14 +6,23 @@ using TMPro;
 
 public class PowerUI : MonoBehaviour
 {
-    public GameObject status;
     public TextMeshProUGUI attackPowerText;
     public TextMeshProUGUI defensePowerText;
+    
+    public PlayerManager playerManager;
 
     public void Start()
     {
-        attackPowerText.text = 1.ToString();
-        defensePowerText.text = 1.ToString();
+        if (playerManager != null)
+        {
+            attackPowerText.text = playerManager.attackPower.ToString();
+            defensePowerText.text = playerManager.defensePower.ToString();
+        }
+        else
+        {
+            attackPowerText.text = 1.ToString();
+            defensePowerText.text = 1.ToString();
+        }
     }
 
     public void UpdateAttackPowerUI(int value)
