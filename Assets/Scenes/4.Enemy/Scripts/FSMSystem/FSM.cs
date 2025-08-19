@@ -11,8 +11,8 @@ public class FSM
 
     public void ChangeState(BaseState nextState)
     {
-        //if (nextState == _curState)
-        //    return;
+        if (nextState == _curState)
+            return;
 
         if (_curState != null)
             _curState.OnStateExit();

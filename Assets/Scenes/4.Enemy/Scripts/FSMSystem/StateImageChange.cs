@@ -18,7 +18,7 @@ public class StateImageChange : MonoBehaviour
      */
     private void Update()
     {
-        switch (gameObject.transform.parent.GetComponent<Troy>().GetState())
+        switch ((Troy.State)gameObject.transform.parent.GetComponent<Troy>().RandState)
         {
             case Troy.State.Atk:
                 GetComponent<SpriteRenderer>().sprite = stateImages[0];

@@ -17,4 +17,4 @@ MonoBehaviour:
   virusName: "\uD14C\uC2A4\uD2B8 \uC6DC"
   virusAtk: 5
   virusHp: 5
-  AttackType: 0
+  AttackType: 1
