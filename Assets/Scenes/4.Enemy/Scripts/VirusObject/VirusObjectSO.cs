@@ -11,7 +11,8 @@ public enum VirusKind
 {
     Troy,
     Worm,
-    SpyWare
+    SpyWare,
+    Elite
 }
 
 [CreateAssetMenu(fileName = "VirusData", menuName = "CreateCardData/VirusData")]

@@ -21,6 +21,7 @@ public class Virus : MonoBehaviour
 
     [HideInInspector]
     public VirusData virusData;
+    public int RandState;
 
     public void InitData()
     {
@@ -33,6 +34,7 @@ public class Virus : MonoBehaviour
     public void UpdateData()
     {
         atkDmgText.text = virusData.AtkDmg.ToString();
+        hpCntText.text = virusData.HpCnt.ToString();
     }
     private enum State
     {
@@ -52,11 +54,16 @@ public class Virus : MonoBehaviour
             Debug.LogError("CardMgr.instance가 초기화되지 않았습니다.");
             return;
         }
+
         _state = State.Idle;
 
         InitData();
     }
 
+    public void GetRandState()
+    {
+        RandState = ChangeStateRand((int)State.Death);
+    }
     private void Update()
     {
         //InitData();

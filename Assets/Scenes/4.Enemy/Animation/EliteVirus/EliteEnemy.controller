@@ -193,7 +193,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Enemy
+  m_Name: EliteEnemy
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: isAttack
@@ -248,7 +248,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 1783cc98b079f0a40b707c80dcdfc864, type: 2}
+  m_Motion: {fileID: 7400000, guid: 21047f8e0816a0a478f7d221ac654ead, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 

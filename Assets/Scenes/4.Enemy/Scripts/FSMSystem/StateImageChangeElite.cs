@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StateImageChange : MonoBehaviour
+public class StateImageChangeElite : MonoBehaviour
 {
     public List<Sprite> stateImages;
 
@@ -18,15 +18,15 @@ public class StateImageChange : MonoBehaviour
      */
     private void Update()
     {
-        switch ((Troy.State)gameObject.transform.parent.GetComponent<Troy>().RandState)
+        switch ((EliteVirus.State)gameObject.transform.parent.GetComponent<EliteVirus>().RandState)
         {
-            case Troy.State.Atk:
+            case EliteVirus.State.Atk:
                 GetComponent<SpriteRenderer>().sprite = stateImages[0];
                 break;
-            case Troy.State.Sup:
+            case EliteVirus.State.Sup:
                 GetComponent<SpriteRenderer>().sprite = stateImages[1];
                 break;
-            case Troy.State.Def:
+            case EliteVirus.State.Def:
                 GetComponent<SpriteRenderer>().sprite = stateImages[2];
                 break;
         }
