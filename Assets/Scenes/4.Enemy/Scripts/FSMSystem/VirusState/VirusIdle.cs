@@ -39,7 +39,9 @@ public class VirusAtk : BaseState
     public override void OnStateEnter()
     {
         Debug.Log("ATK 상태입니다.");
+        //_virus.WaitTime();
         GameManager.PlayerTurn = false;
+        _virus.animator.SetInteger("AttackIdx", _virus.spawnNum);
         _virus.animator.SetBool("isAttack", true);
     }
 
@@ -94,7 +96,9 @@ public class VirusDef : BaseState
     public override void OnStateEnter()
     {
         Debug.Log("DEF 상태입니다.");
+        //_virus.WaitTime();
         GameManager.PlayerTurn = false;
+        
         _virus.animator.SetBool("isDef", true);
     }
 
@@ -121,6 +125,7 @@ public class VirusSup : BaseState
         Debug.Log("SUP 상태입니다.");
         _virus.virusData.AtkDmg += 3;
         Debug.Log("atkDmg : " + _virus.virusData.AtkDmg);
+        //_virus.WaitTime();
         _virus.UpdateData();
         GameManager.PlayerTurn = false;
         _virus.animator.SetBool("isSup", true);

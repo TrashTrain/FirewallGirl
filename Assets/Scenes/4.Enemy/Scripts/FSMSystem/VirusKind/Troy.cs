@@ -45,7 +45,7 @@ public class Troy : Virus
 
         if (GameManager.PlayerTurn)
             return;
-        
+
         //if (sequence >= 1)
         //    return;
 
@@ -84,6 +84,7 @@ public class Troy : Virus
     private void ChangeState(State nexState)
     {
         Debug.Log("ChangeState");
+
         _curState = nexState;
         switch (_curState)
         {
