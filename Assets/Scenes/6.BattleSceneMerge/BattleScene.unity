@@ -586,7 +586,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   costText: {fileID: 1201088404}
-  playerManager: {fileID: 0}
 --- !u!114 &162261118
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -601,7 +600,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackPowerText: {fileID: 1383977080}
   defensePowerText: {fileID: 1308468902}
-  playerManager: {fileID: 0}
 --- !u!1 &166687668
 GameObject:
   m_ObjectHideFlags: 0
@@ -4655,7 +4653,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackPowerText: {fileID: 1493380055}
   defensePowerText: {fileID: 564185698}
-  playerManager: {fileID: 0}
 --- !u!1001 &1343618991
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8056,6 +8053,10 @@ PrefabInstance:
     - target: {fileID: 4557037771983816653, guid: fd7260cb9cc55e446b847d9bc24c923a, type: 3}
       propertyPath: sequence
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5481278553165050541, guid: fd7260cb9cc55e446b847d9bc24c923a, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6774630564218320703, guid: fd7260cb9cc55e446b847d9bc24c923a, type: 3}
       propertyPath: m_Sprite

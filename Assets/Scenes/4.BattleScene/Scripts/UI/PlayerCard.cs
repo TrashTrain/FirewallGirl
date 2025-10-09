@@ -16,6 +16,9 @@ public class PlayerCard : MonoBehaviour
     private int attackPower;
     private int defensePower;
 
+    // 카드 설명 추가.
+    private string description;
+
     public int ap
     {
         get { return attackPower; }
@@ -34,8 +37,19 @@ public class PlayerCard : MonoBehaviour
         set { costValue = value; }
     }
 
+    public string desc
+    {
+        get { return description; } 
+        set { description = value; }
+    }
+
     private void Start()
     {
+        if (cardData == null)
+        {
+            Debug.LogError("cardData 없음.");
+            return;
+        }
         costValue = cardData.cost;
         attackPower = cardData.attackPower;
         defensePower = cardData.defensePower;

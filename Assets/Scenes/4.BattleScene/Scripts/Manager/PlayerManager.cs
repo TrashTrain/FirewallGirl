@@ -17,11 +17,19 @@ public class PlayerManager : MonoBehaviour
     public PowerUI powerUI;
     public CostUI costUI;
 
-    private void Start()
+    public static PlayerManager instance;
+
+    private void Awake()
     {
+        if (instance == null)
+            instance = new PlayerManager();
         UpdateUI();
     }
 
+    private void Start()
+    {
+        
+    }
     public void TakeDamage(int damage)
     {
         // 디버깅용
@@ -37,6 +45,9 @@ public class PlayerManager : MonoBehaviour
 
     public void UpdateUI()
     {
+        if (hpBar == null) {
+            Debug.LogError("없음");
+        }
         hpBar.UpdateHPBar(currentHP, maxHP);
         powerUI.UpdateAttackPowerUI(attackPower);
         powerUI.UpdateDefensePowerUI(defensePower);

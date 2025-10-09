@@ -43,6 +43,8 @@ public class VirusAtk : BaseState
         GameManager.PlayerTurn = false;
         _virus.animator.SetInteger("AttackIdx", _virus.spawnNum);
         _virus.animator.SetBool("isAttack", true);
+        Debug.Log(_virus.virusData.AtkDmg);
+        PlayerManager.instance.TakeDamage(_virus.virusData.AtkDmg);
     }
 
     public override void OnStateUpdate()
