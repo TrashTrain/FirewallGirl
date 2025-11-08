@@ -16,8 +16,6 @@ public class CardDeckController : MonoBehaviour, IPointerEnterHandler, IPointerE
 
     public bool isSpread = false;
     
-    float snapThreshold = 0.01f;
-    
     void Start()
     {
         // 자식 UI 카드 RectTransform 모으기

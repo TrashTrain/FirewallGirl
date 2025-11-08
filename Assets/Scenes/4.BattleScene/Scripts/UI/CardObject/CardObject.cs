@@ -11,6 +11,7 @@ public class CardObject : ScriptableObject
 
     public int attackPower;
     public int defensePower;
+    public int healthPoint;
     public int cost;
     
     [TextArea]

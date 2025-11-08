@@ -523,10 +523,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 843570538}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 843570543}
+        m_TargetAssemblyTypeName: CardChoicePanel, Assembly-CSharp
+        m_MethodName: ShowPanel
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -2700,6 +2700,7 @@ GameObject:
   - component: {fileID: 843570539}
   - component: {fileID: 843570541}
   - component: {fileID: 843570540}
+  - component: {fileID: 843570543}
   m_Layer: 5
   m_Name: CardChoicePanel
   m_TagString: Untagged
@@ -2768,6 +2769,28 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 843570538}
   m_CullTransparentMesh: 1
+--- !u!114 &843570543
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 843570538}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98d4377f5ac25d64eab0659789b078e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  panel: {fileID: 843570538}
+  centerCard: {fileID: 230267964}
+  leftCard: {fileID: 924913102}
+  rightCard: {fileID: 271230774}
+  centerPosition: {x: 0, y: 0}
+  leftOffset: {x: -500, y: 0}
+  rightOffset: {x: 500, y: 0}
+  centerRiseY: -600
+  moveDuration: 0.25
+  delayBetween: 0.15
 --- !u!1 &907226625
 GameObject:
   m_ObjectHideFlags: 0
@@ -3192,7 +3215,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 070e8aaa4b9ebdc43b3bc22be077a53d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  floatOffset: 1.5
+  floatOffset: 100
   floatSpeed: 10
   isDragging: 0
   canvas: {fileID: 691125356}
@@ -3551,7 +3574,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 070e8aaa4b9ebdc43b3bc22be077a53d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  floatOffset: 1.5
+  floatOffset: 100
   floatSpeed: 10
   isDragging: 0
   canvas: {fileID: 691125356}
@@ -3870,7 +3893,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 070e8aaa4b9ebdc43b3bc22be077a53d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  floatOffset: 1.5
+  floatOffset: 100
   floatSpeed: 10
   isDragging: 0
   canvas: {fileID: 691125356}
@@ -4071,7 +4094,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 070e8aaa4b9ebdc43b3bc22be077a53d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  floatOffset: 1.5
+  floatOffset: 100
   floatSpeed: 10
   isDragging: 0
   canvas: {fileID: 691125356}
