@@ -7,11 +7,16 @@ using UnityEngine.EventSystems;
 
 public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    public float floatOffset = 5f;
+    public float floatOffset = 100f;
     public float floatSpeed = 10f;
+    private float scaleUpFactor = 1.5f;
+    private float scaleSpeed = 10f;
 
     private Vector3 defaultPosition;
     private Vector3 targetPosition;
+    private Vector3 defaultScale;
+    private Vector3 targetScale;
+    
     private RectTransform rect;
 
     private bool isFloating = false;
@@ -27,9 +32,14 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     void Start()
     {
         cardDeck = GameObject.Find("CardPanel");
+        rect = GetComponent<RectTransform>();
+        
         defaultPosition = transform.position;
         targetPosition = defaultPosition;
-        rect = GetComponent<RectTransform>();
+        
+        // 스케일 초기값 저장
+        defaultScale = transform.localScale;
+        targetScale = defaultScale;
     }
 
     private void Update()
@@ -37,18 +47,21 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         if (!isDragging)
         {
             transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * floatSpeed);
+            transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * scaleSpeed);
         }
     }
     
     public void OnPointerEnter(PointerEventData eventData)
     {
         // print(eventData.pointerEnter.name);
-        if (cardDeck.GetComponent<CardDeckController>().isSpread && eventData.pointerEnter != null && eventData.pointerEnter.CompareTag("Card"))
+        if (cardDeck.GetComponent<CardDeckController>().isSpread && 
+            eventData.pointerEnter != null && 
+            eventData.pointerEnter.CompareTag("Card"))
         {
-            // print("enter");
             if (!isFloating)
             {
                 targetPosition = defaultPosition + new Vector3(0f, floatOffset, 0f);
+                targetScale = defaultScale * scaleUpFactor;
                 isFloating = true;
             }
         }
@@ -59,6 +72,7 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         if (isFloating)
         {
             targetPosition = defaultPosition;
+            targetScale = defaultScale;
             isFloating = false;
         }
     }
@@ -72,10 +86,12 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         {
             isDragging = true;
             card = gameObject;
-        
             startParent = transform.parent;
+            
+            // 드래그 시작 시 스케일 복원
+            targetScale = defaultScale;
+            transform.localScale = defaultScale;
         }
-        // print("begin drag");
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -124,7 +140,7 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
                     // playerManager.defensePower += cardDP;
                     playerManager.attackPower += AP;
                     playerManager.defensePower += DP;
-                    playerManager.currentCost -= cost;
+                    playerManager.currentCost = Mathf.Max(0, playerManager.currentCost - cost);
                     playerManager.UpdateUI();
                 }
             }
