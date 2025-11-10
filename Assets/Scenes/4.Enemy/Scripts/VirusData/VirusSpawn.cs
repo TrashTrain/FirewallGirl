@@ -5,7 +5,7 @@ using UnityEngine;
 public class VirusSpawn : MonoBehaviour
 {
 
-    public GameObject[] spawns;
+    public List<Transform> spawns = new();
 
     public GameObject[] prefabVirus;
 
@@ -30,7 +30,7 @@ public class VirusSpawn : MonoBehaviour
         //prefabVirus.GetComponent<Troy>().virusObjectSO = VirusMgr.instance
         int rand = Random.Range(0, prefabVirus.Length);
 
-        GameObject virusInstance = Instantiate(prefabVirus[rand], spawns[virusIdx].transform);
+        GameObject virusInstance = Instantiate(prefabVirus[rand], spawns[virusIdx]);
     }
 
 
@@ -38,9 +38,9 @@ public class VirusSpawn : MonoBehaviour
     // 필드에 있는 바이러스 클리어
     public void CleanVirus()
     {
-        for (int i = 0; i < spawns.Length; i++)
+        for (int i = 0; i < spawns.Count; i++)
         {
-            Destroy(spawns[i].transform.GetChild(0).gameObject);
+            Destroy(spawns[i].GetChild(0).gameObject);
         }
 
     }
@@ -48,10 +48,10 @@ public class VirusSpawn : MonoBehaviour
     // 필드에 랜덤 몬스터 스폰
     public void OnButtonSpawnVirus()
     {
-        int spawnIdx = spawns.Length;
+        int spawnIdx = spawns.Count;
         for (int i = 0; i < spawnIdx; i++)
         {
-            if (spawns[i].transform.childCount == 0)
+            if (spawns[i].childCount == 0)
                 SpawnVirus(i);
         }
     }
@@ -61,7 +61,7 @@ public class VirusSpawn : MonoBehaviour
     {
         int count = 0;
         
-        count += spawns.Length;
+        count += spawns.Count;
 
         Debug.Log("count : " + count);
         return count;

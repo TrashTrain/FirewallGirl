@@ -14,8 +14,8 @@ public class Virus : MonoBehaviour
     [Header("내부 데이터")]
     public SpriteRenderer image;
 
-    public TextMeshPro atkDmgText;
-    public TextMeshPro hpCntText;
+    public TextMeshProUGUI atkDmgText;
+    public TextMeshProUGUI hpCntText;
 
     public Animator animator;
 

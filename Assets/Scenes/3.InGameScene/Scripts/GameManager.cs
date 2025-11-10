@@ -34,4 +34,12 @@ public class GameManager : MonoBehaviour
         //    checkTurn = PlayerTurn;
         //}   
     }
+
+}
+
+// 바이러스 SO 데이터 모음
+public class VirusSOData
+{
+    public List<VirusObjectSO> virusObjectList;
+
 }
