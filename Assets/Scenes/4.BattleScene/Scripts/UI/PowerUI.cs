@@ -9,14 +9,16 @@ public class PowerUI : MonoBehaviour
     public TextMeshProUGUI attackPowerText;
     public TextMeshProUGUI defensePowerText;
     
-    public PlayerManager playerManager;
-
     public void Start()
     {
-        if (playerManager != null)
+        PlayerManager player = PlayerManager.instance;
+
+        player.powerUI = this;
+
+        if (player != null)
         {
-            attackPowerText.text = playerManager.attackPower.ToString();
-            defensePowerText.text = playerManager.defensePower.ToString();
+            attackPowerText.text = player.attackPower.ToString();
+            defensePowerText.text = player.defensePower.ToString();
         }
         else
         {

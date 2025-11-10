@@ -23,14 +23,42 @@ public class Virus : MonoBehaviour
     public VirusData virusData;
     public int RandState;
 
+    public int spawnNum;
+
+    public bool virusState = false;
+
     public void InitData()
     {
         virusData = new VirusData(virusObjectSO.virusIndex, virusObjectSO.virusImage, virusObjectSO.virusName, virusObjectSO.virusAtk, virusObjectSO.virusHp);
         gameObject.GetComponent<SpriteRenderer>().sprite = virusData.VirusImage;
         atkDmgText.text = virusData.AtkDmg.ToString();
         hpCntText.text = virusData.HpCnt.ToString();
+
+        if (transform.parent.name == "Spawn1")
+            spawnNum = 1;
+        else if (transform.parent.name == "Spawn2")
+            spawnNum = 2;
+        else if (transform.parent.name == "Spawn3")
+            spawnNum = 3;
+        else
+            spawnNum = 0;
+        animator.SetInteger("AttackIdx", spawnNum);
     }
 
+    public void WaitTime(string stateName)
+    {
+        StartCoroutine(ActionAfterWait(spawnNum*0.75f, stateName));
+    }
+    
+    public IEnumerator ActionAfterWait(float delay, string name)
+    {
+
+        yield return new WaitForSeconds(delay);
+        Debug.Log("Delay : " + delay);
+        
+        animator.SetBool(name, true);
+    }
+    
     public void UpdateData()
     {
         atkDmgText.text = virusData.AtkDmg.ToString();

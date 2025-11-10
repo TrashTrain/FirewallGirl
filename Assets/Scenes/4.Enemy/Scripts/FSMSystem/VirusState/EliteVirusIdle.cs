@@ -35,6 +35,7 @@ public class EliteVirusAtk : BaseState
         Debug.Log("ATK 상태입니다.");
         GameManager.PlayerTurn = false;
         _virus.animator.SetBool("isAttack", true);
+        PlayerManager.instance.TakeDamage(_virus.virusData.AtkDmg);
     }
 
     public override void OnStateUpdate()
