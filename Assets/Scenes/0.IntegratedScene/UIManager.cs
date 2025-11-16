@@ -8,11 +8,6 @@ public class UIManager : MonoBehaviour
     // Card Panel
     public CardDeckController cardDeckController;
 
-    // PlayerStatus
-    //public PowerUI powerUI;
-    //public CostUI costUI;
-
-
 
     public static UIManager Ins;
 

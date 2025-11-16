@@ -1,9 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 // 바이러스 종류간의 차이가 수치뿐이라면 굳이 종류별로 FSM을 나누지 말고 Virus에 합쳐도 됨.
 public class Virus : MonoBehaviour
@@ -14,8 +11,8 @@ public class Virus : MonoBehaviour
     [Header("내부 데이터")]
     public SpriteRenderer image;
 
-    public TextMeshProUGUI atkDmgText;
-    public TextMeshProUGUI hpCntText;
+    //public TextMeshProUGUI atkDmgText;
+    //public TextMeshProUGUI hpCntText;
 
     public Animator animator;
 
@@ -27,12 +24,14 @@ public class Virus : MonoBehaviour
 
     public bool virusState = false;
 
+    public EnemyUIController enemyUIController;
+
     public void InitData()
     {
         virusData = new VirusData(virusObjectSO.virusIndex, virusObjectSO.virusImage, virusObjectSO.virusName, virusObjectSO.virusAtk, virusObjectSO.virusHp);
         gameObject.GetComponent<SpriteRenderer>().sprite = virusData.VirusImage;
-        atkDmgText.text = virusData.AtkDmg.ToString();
-        hpCntText.text = virusData.HpCnt.ToString();
+        //atkDmgText.text = virusData.AtkDmg.ToString();
+        //hpCntText.text = virusData.HpCnt.ToString();
 
         if (transform.parent.name == "Spawn1")
             spawnNum = 1;
@@ -61,8 +60,7 @@ public class Virus : MonoBehaviour
     
     public void UpdateData()
     {
-        atkDmgText.text = virusData.AtkDmg.ToString();
-        hpCntText.text = virusData.HpCnt.ToString();
+        enemyUIController.atk.text = virusData.AtkDmg.ToString();
     }
     private enum State
     {
@@ -115,5 +113,10 @@ public class Virus : MonoBehaviour
     {
         int check = Random.Range(1, endNum);
         return check;
+    }
+
+    public void ChangeAtkValue(int atk)
+    {
+        virusData.AtkDmg += atk;
     }
 }

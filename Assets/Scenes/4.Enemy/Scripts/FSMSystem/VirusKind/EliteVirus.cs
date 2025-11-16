@@ -35,6 +35,8 @@ public class EliteVirus : Virus
     // Update is called once per frame
     void Update()
     {
+
+        enemyUIController.state.UpdateStateImage((Troy.State)RandState);
         Debug.Log("PlayerTurn : " + GameManager.PlayerTurn);
         if (GameManager.PlayerTurn)
             return;
@@ -42,7 +44,7 @@ public class EliteVirus : Virus
         {
             Destroy(gameObject);
         }
-
+        
 
         switch (_curState)
         {

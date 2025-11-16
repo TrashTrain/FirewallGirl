@@ -358,7 +358,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8248664006285093878
 Transform:
   m_ObjectHideFlags: 0
@@ -444,7 +444,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8589996805388187082
 Transform:
   m_ObjectHideFlags: 0
@@ -544,7 +544,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7373465024681313812
 Transform:
   m_ObjectHideFlags: 0
@@ -692,7 +692,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -1
-  m_Sprite: {fileID: 21300000, guid: 41743bf7d3366304081774da7f198a8d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 212734f1d2da4604ba90591b320b8d52, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -717,9 +717,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   virusObjectSO: {fileID: 11400000, guid: 1c1c798a7238bc0428aba19c5f96b3d0, type: 2}
   image: {fileID: 339186034070633408}
-  atkDmgText: {fileID: 4161262694973997048}
-  hpCntText: {fileID: 330940333233539236}
   animator: {fileID: 8985102134192985285}
+  RandState: 0
+  spawnNum: 0
+  virusState: 0
+  enemyUIController: {fileID: 0}
   sequence: 0
 --- !u!61 &5170737382980179650
 BoxCollider2D:
@@ -757,7 +759,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 9, y: 7.96}
+    oldSize: {x: 5.31, y: 4.7}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0

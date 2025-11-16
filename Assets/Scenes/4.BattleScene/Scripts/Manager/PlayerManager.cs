@@ -21,6 +21,7 @@ public class PlayerManager : MonoBehaviour
 
     private void Awake()
     {
+        instance = this;
         if (instance == null)
             instance = new PlayerManager();
         UpdateUI();
@@ -33,6 +34,8 @@ public class PlayerManager : MonoBehaviour
     public void TakeDamage(int damage)
     {
         // 디버깅용
+        Debug.Log("PlayerHP : " + currentHP);
+        Debug.Log("PlayerTakeDamage : " + damage);
         currentHP = Mathf.Max(0, currentHP - damage);
         UpdateUI();
     }

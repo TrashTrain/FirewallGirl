@@ -1,33 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class StateImageChange : MonoBehaviour
 {
     public List<Sprite> stateImages;
 
-    /* È®ÀÎ¿ë
-     *     public enum State
+    //private void Update()
+    public void UpdateStateImage(Troy.State state)
     {
-        Idle,
-        Atk,
-        Def,
-        Sup,
-        Death
-    }
-     */
-    private void Update()
-    {
-        switch ((Troy.State)gameObject.transform.parent.GetComponent<Troy>().RandState)
+        //(Troy.State)gameObject.transform.parent.GetComponent<Troy>().RandState
+        switch (state)
         {
             case Troy.State.Atk:
-                GetComponent<SpriteRenderer>().sprite = stateImages[0];
+                GetComponent<Image>().sprite = stateImages[0];
                 break;
             case Troy.State.Sup:
-                GetComponent<SpriteRenderer>().sprite = stateImages[1];
+                GetComponent<Image>().sprite = stateImages[1];
                 break;
             case Troy.State.Def:
-                GetComponent<SpriteRenderer>().sprite = stateImages[2];
+                GetComponent<Image>().sprite = stateImages[2];
                 break;
         }
 

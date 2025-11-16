@@ -66,6 +66,6 @@ public class StageMgr : MonoBehaviour
 
     public void OnInStageButton()
     {
-        SceneManager.LoadScene("BattleScene");
+        SceneManager.LoadScene("IntegratedScene");
     }
 }

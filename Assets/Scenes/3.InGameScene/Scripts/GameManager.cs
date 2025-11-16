@@ -5,11 +5,15 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     static public bool PlayerTurn = false;
+    static public GameManager Instance = null;
+
+    public int enemyCount = 0;
 
    // private bool checkTurn;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
+        Instance = this;
         PlayerTurn = true;
         //checkTurn = PlayerTurn;
     }
@@ -25,16 +29,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void GameOver()
     {
-        //if(checkTurn != PlayerTurn)
-        //{
-        //    Debug.Log("턴 종료");
-        //    checkTurn = PlayerTurn;
-        //}   
+        StartCoroutine(GameOverSequence());
     }
 
+    private IEnumerator GameOverSequence()
+    {
+        yield return new WaitForSeconds(3f);
+        SceneLoader.LoadStageScene();
+    }
 }
 
 // 바이러스 SO 데이터 모음

@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5792142651357566814
 Transform:
   m_ObjectHideFlags: 0
@@ -117,7 +117,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3769544243540490985
 Transform:
   m_ObjectHideFlags: 0
@@ -202,7 +202,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4765109891440390869
 Transform:
   m_ObjectHideFlags: 0
@@ -375,11 +375,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   virusObjectSO: {fileID: 11400000, guid: 43c76ea980f87d445bb867d365bd3ba4, type: 2}
   image: {fileID: 0}
-  atkDmgText: {fileID: 1124850986738710183}
-  hpCntText: {fileID: 6502639696281520627}
   animator: {fileID: 6725645949326395288}
   RandState: 0
   spawnNum: 0
+  virusState: 0
+  enemyUIController: {fileID: 0}
   sequence: 0
 --- !u!61 &691601837484876464
 BoxCollider2D:

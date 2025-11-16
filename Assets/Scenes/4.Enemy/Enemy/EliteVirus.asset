@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: EliteVirus
   m_EditorClassIdentifier: 
   virusIndex: 1001
-  virusImage: {fileID: 21300000, guid: 41743bf7d3366304081774da7f198a8d, type: 3}
+  virusImage: {fileID: 21300000, guid: 212734f1d2da4604ba90591b320b8d52, type: 3}
   virusName: EliteVirus
   virusAtk: 10
   virusHp: 20

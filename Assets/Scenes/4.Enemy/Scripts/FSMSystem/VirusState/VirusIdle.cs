@@ -125,7 +125,8 @@ public class VirusSup : BaseState
     public override void OnStateEnter()
     {
         Debug.Log("SUP 상태입니다.");
-        _virus.virusData.AtkDmg += 3;
+        //_virus.virusData.AtkDmg += 3;
+        _virus.ChangeAtkValue(3);
         Debug.Log("atkDmg : " + _virus.virusData.AtkDmg);
         //_virus.WaitTime();
         _virus.UpdateData();
@@ -152,6 +153,9 @@ public class VirusDeath : BaseState
 
     public override void OnStateEnter()
     {
+        GameManager.Instance.enemyCount--;
+        if (GameManager.Instance.enemyCount == 0)
+            GameManager.Instance.GameOver();
         Debug.Log("DEATH 상태입니다.");
     }
 

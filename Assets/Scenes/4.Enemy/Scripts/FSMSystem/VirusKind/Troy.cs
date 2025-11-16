@@ -19,6 +19,7 @@ public class Troy : Virus
     private FSM _fsm;
     public int sequence = 0;
 
+
     void Start()
     {
         Debug.Log("InTroy");
@@ -26,6 +27,7 @@ public class Troy : Virus
 
         _fsm = new FSM(new VirusIdle(this));
         ChangeState(State.Idle);
+        
     }
 
     public State GetState()
@@ -34,7 +36,6 @@ public class Troy : Virus
     }
 
 
-    // Update is called once per frame
     void Update()
     {
         Debug.Log("PlayerTurn : " + GameManager.PlayerTurn);
@@ -42,10 +43,10 @@ public class Troy : Virus
         {
             Destroy(gameObject);
         }
-
+        enemyUIController.state.UpdateStateImage((State)RandState);
         if (GameManager.PlayerTurn)
             return;
-
+        
         //if (sequence >= 1)
         //    return;
 
@@ -78,7 +79,7 @@ public class Troy : Virus
         }
 
         _fsm.UpdateState();
-
+        
     }
     
     private void ChangeState(State nexState)
