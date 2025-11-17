@@ -14,7 +14,9 @@ public class HealthBar : MonoBehaviour
     {
         hpSlider.minValue = 0;
         hpSlider.maxValue = 100;
-        hpSlider.value = 75;
+        hpSlider.value = 100;
+
+        PlayerManager.instance.hpBar = this;
     }
 
     public void UpdateHPBar(int current, int max)

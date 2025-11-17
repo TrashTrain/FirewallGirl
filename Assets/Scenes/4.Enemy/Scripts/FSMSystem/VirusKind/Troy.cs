@@ -2,9 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class Troy : Virus
 {
-    private enum State
+    public enum State
     {
         Idle,
         Atk,
@@ -16,56 +17,61 @@ public class Troy : Virus
 
     private State _curState;
     private FSM _fsm;
+    public int sequence = 0;
+
 
     void Start()
     {
         Debug.Log("InTroy");
-        _curState = State.Idle;
+        InitData();
+
         _fsm = new FSM(new VirusIdle(this));
+        ChangeState(State.Idle);
+        
     }
 
-    // Update is called once per frame
+    public State GetState()
+    {
+        return _curState;
+    }
+
+
     void Update()
     {
-        InitData();
+        Debug.Log("PlayerTurn : " + GameManager.PlayerTurn);
+        if (virusData.HpCnt <= 0)
+        {
+            Destroy(gameObject);
+        }
+        enemyUIController.state.UpdateStateImage((State)RandState);
+        if (GameManager.PlayerTurn)
+            return;
+        
+        //if (sequence >= 1)
+        //    return;
+
         switch (_curState)
         {
             case State.Idle:
-                if(hpCnt <= 0)
-                {
-                    ChangeState(State.Death);
-                }
                 if (CanMoveVirus())
                 {
-                    ChangeState((State)ChangeStateRand((int)State.Death));
+                    ChangeState((State)RandState);
                 }
                 break;
             case State.Atk:
-                if (hpCnt <= 0)
-                {
-                    ChangeState(State.Death);
-                }
-                if (!CanMoveVirus())
+                if (CanMoveVirus())
                 {
                     ChangeState(State.Idle);
                 }
                 break;
             case State.Def:
-                if (hpCnt <= 0)
-                {
-                    ChangeState(State.Death);
-                }
-                if (!CanMoveVirus())
+                if (CanMoveVirus())
                 {
                     ChangeState(State.Idle);
                 }
                 break;
             case State.Sup:
-                if (hpCnt <= 0)
-                {
-                    ChangeState(State.Death);
-                }
-                if (!CanMoveVirus())
+                if (CanMoveVirus())
                 {
                     ChangeState(State.Idle);
                 }
@@ -73,10 +79,13 @@ public class Troy : Virus
         }
 
         _fsm.UpdateState();
+        
     }
-
+    
     private void ChangeState(State nexState)
     {
+        Debug.Log("ChangeState");
+
         _curState = nexState;
         switch (_curState)
         {
@@ -101,5 +110,9 @@ public class Troy : Virus
     {
         // virus의 턴이 왔을 경우 참.
         return !GameManager.PlayerTurn;
+    }
+    public void ChangeTurn()
+    {
+        GameManager.PlayerTurn = true;
     }
 }

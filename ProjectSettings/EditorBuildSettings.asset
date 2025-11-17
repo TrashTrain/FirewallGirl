@@ -12,8 +12,11 @@ EditorBuildSettings:
     path: Assets/Scenes/2.StageScene/StageScene.unity
     guid: 06efa41a0323bec4ba76af0a49dd89a1
   - enabled: 1
-    path: Assets/Scenes/4.BattleScene/BattleScene.unity
-    guid: 1977e47144da9494cae3a74eee15bdae
+    path: Assets/Scenes/0.IntegratedScene/IntegratedScene.unity
+    guid: f6c43957ea3aa6e4e8a2da6fd3682bf8
+  - enabled: 1
+    path: Assets/Scenes/6.BattleSceneMerge/BattleScene.unity
+    guid: c9f302c309394634eafe2edd3a859814
   - enabled: 1
     path: Assets/Scenes/5. UpDownCardSysScene/UpDownSysScene.unity
     guid: e8d5d79e92906413dbce190f9555924e
