@@ -1047,7 +1047,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1686374161}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: GameOver
+        m_MethodName: GameClear
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4108,11 +4108,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHP: 100
-  currentHP: 100
-  currentCost: 5
-  totalCost: 5
-  attackPower: 5
-  defensePower: 5
+  currentHP: 0
+  currentCost: 10
+  totalCost: 10
+  attackPower: 10
+  defensePower: 10
+  evasionRate: 0.1
   hpBar: {fileID: 373234982}
   powerUI: {fileID: 854836676}
   costUI: {fileID: 854836675}
