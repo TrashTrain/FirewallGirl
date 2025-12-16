@@ -29,7 +29,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // 게임 오버 -> 스테이지 씬 
     public void GameOver()
     {
         StartCoroutine(GameOverSequence());
@@ -39,18 +38,6 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(3f);
         SceneLoader.LoadStageScene();
-    }
-
-    // 게임 클리어 -> 카드 증감 씬
-    public void GameClear()
-    {
-        StartCoroutine(GameClearSequence());
-    }
-
-    private IEnumerator GameClearSequence()
-    {
-        yield return new WaitForSeconds(0.1f);
-        SceneLoader.LoadUpDownCardScene();
     }
 }
 
