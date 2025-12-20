@@ -224,7 +224,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2180615766442653880, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 88
+      value: 95
       objectReference: {fileID: 0}
     - target: {fileID: 2180615766442653880, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1330,7 +1330,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2180615766442653880, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 88
+      value: 95
       objectReference: {fileID: 0}
     - target: {fileID: 2180615766442653880, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1747,7 +1747,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2180615766442653880, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 88
+      value: 95
       objectReference: {fileID: 0}
     - target: {fileID: 2180615766442653880, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2265,7 +2265,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2180615766442653880, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 88
+      value: 95
       objectReference: {fileID: 0}
     - target: {fileID: 2180615766442653880, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -3612,8 +3612,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 370, y: 11}
-  m_SizeDelta: {x: 650, y: 194}
+  m_AnchoredPosition: {x: 444.24316, y: 11}
+  m_SizeDelta: {x: 798.4863, y: 252.4208}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!61 &1048387849
 BoxCollider2D:
@@ -3672,9 +3672,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6ae0e3b78c26914ea5044338012eb10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spreadOffset: 250
-  spreadSpeed: 15
+  spreadOffset: 165
+  spreadSpeed: 50
   isSpread: 0
+  isSpreading: 0
 --- !u!114 &1048387851
 MonoBehaviour:
   m_ObjectHideFlags: 0
