@@ -137,7 +137,7 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             {
                 var playerManager = hitObj.GetComponent<PlayerManager>();
 
-                if (playerManager != null)
+                if (playerManager != null && playerManager.currentCost > 0)
                 {
                     Debug.Log($"{hitObj.name}의 현재 체력: {playerManager.currentHP}");
                     int AP = transform.GetComponent<PlayerCard>().ap;
@@ -151,6 +151,10 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
                     playerManager.defensePower += DP;
                     playerManager.currentCost = Mathf.Max(0, playerManager.currentCost - cost);
                     playerManager.UpdateUI();
+                }
+                else
+                {
+                    Debug.Log("카드 적용 불가");
                 }
             }
         }
