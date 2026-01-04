@@ -29,6 +29,9 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     [HideInInspector] public Transform startParent;
     
+    // 추가: 원래 렌더 순서(형제 인덱스) 저장
+    private int originalSiblingIndex;
+    
     void Start()
     {
         cardDeck = GameObject.Find("CardPanel");
@@ -40,6 +43,9 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         // 스케일 초기값 저장
         defaultScale = transform.localScale;
         targetScale = defaultScale;
+        
+        // 추가: 시작 시 원래 sibling index 저장
+        originalSiblingIndex = transform.GetSiblingIndex(); 
     }
 
     private void Update()
@@ -51,7 +57,7 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         }
     }
     
-    public void OnPointerEnter(PointerEventData eventData)
+    public void OnPointerEnter(PointerEventData eventData)  
     {
         // print(eventData.pointerEnter.name);
         if (cardDeck.GetComponent<CardDeckController>().isSpread && 
@@ -60,6 +66,10 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         {
             if (!isFloating)
             {
+                // 추가: 원래 순서 저장 후 맨 위로 올리기
+                originalSiblingIndex = transform.GetSiblingIndex();
+                transform.SetAsLastSibling();
+                
                 targetPosition = defaultPosition + new Vector3(0f, floatOffset, 0f);
                 targetScale = defaultScale * scaleUpFactor;
                 isFloating = true;
@@ -74,11 +84,11 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             targetPosition = defaultPosition;
             targetScale = defaultScale;
             isFloating = false;
+            
+            // 추가: 원래 순서로 복구
+            transform.SetSiblingIndex(originalSiblingIndex);
         }
     }
-    
-    // TODO: 드래그 이벤트 구현
-    // 드래그 & 드롭 시 해당 캐릭터에 스탯 적용 함수 호출 (StatManager)
     
     public void OnBeginDrag(PointerEventData eventData)
     {
@@ -91,21 +101,20 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             // 드래그 시작 시 스케일 복원
             targetScale = defaultScale;
             transform.localScale = defaultScale;
+            
+            // 추가: 드래그 중에도 항상 맨 위 유지
+            transform.SetAsLastSibling();
         }
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        //Vector2 pos;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             canvas.transform as RectTransform,
             Input.mousePosition,
             canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera,
             out Vector2 localPoint);
-        // Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, transform.position.z);
-        // transform.position = eventData.position;
-        // print("mouse: " + new Vector2(Input.mousePosition.x, Input.mousePosition.y));
-        // print("pos: " + pos);
+        
         rect.anchoredPosition = Input.mousePosition;
     }
 
@@ -153,6 +162,15 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         // 해당 캐릭터의 manager 호출
         isDragging = false;
         rect.anchoredPosition = defaultPosition;
-        // print("end drag");
+        
+        // 추가: 드래그 종료 후에도 (아직 floating이면) 위에, floating이 해제된 상태면 원래 순서로 복귀
+        if (!isFloating)
+        {
+            transform.SetSiblingIndex(originalSiblingIndex);
+        }
+        else
+        {
+            transform.SetAsLastSibling();
+        }
     }
 }
