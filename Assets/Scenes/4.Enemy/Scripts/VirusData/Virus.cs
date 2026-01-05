@@ -2,7 +2,6 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 
-// 바이러스 종류간의 차이가 수치뿐이라면 굳이 종류별로 FSM을 나누지 말고 Virus에 합쳐도 됨.
 public class Virus : MonoBehaviour
 {
     [Header("SO데이터")]
@@ -14,8 +13,6 @@ public class Virus : MonoBehaviour
     //public TextMeshProUGUI atkDmgText;
     //public TextMeshProUGUI hpCntText;
 
-    public Animator animator;
-
     [HideInInspector]
     public VirusData virusData;
     public int RandState;
@@ -25,6 +22,20 @@ public class Virus : MonoBehaviour
     public bool virusState = false;
 
     public EnemyUIController enemyUIController;
+
+    public State NextAction { get; private set; }
+
+    private Coroutine _actionCo;
+    private Vector3 _originPos;
+    private Vector3 _originScale;
+
+    [Header("Action Params")]
+    private float atkMoveDuration = 0.3f;
+    private float atkPause = 0.1f;
+    private float supScaleMul = 1.15f;
+    private float supDuration = 0.5f;
+    private float defYOffset = 0.20f;
+    private float defDuration = 0.3f;
 
     public void InitData()
     {
@@ -41,28 +52,14 @@ public class Virus : MonoBehaviour
             spawnNum = 3;
         else
             spawnNum = 0;
-        animator.SetInteger("AttackIdx", spawnNum);
     }
 
-    public void WaitTime(string stateName)
-    {
-        StartCoroutine(ActionAfterWait(spawnNum*0.75f, stateName));
-    }
-    
-    public IEnumerator ActionAfterWait(float delay, string name)
-    {
-
-        yield return new WaitForSeconds(delay);
-        Debug.Log("Delay : " + delay);
-        
-        animator.SetBool(name, true);
-    }
     
     public void UpdateData()
     {
         enemyUIController.atk.text = virusData.AtkDmg.ToString();
     }
-    private enum State
+    public enum State
     {
         Idle,
         Atk,
@@ -71,7 +68,12 @@ public class Virus : MonoBehaviour
         Death
     }
 
-    private State _state;
+
+    private void Awake()
+    {
+        _originPos = transform.position;
+        _originScale = transform.localScale;
+    }
 
     private void Start()
     {
@@ -81,34 +83,29 @@ public class Virus : MonoBehaviour
             return;
         }
 
-        _state = State.Idle;
-
         InitData();
+
+        // 시작할 때 아이콘 나오도록
+        RollNextActionAndUpdateIcon();
+    }
+
+    public void RollNextActionAndUpdateIcon()
+    {
+        RollNextAction();
+        enemyUIController.state.UpdateStateImage(NextAction);
+    }
+
+    private void RollNextAction()
+    {
+        GetRandState();
+        NextAction = (State)RandState;
     }
 
     public void GetRandState()
     {
         RandState = ChangeStateRand((int)State.Death);
     }
-    private void Update()
-    {
-        //InitData();
-        switch (_state)
-        {
-            case State.Idle:
-                break;
-            case State.Atk:
-                break; 
-            case State.Def:
-                break;
-            case State.Sup:
-                break;
-            case State.Death:
-                break;
-            default:
-                break;
-        }
-    }
+
     public int ChangeStateRand(int endNum)
     {
         int check = Random.Range(1, endNum);
@@ -118,5 +115,114 @@ public class Virus : MonoBehaviour
     public void ChangeAtkValue(int atk)
     {
         virusData.AtkDmg += atk;
+    }
+
+    protected IEnumerator CoAttack()
+    {
+        // 목표: 플레이어 위치까지 갔다가 복귀
+        Transform playerTr = PlayerManager.instance.transform;
+        if (playerTr == null) yield break;
+
+        Vector3 start = _originPos;
+        Vector3 target = playerTr.position;
+
+        // 2D 횡이동만 원하면 y 고정(필요하면 주석 해제)
+         target.y = start.y;
+
+        yield return LerpPos(start, target, atkMoveDuration);
+
+        // 도착 시점에 피해
+        PlayerManager.instance.TakeDamage(virusData.AtkDmg);
+
+        if (atkPause > 0f) yield return new WaitForSeconds(atkPause);
+
+        yield return LerpPos(target, start, atkMoveDuration);
+
+        // 끝나면 항상 원복 보정
+        transform.position = start;
+    }
+
+    protected IEnumerator CoSupport()
+    {
+        // 목표: 커졌다가 작아짐 + 공격력 증가
+        ChangeAtkValue(3);
+        UpdateData();
+
+        Vector3 start = _originScale;
+        Vector3 big = start * supScaleMul;
+
+        yield return LerpScale(start, big, supDuration);
+        yield return LerpScale(big, start, supDuration);
+
+        transform.localScale = start;
+    }
+
+    protected IEnumerator CoDefend()
+    {
+        // 목표: y축으로 올라갔다 내려옴
+        Vector3 start = _originPos;
+        Vector3 up = start + new Vector3(0f, defYOffset, 0f);
+
+        yield return LerpPos(start, up, defDuration);
+        yield return LerpPos(up, start, defDuration);
+
+        transform.position = start;
+    }
+
+    private IEnumerator LerpPos(Vector3 start, Vector3 target, float dur)
+    {
+        float t = 0f;
+        dur = Mathf.Max(0.0001f, dur);
+
+        while (t < 1f)
+        {
+            Debug.Log($"pos now: {transform.position}");
+            t += Time.deltaTime / dur;
+            float easedT = Mathf.SmoothStep(0f, 1f, t);
+            transform.position = Vector3.Lerp(start, target, easedT);
+            yield return null;
+        }
+        transform.position = target;
+    }
+
+    private IEnumerator LerpScale(Vector3 a, Vector3 b, float dur)
+    {
+        float t = 0f;
+        dur = Mathf.Max(0.0001f, dur);
+        while (t < 1f)
+        {
+            t += Time.deltaTime / dur;
+            transform.localScale = Vector3.Lerp(a, b, t);
+            yield return null;
+        }
+        transform.localScale = b;
+    }
+
+    public IEnumerator CoDoOneAction()
+    {
+
+        // 행동 시작
+        yield return StartCoroutine(CoRunStateAction(NextAction));
+    }
+
+    private IEnumerator CoRunStateAction(State s)
+    {
+        switch (s)
+        {
+            case State.Atk:
+                yield return StartCoroutine(CoAttack());
+                break;
+            case State.Sup:
+                yield return StartCoroutine(CoSupport());
+                break;
+            case State.Def:
+                yield return StartCoroutine(CoDefend());
+                break;
+            default:
+                // Idle/Death면 그냥 넘어감
+
+                yield break;
+        }
+        //RollNextAction();
     }
 }

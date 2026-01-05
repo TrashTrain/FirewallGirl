@@ -15,18 +15,24 @@ public class GameManager : MonoBehaviour
     {
         Instance = this;
         PlayerTurn = true;
+        EnemyTurnManager.Instance.InitEnemyIntents();
+
         //checkTurn = PlayerTurn;
     }
 
     public void OnTrunButtonClick()
     {
         // true -> PlayerTurn으로 바꾸기
-        if (PlayerTurn)
-        {
-            Debug.Log("턴 넘기기 성공");
-            PlayerTurn = !PlayerTurn;
-            SequenceTurn.instance.SetResetSequenceCheck();
-        }
+        //if (PlayerTurn)
+        //{
+        //    Debug.Log("턴 넘기기 성공");
+        //    PlayerTurn = !PlayerTurn;
+        //    SequenceTurn.instance.SetResetSequenceCheck();
+
+        //}
+        if (!PlayerTurn) return; // 이미 적턴이면 무시
+
+        EnemyTurnManager.Instance.StartEnemyTurn();
     }
 
     public void GameOver()

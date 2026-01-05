@@ -1,23 +1,21 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum AugmentRank
-{
-    Common,
-    Rare,
-    Unique,
-    Epic,
-}
+public enum AugmentRank { Common, Rare, Unique, Epic }
 
+[Serializable]
 public class AugmentData
 {
+    public string id;              // 중복 방지용 고유 ID (중요)
     public string augmentName;
-    public string augmentDesc;
+    [TextArea] public string augmentDesc;
     public AugmentRank augmentRank;
     public int positiveValue;
     public int negativeValue;
 }
+
 
 public class AugmentDeck
 {

@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 894934282596416935}
   - component: {fileID: 4557037771983816653}
   - component: {fileID: 5481278553165050541}
-  - component: {fileID: 5681695378253590800}
   m_Layer: 0
   m_Name: TestTroy
   m_TagString: Virus
@@ -104,11 +103,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   virusObjectSO: {fileID: 11400000, guid: 0b5834fdc55122a409221512e7846618, type: 2}
   image: {fileID: 894934282596416935}
-  animator: {fileID: 5681695378253590800}
   RandState: 0
   spawnNum: 0
   virusState: 0
   enemyUIController: {fileID: 0}
+  atkMoveDuration: 0.5
+  atkPause: 0.1
+  supScaleMul: 1.15
+  supDuration: 0.5
+  defYOffset: 0.2
+  defDuration: 0.5
   sequence: 0
 --- !u!61 &5481278553165050541
 BoxCollider2D:
@@ -155,27 +159,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!95 &5681695378253590800
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1786381171166047068}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 406a9976dddca4b4ea869d0a65635174, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2668089688122718261
 GameObject:
   m_ObjectHideFlags: 0

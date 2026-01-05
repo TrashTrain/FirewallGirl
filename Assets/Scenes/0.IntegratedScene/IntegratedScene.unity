@@ -541,7 +541,6 @@ MonoBehaviour:
   - {fileID: 1525040785}
   prefabVirus:
   - {fileID: 1786381171166047068, guid: fd7260cb9cc55e446b847d9bc24c923a, type: 3}
-  - {fileID: 9126388757029042433, guid: 49f338c46a3a9a84799edaa01d40eab1, type: 3}
   - {fileID: 7750796116713643236, guid: ae71dc134fe945b40a5c035a1043964d, type: 3}
 --- !u!1 &167793138
 GameObject:
@@ -5265,6 +5264,7 @@ GameObject:
   - component: {fileID: 1686374162}
   - component: {fileID: 1686374161}
   - component: {fileID: 1686374160}
+  - component: {fileID: 1686374164}
   m_Layer: 0
   m_Name: GameMgr
   m_TagString: Untagged
@@ -5359,6 +5359,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1686374164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1686374159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e08a6df9b5bc2440886f90bc6ab8661, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1719802377
 GameObject:
   m_ObjectHideFlags: 0
