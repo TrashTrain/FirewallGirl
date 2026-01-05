@@ -137,7 +137,7 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             {
                 var playerManager = hitObj.GetComponent<PlayerManager>();
 
-                if (playerManager != null)
+                if (playerManager != null && playerManager.currentCost > 0)
                 {
                     Debug.Log($"{hitObj.name}의 현재 체력: {playerManager.currentHP}");
                     int AP = transform.GetComponent<PlayerCard>().ap;
@@ -147,10 +147,24 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
                     // int cardDP = int.Parse(card.transform.Find("Defense/Text").GetComponent<TextMeshProUGUI>().text);
                     // playerManager.attackPower += cardAP;
                     // playerManager.defensePower += cardDP;
-                    playerManager.attackPower += AP;
-                    playerManager.defensePower += DP;
-                    playerManager.currentCost = Mathf.Max(0, playerManager.currentCost - cost);
-                    playerManager.UpdateUI();
+
+                    if (playerManager.currentCost < cost)
+                    {
+                        // [TODO] current cost에 따라 사용 가능한 카드만 하이라이트 효과 적용
+                        Debug.Log("현재 코스트보다 큰 카드는 사용 불가");
+                    }
+                    else
+                    {
+                        // [TODO] 함수화 & 카드 속성에 따라 다르게 적용
+                        playerManager.attackPower += AP;
+                        playerManager.defensePower += DP;
+                        playerManager.currentCost = Mathf.Max(0, playerManager.currentCost - cost);
+                        playerManager.UpdateUI();
+                    }
+                }
+                else
+                {
+                    Debug.Log("코스트=0으로 사용 불가");
                 }
             }
         }
