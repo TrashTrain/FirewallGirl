@@ -25,6 +25,9 @@ public class PowerUI : MonoBehaviour
             attackPowerText.text = 1.ToString();
             defensePowerText.text = 1.ToString();
         }
+
+        PlayerManager.instance.powerUI = this; // 새로운 씬의 UI를 인스턴스에 연결
+        PlayerManager.instance.UpdateUI();      // 연결되자마자 최신 데이터로 UI 갱신
     }
 
     public void UpdateAttackPowerUI(int value)

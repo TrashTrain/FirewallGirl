@@ -46,13 +46,6 @@ public class UpDownMgr : MonoBehaviour
     public Sprite costDownSprite; //코스트 = 상승 그래프
     public Sprite hpSprite; //체력 = 물약 
     public Sprite avoidanceSprite; //회피율 = 바람
-
-    [Header("카드 Reload 버튼")]
-    public Button ReloadBtn; //카드 리로드 버튼
-
-    [Header("카드 리로드 애니메이션")]
-    public Animation OpenAnimtion1; 
-    public Animation OpenAnimtion3; 
     
     string Card1openAnimationTrigger = "Card1Open";
     string Card3openAnimationTrigger = "Card3Open";
@@ -62,48 +55,23 @@ public class UpDownMgr : MonoBehaviour
     //카드 기억: 중복허용x 자료구조형으로
     private HashSet<(StatType, ValueType)> usedCombinations = new();
     private const int RECENT_HISTORY_LIMIT = 10; // 기억할 최근 값의 수
-    
+
+    // 현재 생성된 카드들의 정보를 저장해둘 리스트
+    private List<(GenerateCard pos, GenerateCard neg)> currentCardsInfo = new();
+
 
 
     void Start()
     {
-        foreach (Button card in Card)
-            card.gameObject.SetActive(false);
-
-        ReloadBtn.onClick.AddListener(ReloadBtnClick);
-
-        for (int i = 0; i < Card.Length; i++)
+        // 1. 카드가 할당되었는지 확인
+        if (Card == null || Card.Length == 0)
         {
-            int index = i;
-            Card[i].onClick.AddListener(() => OnCardClicked());
+            Debug.LogError("UpDownMgr: Card 배열이 비어있습니다! 인스펙터에서 버튼들을 넣어주세요.");
+            return;
         }
 
         CardSystem();
 
-    }
-
-    //카드를 선택한 경우 배틀씬으로 
-    void OnCardClicked()
-    {
-        Debug.Log("Clicked");
-        // 필요하면 선택된 카드 인덱스를 저장
-        // GameManager.selectedCardId = cardIndex;
-
-        SceneManager.LoadScene("BattleScene");
-    }
-
-    // 스프라이트 매칭 
-    Sprite GetSprite(StatType stat, ValueType value)
-    {
-        return stat switch
-        {
-            StatType.Attack => swordSprite,
-            StatType.Defense => shieldSprite,
-            StatType.Cost => value == ValueType.Positive ? costUpSprite : costDownSprite,
-            StatType.Health => hpSprite,
-            StatType.Evasion => avoidanceSprite,
-            _ => null,
-        };
     }
 
     // 증감 구조체 
@@ -150,45 +118,75 @@ public class UpDownMgr : MonoBehaviour
     // 증감 시스템 
     public void CardSystem()
     {
+        Debug.Log("CardSystem 시작");
         usedCombinations.Clear();
+        currentCardsInfo.Clear(); // 리스트 초기화
 
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < Card.Length; i++)
         {
-            // 카드 안 속성 중복 방지 
-            HashSet<StatType> localUsedStats = new();
+            if (Card[i] == null) continue;
 
-            // 긍정 효과 생성 
-            GenerateCard pos = GenerateStat (ValueType.Positive, localUsedStats); // + or - Stat
+            Card[i].gameObject.SetActive(true);
+
+            
+            HashSet<StatType> localUsedStats = new HashSet<StatType>();
+
+            // 긍정 스탯 생성 및 기록
+            GenerateCard pos = GenerateStat(ValueType.Positive, localUsedStats);
             usedCombinations.Add((pos.stat, ValueType.Positive));
-            localUsedStats.Add(pos.stat);
-            PositiveSkillText[i].text = pos.stat.ToKorean();
-            PositiveUpDownText[i].text = pos.ToString();
-            PositiveSkillIcons[i].sprite = GetSprite(pos.stat, pos.valueType);
+            localUsedStats.Add(pos.stat); // 같은 카드 내 중복 방지
 
-            // 부정 효과 생성 
-            GenerateCard neg = GenerateStat (ValueType.Negative, localUsedStats);
+            // 부정 스탯 생성 및 기록
+            GenerateCard neg = GenerateStat(ValueType.Negative, localUsedStats);
             usedCombinations.Add((neg.stat, ValueType.Negative));
             localUsedStats.Add(neg.stat);
-            NegativeSkillText[i].text = neg.stat.ToKorean();
-            NegativeUpDownText[i].text = neg.ToString();
-            NegativeSkillIcons[i].sprite = GetSprite(neg.stat, neg.valueType);
+
+            // 정보 저장 (나중에 클릭 시 사용)
+            currentCardsInfo.Add((pos, neg));
+
+            RewardCard rewardCardScript = Card[i].GetComponent<RewardCard>();
+            if (rewardCardScript != null)
+            {
+                rewardCardScript.SetupCard(
+                    pos, neg,
+                    GetSprite(pos.stat, pos.valueType),
+                    GetSprite(neg.stat, neg.valueType)
+                );
+                Debug.Log($"{i}번 카드 세팅 완료: {pos.stat} / {neg.stat}");
+            }
+
+            int index = i;
+            Card[index].onClick.RemoveAllListeners();
+            Card[index].onClick.AddListener(() => OnCardClicked(index));
         }
     }
 
-    // 카드 리로드 버튼 
-    public void ReloadBtnClick()
+    //카드를 선택한 경우 스테이지 씬으로
+    void OnCardClicked(int index)
     {
-        foreach (Button card in Card)
-            card.gameObject.SetActive(true);
+        // 1. 선택한 카드의 데이터를 PlayerManager에 적용
+        var selected = currentCardsInfo[index];
+        PlayerManager.instance.ApplyCardStats(selected.pos, selected.neg);
+        SceneManager.LoadScene("StageScene");
+    }
 
-        OpenAnimtion1.Play(Card1openAnimationTrigger);
-        OpenAnimtion3.Play(Card3openAnimationTrigger);
-
-
-        CardSystem();
+    // 스프라이트 매칭 
+    Sprite GetSprite(StatType stat, ValueType value)
+    {
+        return stat switch
+        {
+            StatType.Attack => swordSprite,
+            StatType.Defense => shieldSprite,
+            StatType.Cost => value == ValueType.Positive ? costUpSprite : costDownSprite,
+            StatType.Health => hpSprite,
+            StatType.Evasion => avoidanceSprite,
+            _ => null,
+        };
     }
 
 }
+
+
 
 // 속성 한국어 매칭
 public static class StatTypeExtensions
