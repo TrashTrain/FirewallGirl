@@ -224,7 +224,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2180615766442653880, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 88
+      value: 95
       objectReference: {fileID: 0}
     - target: {fileID: 2180615766442653880, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -541,7 +541,6 @@ MonoBehaviour:
   - {fileID: 1525040785}
   prefabVirus:
   - {fileID: 1786381171166047068, guid: fd7260cb9cc55e446b847d9bc24c923a, type: 3}
-  - {fileID: 9126388757029042433, guid: 49f338c46a3a9a84799edaa01d40eab1, type: 3}
   - {fileID: 7750796116713643236, guid: ae71dc134fe945b40a5c035a1043964d, type: 3}
 --- !u!114 &119638774 stripped
 MonoBehaviour:
@@ -1339,7 +1338,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2180615766442653880, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 88
+      value: 95
       objectReference: {fileID: 0}
     - target: {fileID: 2180615766442653880, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1803,7 +1802,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2180615766442653880, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 88
+      value: 95
       objectReference: {fileID: 0}
     - target: {fileID: 2180615766442653880, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2321,7 +2320,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2180615766442653880, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 88
+      value: 95
       objectReference: {fileID: 0}
     - target: {fileID: 2180615766442653880, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -3701,8 +3700,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 370, y: 11}
-  m_SizeDelta: {x: 650, y: 194}
+  m_AnchoredPosition: {x: 444.24316, y: 11}
+  m_SizeDelta: {x: 798.4863, y: 252.4208}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!61 &1048387849
 BoxCollider2D:
@@ -3761,9 +3760,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6ae0e3b78c26914ea5044338012eb10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spreadOffset: 250
-  spreadSpeed: 15
+  spreadOffset: 165
+  spreadSpeed: 50
   isSpread: 0
+  isSpreading: 0
 --- !u!114 &1048387851
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5441,6 +5441,7 @@ GameObject:
   - component: {fileID: 1686374162}
   - component: {fileID: 1686374161}
   - component: {fileID: 1686374160}
+  - component: {fileID: 1686374164}
   m_Layer: 0
   m_Name: GameMgr
   m_TagString: Untagged
@@ -5544,6 +5545,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+--- !u!114 &1686374164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1686374159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e08a6df9b5bc2440886f90bc6ab8661, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1719802377
