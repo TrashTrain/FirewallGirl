@@ -8,7 +8,7 @@ public enum AugmentRank { Common, Rare, Unique, Epic }
 [Serializable]
 public class AugmentData
 {
-    public string id;              // 중복 방지용 고유 ID (중요)
+    public string id;              // ??? ?????? ???? ID (???)
     public string augmentName;
     [TextArea] public string augmentDesc;
     public AugmentRank augmentRank;
@@ -23,7 +23,7 @@ public class AugmentDeck
 
 }
 
-// 증강체 로직 시작점.
+// ????? ???? ??????.
 public class Augment : MonoBehaviour
 {
     

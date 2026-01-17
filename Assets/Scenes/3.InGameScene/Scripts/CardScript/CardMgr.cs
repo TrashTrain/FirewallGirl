@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 
 public class CardMgr : MonoBehaviour
 {
-    public PlayerCardObject[] CardObject;
+    public CardObject[] CardObject;
 
     public static CardMgr instance;
 
@@ -24,9 +24,17 @@ public class CardMgr : MonoBehaviour
     public List<CardData> cardDatas = new List<CardData>();
     //private int totalCost = 10;
 
-    public CardData CardCreate(PlayerCardObject cardObject)
+    public CardData CardCreate(CardObject cardObject)
     {
-        CardData cardData = new CardData(cardObject.cardIndex, cardObject.cardImage, cardObject.cardName, cardObject.positiveNum, cardObject.negativeNum, cardObject.costNum, cardObject.description);
+        CardData cardData = new CardData(cardObject.cardIndex,
+                                        cardObject.cardName,
+                                        cardObject.cardImage,
+                                        cardObject.positiveStatType,
+                                        cardObject.negativeStatType,
+                                        cardObject.positiveStatValue,
+                                        cardObject.negativeStatValue,
+                                        cardObject.cost,
+                                        cardObject.description);
         return cardData;
     }
 
@@ -41,7 +49,7 @@ public class CardMgr : MonoBehaviour
             Destroy(gameObject);
         }
 
-        foreach (PlayerCardObject card in CardObject)
+        foreach (CardObject card in CardObject)
         {
             cardDatas.Add(CardCreate(card));
         }

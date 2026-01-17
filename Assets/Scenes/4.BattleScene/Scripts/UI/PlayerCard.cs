@@ -13,22 +13,22 @@ public class PlayerCard : MonoBehaviour
     [SerializeField]
     private int costValue;
 
-    private int attackPower;
-    private int defensePower;
+    private int positiveStatValue;
+    private int negativeStatValue;
 
     // 카드 설명 추가.
     private string description;
 
     public int ap
     {
-        get { return attackPower; }
-        set { attackPower = value; }
+        get { return positiveStatValue; }
+        set { positiveStatValue = value; }
     }
     
     public int dp
     {
-        get { return defensePower; }
-        set { defensePower = value; }
+        get { return negativeStatValue; }
+        set { negativeStatValue = value; }
     }
     
     public int cost
@@ -42,6 +42,16 @@ public class PlayerCard : MonoBehaviour
         get { return description; } 
         set { description = value; }
     }
+    
+    private Sprite GetStatIcon(StatType stat)
+    {
+        if (StatIconManager.Instance == null)
+        {
+            Debug.LogError("StatIconManager가 씬에 없음");
+            return null;
+        }
+        return StatIconManager.Instance.GetIcon(stat);
+    }
 
     private void Start()
     {
@@ -51,19 +61,31 @@ public class PlayerCard : MonoBehaviour
             return;
         }
         costValue = cardData.cost;
-        attackPower = cardData.attackPower;
-        defensePower = cardData.defensePower;
+        positiveStatValue = cardData.positiveStatValue;
+        negativeStatValue = cardData.negativeStatValue;
         
-        Image cardImage = transform.Find("Content").GetComponent<Image>();
-        TextMeshProUGUI cardName = transform.Find("CardName/Text").GetComponent<TextMeshProUGUI>();
-        TextMeshProUGUI attackPowerText = transform.Find("AttackPower/Text").GetComponent<TextMeshProUGUI>();
-        TextMeshProUGUI defensePowerText = transform.Find("Defense/Text").GetComponent<TextMeshProUGUI>();
-        TextMeshProUGUI costText = transform.Find("Cost").GetComponent<TextMeshProUGUI>();
+        Image cardImage = transform.Find("Content").GetComponent<Image>(); // 카드 그림
+        TextMeshProUGUI cardName = transform.Find("CardName/Text").GetComponent<TextMeshProUGUI>(); // 카드 이름
+
+        Image positiveIcon = transform.Find("PositiveStat").GetComponent<Image>();
+        Image negativeIcon = transform.Find("NegativeStat").GetComponent<Image>();
+        
+        TextMeshProUGUI posStatText = transform.Find("PositiveStat/Text").GetComponent<TextMeshProUGUI>(); // 긍정 수치 텍스트
+        TextMeshProUGUI negStatText = transform.Find("NegativeStat/Text").GetComponent<TextMeshProUGUI>(); // 부정 수치 텍스트
+        
+        TextMeshProUGUI costText = transform.Find("Cost/CostText").GetComponent<TextMeshProUGUI>(); // 코스트 수치 텍스트
+        TextMeshProUGUI descriptionText = transform.Find("Description").GetComponent<TextMeshProUGUI>(); // 카드 설명 텍스트
         
         cardImage.sprite = cardData.cardImage;
         cardName.text = cardData.cardName;
-        attackPowerText.text = attackPower.ToString();
-        defensePowerText.text = defensePower.ToString();
+
+        positiveIcon.sprite = GetStatIcon(cardData.positiveStatType);
+        negativeIcon.sprite = GetStatIcon(cardData.negativeStatType);
+        
+        posStatText.text = positiveStatValue.ToString();
+        negStatText.text = negativeStatValue.ToString();
+        
         costText.text = costValue.ToString();
+        descriptionText.text = cardData.description;
     }
 }
