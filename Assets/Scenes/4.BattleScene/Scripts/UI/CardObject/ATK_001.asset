@@ -15,6 +15,10 @@ MonoBehaviour:
   cardIndex: 2
   cardName: "\uC548\uD2F0\uBC14\uC774\uB7EC\uC2A4 \uC2A4\uCE94"
   cardImage: {fileID: 21300000, guid: d91e93f8e08c23c4b9a1254826a9da94, type: 3}
+  positiveStatType: 0
+  negativeStatType: 0
+  positiveIcon: {fileID: 0}
+  negativeIcon: {fileID: 0}
   attackPower: 3
   defensePower: -2
   healthPoint: 0

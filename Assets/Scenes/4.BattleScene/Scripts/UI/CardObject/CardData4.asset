@@ -13,9 +13,14 @@ MonoBehaviour:
   m_Name: CardData4
   m_EditorClassIdentifier: 
   cardIndex: 4
-  cardName: "\uC548\uD2F0\uCE58\uD2B8"
+  cardName: "VPN \uC740\uC2E0"
   cardImage: {fileID: 21300000, guid: d91e93f8e08c23c4b9a1254826a9da94, type: 3}
-  attackPower: 2
-  defensePower: 1
+  positiveStatType: 4
+  negativeStatType: 0
+  positiveIcon: {fileID: 0}
+  negativeIcon: {fileID: 0}
+  positiveStatValue: 2
+  negativeStatValue: -3
+  healthPoint: 0
   cost: 1
   description: 

@@ -28,14 +28,14 @@ public class Card : MonoBehaviour
         }
 
         //dataset.data.FindIndex(card => card.CardNum.Equals(cardNum));
-        CardData cardData = CardMgr.instance.cardDatas.Find(card => card.CardNum == cardNum);
+        CardData cardData = CardMgr.instance.cardDatas.Find(card => card.CardIndex == cardNum);
 
 
         cardImage.sprite = cardData.CardImage;
         cardName.text = cardData.CardName;
-        positiveNum.text = cardData.PositiveNum.ToString();
-        negativeNum.text = cardData.NegativeNum.ToString();
-        costNum.text = cardData.CostNum.ToString();
+        positiveNum.text = cardData.PositiveStat.ToString();
+        negativeNum.text = cardData.NegativeStat.ToString();
+        costNum.text = cardData.Cost.ToString();
 
         // 지금은 설명칸이 비어있어서 빼놓음.
         //description.text = cardData.Description;
