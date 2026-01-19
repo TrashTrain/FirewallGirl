@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyTurnManager : MonoBehaviour
@@ -12,23 +13,33 @@ public class EnemyTurnManager : MonoBehaviour
         Instance = this;
     }
 
+    private void Update()
+    {
+        if (!_running && !GameManager.PlayerTurn)
+        {
+            StartEnemyTurn();
+        }
+    }
+
     public void StartEnemyTurn()
     {
         // 중복 시작 방지
         if (_running) return;
 
         // 플레이어 턴일 때만 적 턴 시작 (원하면 유지)
-        if (!GameManager.PlayerTurn) return;
+        if (GameManager.PlayerTurn) return;
 
+        _running = true;
         StartCoroutine(CoEnemyTurnSequence());
     }
 
     private IEnumerator CoEnemyTurnSequence()
     {
-        _running = true;
+        Debug.Log("적 턴 시작");
+        // _running = true;
 
         // 플레이어 턴 종료 -> 적 턴 시작
-        GameManager.PlayerTurn = false;
+        // GameManager.PlayerTurn = false;
 
         // 현재 살아있는 Virus들 가져오기
         Virus[] enemies = FindObjectsOfType<Virus>();
@@ -63,6 +74,8 @@ public class EnemyTurnManager : MonoBehaviour
         GameManager.PlayerTurn = true;
 
         _running = false;
+        
+        Debug.Log("적 턴 종료");
     }
     public void InitEnemyIntents()
     {

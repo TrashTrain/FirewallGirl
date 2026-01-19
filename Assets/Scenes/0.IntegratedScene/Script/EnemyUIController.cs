@@ -9,5 +9,6 @@ public class EnemyUIController : MonoBehaviour
     public StateImageChange state;
     public GameObject panel;
     public TextMeshProUGUI atk;
+    public TextMeshProUGUI def;
     public TextMeshProUGUI hp;
 }
