@@ -277,6 +277,7 @@ MonoBehaviour:
   state: {fileID: 5716941435176422974}
   panel: {fileID: 4960590866162583644}
   atk: {fileID: 5628192260810035865}
+  def: {fileID: 706111966122588985}
   hp: {fileID: 706111966122588985}
 --- !u!1 &2835334314130930898
 GameObject:
@@ -891,7 +892,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 826724154552469245}
   m_FillRect: {fileID: 8565774190300183622}
   m_HandleRect: {fileID: 4447319228989723221}

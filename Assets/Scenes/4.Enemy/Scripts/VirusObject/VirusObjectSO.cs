@@ -23,6 +23,7 @@ public class VirusObjectSO : ScriptableObject
     public string virusName;
 
     public int virusAtk;
+    public int virusDef;
     public int virusHp;
     
     // 외부 코드로 타입을 수정할 수 있는지 확인할 것.

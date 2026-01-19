@@ -39,7 +39,7 @@ public class Virus : MonoBehaviour
 
     public void InitData()
     {
-        virusData = new VirusData(virusObjectSO.virusIndex, virusObjectSO.virusImage, virusObjectSO.virusName, virusObjectSO.virusAtk, virusObjectSO.virusHp);
+        virusData = new VirusData(virusObjectSO.virusIndex, virusObjectSO.virusImage, virusObjectSO.virusName, virusObjectSO.virusAtk, virusObjectSO.virusDef, virusObjectSO.virusHp, virusObjectSO.virusHp);
         gameObject.GetComponent<SpriteRenderer>().sprite = virusData.VirusImage;
         //atkDmgText.text = virusData.AtkDmg.ToString();
         //hpCntText.text = virusData.HpCnt.ToString();
@@ -58,6 +58,8 @@ public class Virus : MonoBehaviour
     public void UpdateData()
     {
         enemyUIController.atk.text = virusData.AtkDmg.ToString();
+        enemyUIController.def.text = virusData.DefCnt.ToString();
+        enemyUIController.healthBar.UpdateHPBar(virusData.CurHpCnt, virusData.HpCnt);
     }
     public enum State
     {
@@ -116,6 +118,11 @@ public class Virus : MonoBehaviour
     {
         virusData.AtkDmg += atk;
     }
+    
+    public void ChangeDefenseValue(int def)
+    {
+        virusData.DefCnt += def;
+    }
 
     protected IEnumerator CoAttack()
     {
@@ -159,7 +166,10 @@ public class Virus : MonoBehaviour
 
     protected IEnumerator CoDefend()
     {
-        // 목표: y축으로 올라갔다 내려옴
+        // 목표: y축으로 올라갔다 내려옴 + 방어력 증가
+        ChangeDefenseValue(3);
+        UpdateData();
+        
         Vector3 start = _originPos;
         Vector3 up = start + new Vector3(0f, defYOffset, 0f);
 
@@ -224,5 +234,37 @@ public class Virus : MonoBehaviour
                 yield break;
         }
         //RollNextAction();
+    }
+
+    public int ApplyDamage(int damage)
+    {
+        int remaining = damage;
+        
+        // 방어력 감소
+        if (virusData.DefCnt > 0)
+        {
+            int defUsed = Mathf.Min(virusData.DefCnt, remaining);
+            virusData.DefCnt = Mathf.Max(0, virusData.DefCnt - defUsed);
+            remaining -= defUsed;
+        }
+        
+        // 남은 데미지만큼 체력 감소
+        if (remaining > 0 && virusData.CurHpCnt > 0)
+        {
+            int hpUsed = Mathf.Min(virusData.CurHpCnt, remaining);
+            virusData.CurHpCnt = Mathf.Max(0, virusData.CurHpCnt - hpUsed);
+            remaining -= hpUsed;
+        }
+        
+        UpdateData();
+        
+        Debug.Log($"[Enemy] 받은 데미지: {damage}, 남은 체력: {virusData.CurHpCnt}");
+
+        if (virusData.CurHpCnt <= 0)
+        {
+            // Death state로 변경 로직
+        }
+
+        return remaining;
     }
 }

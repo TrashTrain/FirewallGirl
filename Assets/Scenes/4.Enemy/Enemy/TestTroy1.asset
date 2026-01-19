@@ -16,5 +16,6 @@ MonoBehaviour:
   virusImage: {fileID: 21300000, guid: c63af6cebe9b6fe4a90c82d9f336182e, type: 3}
   virusName: "\uD14C\uC2A4\uD2B8 \uD2B8\uB85C\uC774 \uBD07"
   virusAtk: 1
+  virusDef: 5
   virusHp: 10
   AttackType: 0

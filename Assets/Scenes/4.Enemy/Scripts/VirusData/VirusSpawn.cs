@@ -41,6 +41,7 @@ public class VirusSpawn : MonoBehaviour
             Debug.LogError("virusHP : " + virus.virusData.HpCnt);
             virus.enemyUIController.healthBar.UpdateHPBar(virus.virusData.HpCnt, virus.virusData.HpCnt);
             virus.enemyUIController.atk.text = virus.virusData.AtkDmg.ToString();
+            virus.enemyUIController.def.text = virus.virusData.DefCnt.ToString();
             //virus.enemyUIController.hp.text = virus.virusData.ToString();
 
             enemyUIController[virusIdx].state.UpdateStateImage(virus.NextAction);

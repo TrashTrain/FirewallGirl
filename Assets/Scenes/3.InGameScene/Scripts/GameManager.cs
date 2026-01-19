@@ -31,8 +31,11 @@ public class GameManager : MonoBehaviour
 
         //}
         if (!PlayerTurn) return; // 이미 적턴이면 무시
+        
+        // 플레이어 턴 구현
+        PlayerManager.instance.StartPlayerTurn();
 
-        EnemyTurnManager.Instance.StartEnemyTurn();
+        // EnemyTurnManager.Instance.StartEnemyTurn();
     }
 
     public void GameOver()
