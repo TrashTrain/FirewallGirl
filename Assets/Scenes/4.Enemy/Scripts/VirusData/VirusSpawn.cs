@@ -44,7 +44,7 @@ public class VirusSpawn : MonoBehaviour
             virus.enemyUIController.def.text = virus.virusData.DefCnt.ToString();
             //virus.enemyUIController.hp.text = virus.virusData.ToString();
 
-            enemyUIController[virusIdx].state.UpdateStateImage(virus.NextAction);
+            virus.enemyUIController.state.UpdateStateImage(virus.NextAction);
         }
         else
         {

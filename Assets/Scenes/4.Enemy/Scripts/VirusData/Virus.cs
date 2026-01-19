@@ -91,6 +91,16 @@ public class Virus : MonoBehaviour
         RollNextActionAndUpdateIcon();
     }
 
+    private void Update()
+    {
+        if (virusData.CurHpCnt <= 0)
+        {
+            Debug.Log("바이러스 퇴치");
+            Destroy(enemyUIController.gameObject);
+            Destroy(gameObject);
+        }
+    }
+
     public void RollNextActionAndUpdateIcon()
     {
         RollNextAction();
@@ -228,6 +238,9 @@ public class Virus : MonoBehaviour
             case State.Def:
                 yield return StartCoroutine(CoDefend());
                 break;
+            case State.Death:
+                Destroy(gameObject);
+                yield break;
             default:
                 // Idle/Death면 그냥 넘어감
 

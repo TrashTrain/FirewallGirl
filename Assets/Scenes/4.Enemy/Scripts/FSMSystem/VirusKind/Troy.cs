@@ -12,19 +12,19 @@ public class Troy : Virus
 
     }
 
-    void Update()
-    {
-        Debug.Log("PlayerTurn : " + GameManager.PlayerTurn);
-        if (virusData.HpCnt <= 0)
-        {
-            Destroy(gameObject);
-        }
+    //void Update()
+    //{
+    //    Debug.Log("PlayerTurn : " + GameManager.PlayerTurn);
+    //    //if (virusData.CurHpCnt <= 0)
+    //    //{
+    //    //    Destroy(gameObject);
+    //    //}
 
-        enemyUIController.state.UpdateStateImage((State)RandState);
+    //    enemyUIController.state.UpdateStateImage((State)RandState);
 
-        if (GameManager.PlayerTurn)
-            return;
+    //    if (GameManager.PlayerTurn)
+    //        return;
         
-    }
+    //}
 
 }

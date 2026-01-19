@@ -15,11 +15,15 @@ public class GameManager : MonoBehaviour
     {
         Instance = this;
         PlayerTurn = true;
-        EnemyTurnManager.Instance.InitEnemyIntents();
+        
 
         //checkTurn = PlayerTurn;
     }
 
+    private void Start()
+    {
+        EnemyTurnManager.Instance.InitEnemyIntents();
+    }
     public void OnTrunButtonClick()
     {
         // true -> PlayerTurn으로 바꾸기
