@@ -12,6 +12,7 @@ public class VirusSpawn : MonoBehaviour
 
     public static VirusSpawn instance;
 
+    public int virusCnt = 0;
 
     void Start()
     {
@@ -23,8 +24,9 @@ public class VirusSpawn : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        GetVirusCount();
+        
         OnButtonSpawnVirus();
+        GetVirusCount();
     }
     
     public void SpawnVirus(int virusIdx)
@@ -45,6 +47,7 @@ public class VirusSpawn : MonoBehaviour
             //virus.enemyUIController.hp.text = virus.virusData.ToString();
 
             virus.enemyUIController.state.UpdateStateImage(virus.NextAction);
+            
         }
         else
         {
@@ -88,11 +91,21 @@ public class VirusSpawn : MonoBehaviour
     // 몬스터 갯수 세기
     public int GetVirusCount()
     {
-        int count = 0;
-        
-        count += spawns.Count;
+        virusCnt += spawns.Count;
 
-        Debug.Log("count : " + count);
-        return count;
+        Debug.Log("count : " + virusCnt);
+        return virusCnt;
+    }
+
+    public int SetDiscountVirusCount()
+    {
+        return --virusCnt;
+    }
+    public IEnumerator GetReward()
+    {
+        Debug.Log("리워드 진입");
+        yield return new WaitForSeconds(1f);
+        Debug.Log("리워드 대기 완료");
+        UIManager.Ins.choicePanel.ShowPanel();
     }
 }

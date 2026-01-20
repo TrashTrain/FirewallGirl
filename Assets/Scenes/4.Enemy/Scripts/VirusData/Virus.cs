@@ -91,15 +91,15 @@ public class Virus : MonoBehaviour
         RollNextActionAndUpdateIcon();
     }
 
-    private void Update()
-    {
-        if (virusData.CurHpCnt <= 0)
-        {
-            Debug.Log("바이러스 퇴치");
-            Destroy(enemyUIController.gameObject);
-            Destroy(gameObject);
-        }
-    }
+    //private void Update()
+    //{
+    //    if (virusData.CurHpCnt <= 0)
+    //    {
+    //        Debug.Log("바이러스 퇴치");
+    //        Destroy(enemyUIController.gameObject);
+    //        Destroy(gameObject);
+    //    }
+    //}
 
     public void RollNextActionAndUpdateIcon()
     {
@@ -276,8 +276,28 @@ public class Virus : MonoBehaviour
         if (virusData.CurHpCnt <= 0)
         {
             // Death state로 변경 로직
+            OnDeath();
         }
 
         return remaining;
     }
+    // 죽음 처리를 담당하는 함수 추가
+    private void OnDeath()
+    {
+        Debug.Log("바이러스 퇴치");
+        VirusSpawn.instance.SetDiscountVirusCount();
+        Debug.Log("남은 바이러스 : " + VirusSpawn.instance.virusCnt);
+        
+        if (VirusSpawn.instance.virusCnt <= 0)
+        {
+            VirusSpawn.instance.StartCoroutine(VirusSpawn.instance.GetReward());
+        }
+        gameObject.SetActive(false);
+
+        // 만약 UI도 같이 꺼야 한다면:
+        if (enemyUIController != null) enemyUIController.gameObject.SetActive(false);
+        
+    }
+
+    
 }

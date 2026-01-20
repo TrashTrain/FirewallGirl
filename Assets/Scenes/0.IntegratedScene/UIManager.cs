@@ -7,7 +7,7 @@ public class UIManager : MonoBehaviour
 
     // Card Panel
     public CardDeckController cardDeckController;
-
+    public CardChoicePanel choicePanel;
 
     public static UIManager Ins;
 
