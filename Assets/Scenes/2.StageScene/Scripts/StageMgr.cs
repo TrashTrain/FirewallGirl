@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine;
+using TMPro;
 
 public class StageMgr : MonoBehaviour
 {
@@ -13,6 +14,12 @@ public class StageMgr : MonoBehaviour
     public Image[] StageImg;
     private Outline StageOutline;
 
+    //LJI
+    public int stageCnt = 0;
+    public int clearStageCnt = 0;
+    public List<Button> StageButtons;
+    public TextMeshProUGUI stageCntTxt;
+    public static StageMgr Instance;
 
     private int StageCount = 0;
     ///private int OutLineCount = 0;
@@ -22,6 +29,9 @@ public class StageMgr : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (Instance == null)
+            Instance = this;   
+
         //프레임 안정화
         Application.targetFrameRate = 60;
         QualitySettings.vSyncCount = 0;
@@ -39,17 +49,34 @@ public class StageMgr : MonoBehaviour
             StageChangeBtn.onClick.AddListener(StageChangeBtnClick);
         }
 
-        StageOutline = StageImg[StageImg.Length].GetComponent<Outline>();
-        StageOutline.enabled = false;
+        OnViewStageCnt();
+        SetStageScene();
+
+        //StageOutline = StageImg[StageImg.Length].GetComponent<Outline>();
+        //StageOutline.enabled = false;
 
     }
-
-    // Update is called once per frame
-    void Update()
+    private void OnViewStageCnt()
     {
+        stageCnt = StageButtons.Count - clearStageCnt;
+        stageCntTxt.text = "Stage Cnt : " + stageCnt;
+
+    }
+    
+    // 새로 시작할때 스테이지씬
+    private void SetStageScene()
+    {
+        foreach(var stage in StageButtons)
+        {
+            stage.image.color = Color.red;
+            stage.onClick.AddListener(() =>
+            {
+                OnInStageButton();
+                stage.image.color = GameColors.FromHex("0080EA");
+            } );
+        }
         
     }
-
 
     private void StageChangeBtnClick()
     {

@@ -284,9 +284,7 @@ public class Virus : MonoBehaviour
     // 죽음 처리를 담당하는 함수 추가
     private void OnDeath()
     {
-        Debug.Log("바이러스 퇴치");
         VirusSpawn.instance.SetDiscountVirusCount();
-        Debug.Log("남은 바이러스 : " + VirusSpawn.instance.virusCnt);
         
         if (VirusSpawn.instance.virusCnt <= 0)
         {

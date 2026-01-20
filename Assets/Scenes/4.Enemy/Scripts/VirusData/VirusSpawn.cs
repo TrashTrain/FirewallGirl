@@ -101,11 +101,11 @@ public class VirusSpawn : MonoBehaviour
     {
         return --virusCnt;
     }
+
     public IEnumerator GetReward()
     {
-        Debug.Log("리워드 진입");
         yield return new WaitForSeconds(1f);
-        Debug.Log("리워드 대기 완료");
+
         UIManager.Ins.choicePanel.ShowPanel();
     }
 }

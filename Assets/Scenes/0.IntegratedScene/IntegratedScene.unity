@@ -6927,7 +6927,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 658299193}
         m_TargetAssemblyTypeName: CardChoicePanel, Assembly-CSharp
         m_MethodName: ShowPanel
         m_Mode: 1

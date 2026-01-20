@@ -61,4 +61,9 @@ public class CardChoicePanel : MonoBehaviour
         leftCard.anchoredPosition = centerPosition + leftOffset;
         rightCard.anchoredPosition = centerPosition + rightOffset;
     }
+
+    private void SaveStageClear()
+    {
+        StageSaveManager.ClearStage(StageMgr.Instance.clearStageCnt++);
+    }
 }
