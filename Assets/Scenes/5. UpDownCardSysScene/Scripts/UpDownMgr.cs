@@ -27,7 +27,7 @@ public enum ValueType
 public class UpDownMgr : MonoBehaviour
 {
     [Header("카드 UI")]
-    public Button[] Card;
+    public Image[] Card;
 
     [Header("카드 요소")]
     public TextMeshProUGUI[] PositiveSkillText;
@@ -156,8 +156,14 @@ public class UpDownMgr : MonoBehaviour
             }
 
             int index = i;
-            Card[index].onClick.RemoveAllListeners();
-            Card[index].onClick.AddListener(() => OnCardClicked(index));
+
+            UpDownCardClickHandler clickHandler = Card[index].GetComponent<UpDownCardClickHandler>();
+            if (clickHandler == null)
+            {
+                clickHandler = Card[index].gameObject.AddComponent<UpDownCardClickHandler>();
+            }
+
+            clickHandler.Init(index, OnCardClicked);
         }
     }
 
