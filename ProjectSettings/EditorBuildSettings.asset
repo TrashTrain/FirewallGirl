@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/5. UpDownCardSysScene/UpDownSysScene.unity
     guid: e8d5d79e92906413dbce190f9555924e
+  - enabled: 1
+    path: Assets/Scenes/7.DialogScene/DialogScene.unity
+    guid: aa533ecefd5fd324bb60bcf2cf82d709
   m_configObjects: {}

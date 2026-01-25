@@ -1649,9 +1649,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Card:
-  - {fileID: 855163916}
-  - {fileID: 1583479570}
-  - {fileID: 1085780516}
+  - {fileID: 1439991172}
+  - {fileID: 1583479573}
+  - {fileID: 1716212611}
   PositiveSkillText:
   - {fileID: 119638774}
   - {fileID: 1230175515}
@@ -3466,17 +3466,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &855163916 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2761643087379968987, guid: 386482768d6aaeb48a89d6ef4c47cb95, type: 3}
-  m_PrefabInstance: {fileID: 188145471}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &863743509
 GameObject:
   m_ObjectHideFlags: 0
@@ -4167,17 +4156,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1048387847}
   m_CullTransparentMesh: 1
---- !u!114 &1085780516 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2761643087379968987, guid: 386482768d6aaeb48a89d6ef4c47cb95, type: 3}
-  m_PrefabInstance: {fileID: 1744821545}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1096089805
 GameObject:
   m_ObjectHideFlags: 0
@@ -5221,6 +5199,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1439991172 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5950442181994486977, guid: 386482768d6aaeb48a89d6ef4c47cb95, type: 3}
+  m_PrefabInstance: {fileID: 188145471}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1447667849 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 297896794653928037, guid: 386482768d6aaeb48a89d6ef4c47cb95, type: 3}
@@ -5527,15 +5516,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bc774cf29d8b34a8f56b10d12b45f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1583479570 stripped
+--- !u!114 &1583479573 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2761643087379968987, guid: 386482768d6aaeb48a89d6ef4c47cb95, type: 3}
+  m_CorrespondingSourceObject: {fileID: 5950442181994486977, guid: 386482768d6aaeb48a89d6ef4c47cb95, type: 3}
   m_PrefabInstance: {fileID: 227902471}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1594029025
@@ -5934,6 +5923,17 @@ MonoBehaviour:
 --- !u!114 &1701617682 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6567308037746000976, guid: 386482768d6aaeb48a89d6ef4c47cb95, type: 3}
+  m_PrefabInstance: {fileID: 1744821545}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1716212611 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5950442181994486977, guid: 386482768d6aaeb48a89d6ef4c47cb95, type: 3}
   m_PrefabInstance: {fileID: 1744821545}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
@@ -7254,10 +7254,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: CardChoicePanel, Assembly-CSharp
-        m_MethodName: ShowPanel
-        m_Mode: 1
+      - m_Target: {fileID: 437485831}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
