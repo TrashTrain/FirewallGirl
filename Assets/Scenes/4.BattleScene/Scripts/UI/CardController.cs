@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
@@ -30,6 +31,8 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public static GameObject card;
     public Canvas canvas;
+    private Image background;
+    private Color bgOriginColor;
 
     [HideInInspector] public Transform startParent;
     
@@ -41,6 +44,16 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         cardDeck = GameObject.Find("CardPanel");
         cardDeckController = cardDeck.GetComponent<CardDeckController>();
         rect = GetComponent<RectTransform>();
+        
+        Transform bgTr = transform.Find("Background");
+        if (bgTr != null)
+        {
+            background = bgTr.GetComponent<Image>();
+            if (background != null)
+            {
+                bgOriginColor = background.color;
+            }
+        }
         
         playerCard = GetComponent<PlayerCard>();
         
@@ -66,7 +79,30 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * floatSpeed);
             transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * scaleSpeed);
         }
+
+        if (PlayerManager.instance != null && playerCard != null)
+        {
+            SetCardUsableVisual(PlayerManager.instance.currentCost >= playerCard.cost);
+        }
     }
+    
+    private void SetCardUsableVisual(bool usable)
+    {
+        if (background == null) return;
+
+        if (usable)
+        {
+            background.color = bgOriginColor;
+            
+        }
+        else
+        {
+            Color color = Color.gray;
+            color.a = 0.7f;
+            background.color = color;
+        }
+    }
+
     
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -115,6 +151,8 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (!isFloating) return;
+        if (PlayerManager.instance == null) return;
+        if (PlayerManager.instance.currentCost < playerCard.cost) return;
 
         isDragging = true;
         card = gameObject;
@@ -147,6 +185,8 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (!isDragging) return;
+        
         RectTransform parentRect = rect.parent as RectTransform;
         Camera cam = (canvas.renderMode == RenderMode.ScreenSpaceOverlay) ? null : canvas.worldCamera;
 
@@ -159,6 +199,8 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (!isDragging) return;
+        
         transform.SetParent(startParent); // Parent 재설정
         
         // Raycast
@@ -174,7 +216,8 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             
             if (hitObj.CompareTag("Player"))
             {
-                var playerManager = hitObj.GetComponent<PlayerManager>();
+                // var playerManager = hitObj.GetComponent<PlayerManager>();
+                var playerManager = PlayerManager.instance;
 
                 if (playerManager != null && playerManager.currentCost > 0)
                 {
