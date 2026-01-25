@@ -75,6 +75,10 @@ public class EnemyTurnManager : MonoBehaviour
 
         _running = false;
         
+        PlayerManager.instance.ResetTurnDeltaStats();
+        PlayerManager.instance.currentCost = PlayerManager.instance.TotalCost;
+        PlayerManager.instance.UpdateUI();
+        
         Debug.Log("적 턴 종료");
     }
     public void InitEnemyIntents()

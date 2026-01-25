@@ -26,6 +26,7 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     GameObject cardDeck;
     private CardDeckController  cardDeckController;
+    private PlayerCard playerCard;
 
     public static GameObject card;
     public Canvas canvas;
@@ -40,6 +41,8 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         cardDeck = GameObject.Find("CardPanel");
         cardDeckController = cardDeck.GetComponent<CardDeckController>();
         rect = GetComponent<RectTransform>();
+        
+        playerCard = GetComponent<PlayerCard>();
         
         defaultPosition = transform.position;
         // defaultPosition = rect.anchoredPosition;
@@ -176,25 +179,25 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
                 if (playerManager != null && playerManager.currentCost > 0)
                 {
                     Debug.Log($"{hitObj.name}의 현재 체력: {playerManager.currentHP}");
-                    int AP = transform.GetComponent<PlayerCard>().ap;
-                    int DP = transform.GetComponent<PlayerCard>().dp;
-                    int cost = transform.GetComponent<PlayerCard>().cost;
-                    // int cardAP = int.Parse(card.transform.Find("AttackPower/Text").GetComponent<TextMeshProUGUI>().text);
-                    // int cardDP = int.Parse(card.transform.Find("Defense/Text").GetComponent<TextMeshProUGUI>().text);
-                    // playerManager.attackPower += cardAP;
-                    // playerManager.defensePower += cardDP;
+                    int posValue = playerCard.posValue;
+                    int negValue = playerCard.negValue;
+                    int cost = playerCard.cost;
 
                     if (playerManager.currentCost < cost)
                     {
-                        // [TODO] current cost에 따라 사용 가능한 카드만 하이라이트 효과 적용
+                        // [TODO] current cost에 따라 사용 가능한 카드만 하이라이트 효과 적용 + 사용 불가능한 카드의 raycast 해제
                         Debug.Log("현재 코스트보다 큰 카드는 사용 불가");
                     }
                     else
                     {
                         // [TODO] 함수화 & 카드 속성에 따라 다르게 적용
-                        playerManager.attackPower += AP;
-                        playerManager.defensePower += DP;
+                        StatType posType = playerCard.cardData.positiveStatType;
+                        StatType negType = playerCard.cardData.negativeStatType;
+                        
+                        playerManager.AddTurnStatDelta(posType, posValue);
+                        playerManager.AddTurnStatDelta(negType, -negValue);
                         playerManager.currentCost = Mathf.Max(0, playerManager.currentCost - cost);
+                        
                         playerManager.UpdateUI();
                     }
                 }
