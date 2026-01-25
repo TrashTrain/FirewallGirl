@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
@@ -26,9 +27,12 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     GameObject cardDeck;
     private CardDeckController  cardDeckController;
+    private PlayerCard playerCard;
 
     public static GameObject card;
     public Canvas canvas;
+    private Image background;
+    private Color bgOriginColor;
 
     [HideInInspector] public Transform startParent;
     
@@ -40,6 +44,18 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         cardDeck = GameObject.Find("CardPanel");
         cardDeckController = cardDeck.GetComponent<CardDeckController>();
         rect = GetComponent<RectTransform>();
+        
+        Transform bgTr = transform.Find("Background");
+        if (bgTr != null)
+        {
+            background = bgTr.GetComponent<Image>();
+            if (background != null)
+            {
+                bgOriginColor = background.color;
+            }
+        }
+        
+        playerCard = GetComponent<PlayerCard>();
         
         defaultPosition = transform.position;
         // defaultPosition = rect.anchoredPosition;
@@ -63,7 +79,30 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * floatSpeed);
             transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * scaleSpeed);
         }
+
+        if (PlayerManager.instance != null && playerCard != null)
+        {
+            SetCardUsableVisual(PlayerManager.instance.currentCost >= playerCard.cost);
+        }
     }
+    
+    private void SetCardUsableVisual(bool usable)
+    {
+        if (background == null) return;
+
+        if (usable)
+        {
+            background.color = bgOriginColor;
+            
+        }
+        else
+        {
+            Color color = Color.gray;
+            color.a = 0.7f;
+            background.color = color;
+        }
+    }
+
     
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -112,6 +151,8 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (!isFloating) return;
+        if (PlayerManager.instance == null) return;
+        if (PlayerManager.instance.currentCost < playerCard.cost) return;
 
         isDragging = true;
         card = gameObject;
@@ -144,6 +185,8 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (!isDragging) return;
+        
         RectTransform parentRect = rect.parent as RectTransform;
         Camera cam = (canvas.renderMode == RenderMode.ScreenSpaceOverlay) ? null : canvas.worldCamera;
 
@@ -156,6 +199,8 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (!isDragging) return;
+        
         transform.SetParent(startParent); // Parent 재설정
         
         // Raycast
@@ -171,30 +216,31 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             
             if (hitObj.CompareTag("Player"))
             {
-                var playerManager = hitObj.GetComponent<PlayerManager>();
+                // var playerManager = hitObj.GetComponent<PlayerManager>();
+                var playerManager = PlayerManager.instance;
 
                 if (playerManager != null && playerManager.currentCost > 0)
                 {
                     Debug.Log($"{hitObj.name}의 현재 체력: {playerManager.currentHP}");
-                    int AP = transform.GetComponent<PlayerCard>().ap;
-                    int DP = transform.GetComponent<PlayerCard>().dp;
-                    int cost = transform.GetComponent<PlayerCard>().cost;
-                    // int cardAP = int.Parse(card.transform.Find("AttackPower/Text").GetComponent<TextMeshProUGUI>().text);
-                    // int cardDP = int.Parse(card.transform.Find("Defense/Text").GetComponent<TextMeshProUGUI>().text);
-                    // playerManager.attackPower += cardAP;
-                    // playerManager.defensePower += cardDP;
+                    int posValue = playerCard.posValue;
+                    int negValue = playerCard.negValue;
+                    int cost = playerCard.cost;
 
                     if (playerManager.currentCost < cost)
                     {
-                        // [TODO] current cost에 따라 사용 가능한 카드만 하이라이트 효과 적용
+                        // [TODO] current cost에 따라 사용 가능한 카드만 하이라이트 효과 적용 + 사용 불가능한 카드의 raycast 해제
                         Debug.Log("현재 코스트보다 큰 카드는 사용 불가");
                     }
                     else
                     {
                         // [TODO] 함수화 & 카드 속성에 따라 다르게 적용
-                        playerManager.attackPower += AP;
-                        playerManager.defensePower += DP;
+                        StatType posType = playerCard.cardData.positiveStatType;
+                        StatType negType = playerCard.cardData.negativeStatType;
+                        
+                        playerManager.AddTurnStatDelta(posType, posValue);
+                        playerManager.AddTurnStatDelta(negType, -negValue);
                         playerManager.currentCost = Mathf.Max(0, playerManager.currentCost - cost);
+                        
                         playerManager.UpdateUI();
                     }
                 }
