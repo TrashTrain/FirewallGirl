@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
@@ -16,6 +17,8 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     private Vector3 targetPosition;
     private Vector3 defaultScale;
     private Vector3 targetScale;
+    private Vector2 dragOffset;
+    private float cardRotation;
     
     private RectTransform rect;
 
@@ -23,9 +26,13 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public bool isDragging = false;
 
     GameObject cardDeck;
+    private CardDeckController  cardDeckController;
+    private PlayerCard playerCard;
 
     public static GameObject card;
     public Canvas canvas;
+    private Image background;
+    private Color bgOriginColor;
 
     [HideInInspector] public Transform startParent;
     
@@ -35,9 +42,24 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     void Start()
     {
         cardDeck = GameObject.Find("CardPanel");
+        cardDeckController = cardDeck.GetComponent<CardDeckController>();
         rect = GetComponent<RectTransform>();
         
+        Transform bgTr = transform.Find("Background");
+        if (bgTr != null)
+        {
+            background = bgTr.GetComponent<Image>();
+            if (background != null)
+            {
+                bgOriginColor = background.color;
+            }
+        }
+        
+        playerCard = GetComponent<PlayerCard>();
+        
         defaultPosition = transform.position;
+        // defaultPosition = rect.anchoredPosition;
+        // Debug.Log(transform.name + " 시작 위치: " + defaultPosition);
         targetPosition = defaultPosition;
         
         // 스케일 초기값 저장
@@ -45,7 +67,9 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         targetScale = defaultScale;
         
         // 추가: 시작 시 원래 sibling index 저장
-        originalSiblingIndex = transform.GetSiblingIndex(); 
+        originalSiblingIndex = transform.GetSiblingIndex();
+
+        cardRotation = transform.localEulerAngles.z;
     }
 
     private void Update()
@@ -55,13 +79,36 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * floatSpeed);
             transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * scaleSpeed);
         }
+
+        if (PlayerManager.instance != null && playerCard != null)
+        {
+            SetCardUsableVisual(PlayerManager.instance.currentCost >= playerCard.cost);
+        }
     }
     
-    public void OnPointerEnter(PointerEventData eventData)  
+    private void SetCardUsableVisual(bool usable)
     {
-        // print(eventData.pointerEnter.name);
-        if (cardDeck.GetComponent<CardDeckController>().isSpread && 
-            eventData.pointerEnter != null && 
+        if (background == null) return;
+
+        if (usable)
+        {
+            background.color = bgOriginColor;
+            
+        }
+        else
+        {
+            Color color = Color.gray;
+            color.a = 0.7f;
+            background.color = color;
+        }
+    }
+
+    
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (cardDeckController == null) return;
+        if (!cardDeckController.isSpread) return;
+        if (eventData.pointerEnter != null && 
             eventData.pointerEnter.CompareTag("Card"))
         {
             if (!isFloating)
@@ -72,6 +119,11 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
                 
                 targetPosition = defaultPosition + new Vector3(0f, floatOffset, 0f);
                 targetScale = defaultScale * scaleUpFactor;
+                
+                var e = transform.localEulerAngles;
+                e.z = 0f;
+                transform.localEulerAngles = e;
+                
                 isFloating = true;
             }
         }
@@ -79,10 +131,16 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        if (isDragging) return;
+        
         if (isFloating)
         {
             targetPosition = defaultPosition;
             targetScale = defaultScale;
+            var e = transform.localEulerAngles;
+            e.z = cardRotation;
+            transform.localEulerAngles = e;
+            
             isFloating = false;
             
             // 추가: 원래 순서로 복구
@@ -92,34 +150,57 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (isFloating)
+        if (!isFloating) return;
+        if (PlayerManager.instance == null) return;
+        if (PlayerManager.instance.currentCost < playerCard.cost) return;
+
+        isDragging = true;
+        card = gameObject;
+        startParent = transform.parent;
+        
+        // 드래그 시 카드 회전을 0으로 고정
+        var e = transform.localEulerAngles;
+        e.z = 0f;
+        transform.localEulerAngles = e;
+        
+        // 드래그 시작 시 스케일 복원
+        targetScale = defaultScale;
+        transform.localScale = defaultScale;
+        
+        // 드래그 중에도 항상 맨 위 유지
+        transform.SetAsLastSibling();
+        
+        // 드래그 오프셋 계산: "카드 위치 - 포인터 위치"
+        RectTransform parentRect = rect.parent as RectTransform;
+        Camera cam = (canvas.renderMode == RenderMode.ScreenSpaceOverlay) ? null : canvas.worldCamera;
+
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                parentRect, eventData.position, cam, out Vector2 pointerLocal))
         {
-            isDragging = true;
-            card = gameObject;
-            startParent = transform.parent;
-            
-            // 드래그 시작 시 스케일 복원
-            targetScale = defaultScale;
-            transform.localScale = defaultScale;
-            
-            // 추가: 드래그 중에도 항상 맨 위 유지
-            transform.SetAsLastSibling();
+            // dragOffset = rect.anchoredPosition - pointerLocal;
+            dragOffset = Vector2.zero;
+            rect.anchoredPosition = pointerLocal;
         }
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            canvas.transform as RectTransform,
-            Input.mousePosition,
-            canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera,
-            out Vector2 localPoint);
+        if (!isDragging) return;
         
-        rect.anchoredPosition = Input.mousePosition;
+        RectTransform parentRect = rect.parent as RectTransform;
+        Camera cam = (canvas.renderMode == RenderMode.ScreenSpaceOverlay) ? null : canvas.worldCamera;
+
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                parentRect, eventData.position, cam, out Vector2 pointerLocal))
+        {
+            rect.anchoredPosition = pointerLocal + dragOffset;
+        }
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (!isDragging) return;
+        
         transform.SetParent(startParent); // Parent 재설정
         
         // Raycast
@@ -135,30 +216,31 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             
             if (hitObj.CompareTag("Player"))
             {
-                var playerManager = hitObj.GetComponent<PlayerManager>();
+                // var playerManager = hitObj.GetComponent<PlayerManager>();
+                var playerManager = PlayerManager.instance;
 
                 if (playerManager != null && playerManager.currentCost > 0)
                 {
                     Debug.Log($"{hitObj.name}의 현재 체력: {playerManager.currentHP}");
-                    int AP = transform.GetComponent<PlayerCard>().ap;
-                    int DP = transform.GetComponent<PlayerCard>().dp;
-                    int cost = transform.GetComponent<PlayerCard>().cost;
-                    // int cardAP = int.Parse(card.transform.Find("AttackPower/Text").GetComponent<TextMeshProUGUI>().text);
-                    // int cardDP = int.Parse(card.transform.Find("Defense/Text").GetComponent<TextMeshProUGUI>().text);
-                    // playerManager.attackPower += cardAP;
-                    // playerManager.defensePower += cardDP;
+                    int posValue = playerCard.posValue;
+                    int negValue = playerCard.negValue;
+                    int cost = playerCard.cost;
 
                     if (playerManager.currentCost < cost)
                     {
-                        // [TODO] current cost에 따라 사용 가능한 카드만 하이라이트 효과 적용
+                        // [TODO] current cost에 따라 사용 가능한 카드만 하이라이트 효과 적용 + 사용 불가능한 카드의 raycast 해제
                         Debug.Log("현재 코스트보다 큰 카드는 사용 불가");
                     }
                     else
                     {
                         // [TODO] 함수화 & 카드 속성에 따라 다르게 적용
-                        playerManager.attackPower += AP;
-                        playerManager.defensePower += DP;
+                        StatType posType = playerCard.cardData.positiveStatType;
+                        StatType negType = playerCard.cardData.negativeStatType;
+                        
+                        playerManager.AddTurnStatDelta(posType, posValue);
+                        playerManager.AddTurnStatDelta(negType, -negValue);
                         playerManager.currentCost = Mathf.Max(0, playerManager.currentCost - cost);
+                        
                         playerManager.UpdateUI();
                     }
                 }
@@ -176,6 +258,10 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         // 해당 캐릭터의 manager 호출
         isDragging = false;
         rect.anchoredPosition = defaultPosition;
+        
+        var e = transform.localEulerAngles;
+        e.z = cardRotation;
+        transform.localEulerAngles = e;
         
         // 추가: 드래그 종료 후에도 (아직 floating이면) 위에, floating이 해제된 상태면 원래 순서로 복귀
         if (!isFloating)

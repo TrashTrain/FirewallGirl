@@ -15,10 +15,11 @@ MonoBehaviour:
   cardIndex: 2
   cardName: "\uBCF4\uC548 \uC5C5\uB370\uC774\uD2B8"
   cardImage: {fileID: 21300000, guid: d91e93f8e08c23c4b9a1254826a9da94, type: 3}
-  attackPower: 0
-  defensePower: 0
-  healthPoint: 5
-  cost: 2
+  positiveStatType: 3
+  negativeStatType: 2
+  positiveStatValue: 5
+  negativeStatValue: 2
+  cost: 0
   description: "\uCD5C\uC2E0 \uBCF4\uC548 \uC5C5\uB370\uC774\uD2B8\uB85C \uCCB4\uB825\uC774
-    \uD5A5\uC0C1\uB41C\uB2E4.\n\uCD5C\uB300 \uCCB4\uB825 5 \uC99D\uAC00 / \uCD5C\uB300
-    \uCF54\uC2A4\uD2B8 2 \uAC10\uC18C"
+    \uD5A5\uC0C1\uB41C\uB2E4.\n\uCD5C\uB300 \uCCB4\uB825 +5 / \uCD5C\uB300 \uCF54\uC2A4\uD2B8
+    -2"

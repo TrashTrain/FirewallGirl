@@ -19,13 +19,13 @@ public class PlayerCard : MonoBehaviour
     // 카드 설명 추가.
     private string description;
 
-    public int ap
+    public int posValue
     {
         get { return positiveStatValue; }
         set { positiveStatValue = value; }
     }
     
-    public int dp
+    public int negValue
     {
         get { return negativeStatValue; }
         set { negativeStatValue = value; }
