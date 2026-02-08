@@ -173,6 +173,8 @@ public class UpDownMgr : MonoBehaviour
         // 1. 선택한 카드의 데이터를 PlayerManager에 적용
         var selected = currentCardsInfo[index];
         PlayerManager.instance.ApplyCardStats(selected.pos, selected.neg);
+        StageSaveManager.ClearStage(StageSaveManager.CurrentStageIdx);
+
         SceneManager.LoadScene("StageScene");
     }
 

@@ -5,6 +5,7 @@ public static class StageSaveManager
     // 보스 스테이지를 열기 위해 클리어해야 하는 일반 스테이지의 개수
     // (예: 1번~5번 스테이지를 깨야 한다면 5로 설정)
     private const int TOTAL_NORMAL_STAGES = 6;
+    public static int CurrentStageIdx = 0;
 
     // --- 저장 관련 핵심 기능 ---
 
@@ -20,6 +21,20 @@ public static class StageSaveManager
         }
     }
 
+    // 스테이지 초기화
+    public static void ResetStage()
+    {
+        for (int i = 0; i < TOTAL_NORMAL_STAGES; i++)
+        {
+            if (IsStageCleared(i))
+            {
+                PlayerPrefs.SetInt($"Stage_{i}", 0);
+            }
+        }
+        PlayerPrefs.Save(); // 저장 확정
+        Debug.Log($"스테이지 클리어 초기화 완료!");
+    }
+
     // 특정 스테이지를 깼는지 확인
     public static bool IsStageCleared(int stageID)
     {
@@ -33,7 +48,7 @@ public static class StageSaveManager
     public static bool CanEnterBossStage()
     {
         // 1번부터 마지막 일반 스테이지까지 다 깼는지 확인
-        for (int i = 1; i <= TOTAL_NORMAL_STAGES; i++)
+        for (int i = 0; i < TOTAL_NORMAL_STAGES; i++)
         {
             // 하나라도 안 깬 게 있다면 false 반환 (보스 잠김)
             if (!IsStageCleared(i))

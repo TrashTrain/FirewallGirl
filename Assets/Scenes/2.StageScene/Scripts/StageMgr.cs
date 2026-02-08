@@ -36,21 +36,22 @@ public class StageMgr : MonoBehaviour
         Application.targetFrameRate = 60;
         QualitySettings.vSyncCount = 0;
 
-        player = GameObject.Find("Player"); //플레이어 찾기 
+        //player = GameObject.Find("Player"); //플레이어 찾기 
 
 
-        if (BackBtn != null)
-        {
-            BackBtn.onClick.AddListener(BackBtnClick);
-        }
+        //if (BackBtn != null)
+        //{
+        //    BackBtn.onClick.AddListener(BackBtnClick);
+        //}
 
-        if(StageChangeBtn != null)
-        {
-            StageChangeBtn.onClick.AddListener(StageChangeBtnClick);
-        }
+        //if(StageChangeBtn != null)
+        //{
+        //    StageChangeBtn.onClick.AddListener(StageChangeBtnClick);
+        //}
 
-        OnViewStageCnt();
+        OnViewStageIndex();
         SetStageScene();
+        OnViewStageCnt();
 
         //StageOutline = StageImg[StageImg.Length].GetComponent<Outline>();
         //StageOutline.enabled = false;
@@ -62,18 +63,49 @@ public class StageMgr : MonoBehaviour
         stageCntTxt.text = "Stage Cnt : " + stageCnt;
 
     }
-    
+    // 카운팅
+
+
+    // 초기화 함수(임시)
+    public void OnResetStageInfo()
+    {
+        StageSaveManager.ResetStage();
+        clearStageCnt = 0;
+        OnViewStageIndex();
+        SetStageScene();
+        OnViewStageCnt();
+    }
+
+    private void OnViewStageIndex()
+    {
+        for (int i = 0; i < StageButtons.Count; i++)
+        {
+            StageButtons[i].GetComponent<NomalStage>().stageIdx = i;
+        }
+    }
+
     // 새로 시작할때 스테이지씬
     private void SetStageScene()
     {
         foreach(var stage in StageButtons)
         {
-            stage.image.color = Color.red;
-            stage.onClick.AddListener(() =>
+            if (StageSaveManager.IsStageCleared(stage.GetComponent<NomalStage>().stageIdx))
             {
-                OnInStageButton();
-                stage.image.color = GameColors.FromHex("0080EA");
-            } );
+                stage.image.color = GameColors.FromHex("#0080EA");
+                //GameColors.FromHex("0080EA");
+
+                clearStageCnt++;
+            }
+            else
+            {
+                stage.image.color = Color.red;
+                stage.onClick.AddListener(() =>
+                {
+                    StageSaveManager.CurrentStageIdx = stage.GetComponent<NomalStage>().stageIdx;
+                    OnInStageButton();
+                });
+
+            }
         }
         
     }
