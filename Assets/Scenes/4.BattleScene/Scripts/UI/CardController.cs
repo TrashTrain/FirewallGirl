@@ -6,8 +6,24 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
+    public enum CardMode { Battle, DeckBuilding }
+
+    [Header("Card Mode")]
+    public CardMode currentMode = CardMode.Battle;
+
+    [Header("Deck Building Settings")]
+    public bool isSelected = false;
+    public bool isClone = false;
+    public CardController originalCard;
+    private DeckManager deckManager;
+    public float hoverScaleFactor = 1.2f; // 마우스 올렸을 때 확대 배율 (기존 크기 대비)
+    private Vector3 originScale;
+    private bool isHoveringDeckBuilder = false;
+    private bool isInteractable = true;
+    
+    [Header("Battle Settings")]
     public float floatOffset = 100f;
     public float floatSpeed = 10f;
     private float scaleUpFactor = 1.5f;
@@ -26,11 +42,12 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public bool isDragging = false;
 
     GameObject cardDeck;
-    private CardDeckController  cardDeckController;
+    private CardDeckController cardDeckController;
     private PlayerCard playerCard;
 
     public static GameObject card;
-    public Canvas canvas;
+    [SerializeField]
+    private Canvas canvas;
     private Image background;
     private Color bgOriginColor;
 
@@ -39,11 +56,39 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     // 추가: 원래 렌더 순서(형제 인덱스) 저장
     private int originalSiblingIndex;
     
+    public void SetScale(float scaleValue)
+    {
+        // 1. 본래 크기 갱신
+        originScale = Vector3.one * scaleValue;
+        
+        // 2. 현재 마우스가 올라가 있지 않다면 즉시 적용
+        // (만약 마우스가 올라가 있는 상태라면, OnPointerExit 때 이 값으로 돌아감)
+        if (!isHoveringDeckBuilder) 
+        {
+            transform.localScale = originScale;
+        }
+    }
+    
     void Start()
     {
-        cardDeck = GameObject.Find("CardPanel");
-        cardDeckController = cardDeck.GetComponent<CardDeckController>();
         rect = GetComponent<RectTransform>();
+        playerCard = GetComponent<PlayerCard>();
+
+        canvas = GetComponentInParent<Canvas>();
+        canvas.overrideSorting = false;
+
+        if (currentMode == CardMode.Battle)
+        {
+            cardDeck = GameObject.Find("CardPanel");
+            if (cardDeck != null)
+            {
+                cardDeckController = cardDeck.GetComponent<CardDeckController>();
+            }
+        }
+        else if (currentMode == CardMode.DeckBuilding)
+        {
+            deckManager = FindObjectOfType<DeckManager>();
+        }
         
         Transform bgTr = transform.Find("Background");
         if (bgTr != null)
@@ -55,11 +100,7 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             }
         }
         
-        playerCard = GetComponent<PlayerCard>();
-        
         defaultPosition = transform.position;
-        // defaultPosition = rect.anchoredPosition;
-        // Debug.Log(transform.name + " 시작 위치: " + defaultPosition);
         targetPosition = defaultPosition;
         
         // 스케일 초기값 저장
@@ -68,19 +109,30 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         
         // 추가: 시작 시 원래 sibling index 저장
         originalSiblingIndex = transform.GetSiblingIndex();
-
         cardRotation = transform.localEulerAngles.z;
+        
+        if (originScale == Vector3.zero)
+        {
+            originScale = transform.localScale;
+        }
+    }
+
+    // 덱 빌딩 모드 초기화용 함수 (DeckManager에서 카드 생성 직후 호출)
+    public void SetupForDeckBuilding(DeckManager manager)
+    {
+        currentMode = CardMode.DeckBuilding;
+        deckManager = manager;
     }
 
     private void Update()
     {
-        if (!isDragging)
+        if (currentMode == CardMode.Battle && !isDragging)
         {
             transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * floatSpeed);
             transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * scaleSpeed);
         }
 
-        if (PlayerManager.instance != null && playerCard != null)
+        if (currentMode == CardMode.Battle && PlayerManager.instance != null && playerCard != null)
         {
             SetCardUsableVisual(PlayerManager.instance.currentCost >= playerCard.cost);
         }
@@ -102,18 +154,43 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             background.color = color;
         }
     }
+    
+    public void SetCollectionState(bool isActive)
+    {
+        isInteractable = isActive;
+        isSelected = !isActive; // 활성 상태면 선택 안 된 것, 비활성이면 선택된 것
 
+        if (background != null)
+        {
+            // 비활성(선택됨)이면 회색, 아니면 원래 색
+            background.color = isActive ? bgOriginColor : Color.gray;
+        }
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        // Battle 모드면 클릭 무시
+        if (currentMode == CardMode.Battle) return;
+
+        // DeckBuilding 모드면 매니저에게 알림
+        if (currentMode == CardMode.DeckBuilding && deckManager != null)
+        {
+            if (!isInteractable) return;
+            
+            deckManager.OnCardClicked(this);
+        }
+    }
     
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (cardDeckController == null) return;
-        if (!cardDeckController.isSpread) return;
-        if (eventData.pointerEnter != null && 
-            eventData.pointerEnter.CompareTag("Card"))
+        if (currentMode == CardMode.Battle)
         {
+            if (cardDeckController == null) return;
+            if (!cardDeckController.isSpread) return;
+            
             if (!isFloating)
             {
-                // 추가: 원래 순서 저장 후 맨 위로 올리기
+                // 원래 순서 저장 후 맨 위로 올리기
                 originalSiblingIndex = transform.GetSiblingIndex();
                 transform.SetAsLastSibling();
                 
@@ -126,30 +203,74 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
                 
                 isFloating = true;
             }
+
+            return;
+        }
+
+        if (currentMode == CardMode.DeckBuilding)
+        {
+            if (!isInteractable) return;
+            if (isClone) return;
+            
+            isHoveringDeckBuilder = true;
+
+            if (originScale == Vector3.zero)
+            {
+                originScale = transform.localScale;
+            }
+            
+            transform.localScale = originScale * hoverScaleFactor;
+
+            if (canvas != null)
+            {
+                canvas.overrideSorting = true;
+                canvas.sortingOrder = 100;
+            }
         }
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (isDragging) return;
-        
-        if (isFloating)
+        if (currentMode == CardMode.Battle)
         {
-            targetPosition = defaultPosition;
-            targetScale = defaultScale;
-            var e = transform.localEulerAngles;
-            e.z = cardRotation;
-            transform.localEulerAngles = e;
+            if (isDragging) return;
             
-            isFloating = false;
+            if (isFloating)
+            {
+                targetPosition = defaultPosition;
+                targetScale = defaultScale;
+                var e = transform.localEulerAngles;
+                e.z = cardRotation;
+                transform.localEulerAngles = e;
             
-            // 추가: 원래 순서로 복구
-            transform.SetSiblingIndex(originalSiblingIndex);
+                isFloating = false;
+            
+                // 추가: 원래 순서로 복구
+                transform.SetSiblingIndex(originalSiblingIndex);
+            }
+            
+            return;
+        }
+
+        if (currentMode == CardMode.DeckBuilding)
+        {
+            if (!isHoveringDeckBuilder) return;
+            
+            isHoveringDeckBuilder = false;
+            
+            transform.localScale = originScale;
+            
+            if (canvas != null)
+            {
+                canvas.overrideSorting = false;
+                canvas.sortingOrder = 0;
+            }
         }
     }
     
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (currentMode == CardMode.DeckBuilding) return;
         if (!isFloating) return;
         if (PlayerManager.instance == null) return;
         if (PlayerManager.instance.currentCost < playerCard.cost) return;
@@ -185,6 +306,7 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (currentMode == CardMode.DeckBuilding) return;
         if (!isDragging) return;
         
         RectTransform parentRect = rect.parent as RectTransform;
@@ -199,6 +321,7 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (currentMode == CardMode.DeckBuilding) return;
         if (!isDragging) return;
         
         transform.SetParent(startParent); // Parent 재설정

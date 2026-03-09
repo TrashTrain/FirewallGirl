@@ -11,6 +11,11 @@ public class MainScreenBG : MonoBehaviour
         SceneLoader.LoadStageScene();
     }
 
+    public void LoadDeckBuildingScene()
+    {
+        SceneLoader.LoadDeckBuildingScene();
+    }
+
     public void OnSettingPanel()
     {
         if (isSettingPanel)
