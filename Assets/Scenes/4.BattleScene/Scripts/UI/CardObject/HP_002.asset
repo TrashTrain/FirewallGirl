@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2e223d516d3e7d4ba86a8783867daa6, type: 3}
   m_Name: HP_002
   m_EditorClassIdentifier: 
-  cardIndex: 2
+  cardIndex: 6
   cardName: "\uAE34\uAE09 \uBCF5\uAD6C"
   cardImage: {fileID: 21300000, guid: d91e93f8e08c23c4b9a1254826a9da94, type: 3}
   positiveStatType: 3

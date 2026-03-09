@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b2e223d516d3e7d4ba86a8783867daa6, type: 3}
-  m_Name: DEF_001
+  m_Name: COST_002
   m_EditorClassIdentifier: 
-  cardIndex: 3
-  cardName: "\uBC29\uD654\uBCBD \uC124\uCE58"
-  cardImage: {fileID: 21300000, guid: d2f5dbeaf9828e24c8e8f552ec5610ec, type: 3}
-  positiveStatType: 1
-  negativeStatType: 3
+  cardIndex: 7
+  cardName: "\uB9AC\uC18C\uC2A4 \uCD5C\uC801\uD654"
+  cardImage: {fileID: 21300000, guid: 0020fafd005576a4c91470368a60380b, type: 3}
+  positiveStatType: 2
+  negativeStatType: 0
   positiveStatValue: 2
   negativeStatValue: 3
-  cost: 2
-  description: "\uBC29\uD654\uBCBD\uC744 \uC124\uCE58\uD574 \uD53C\uD574\uB97C \uC904\uC778\uB2E4.\n\uBC29\uC5B4\uB825
-    +2 / \uD68C\uD53C\uB825 -3"
+  cost: 0
+  description: "\uC2DC\uC2A4\uD15C \uB9AC\uC18C\uC2A4\uB97C \uD655\uBCF4\uD55C\uB2E4.\n\uCF54\uC2A4\uD2B8
+    +2 / \uACF5\uACA9\uB825 -3"

@@ -10,4 +10,9 @@ public static class SceneLoader
         SceneManager.LoadScene("StageScene");
     }
 
+    public static void LoadDeckBuildingScene()
+    {
+        SceneManager.LoadScene("DeckBuildingScene");
+    }
+
 }

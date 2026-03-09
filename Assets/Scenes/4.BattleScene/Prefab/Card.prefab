@@ -88,7 +88,7 @@ GameObject:
   - component: {fileID: 9040190393381310516}
   m_Layer: 5
   m_Name: Background
-  m_TagString: Untagged
+  m_TagString: Card
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -504,6 +504,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2180615766442653880}
   - component: {fileID: 789818611153621196}
+  - component: {fileID: 6991720988731707565}
   m_Layer: 5
   m_Name: Card
   m_TagString: Untagged
@@ -551,6 +552,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardData: {fileID: 0}
   costValue: 0
+--- !u!114 &6991720988731707565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4631881173365916910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 070e8aaa4b9ebdc43b3bc22be077a53d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentMode: 0
+  isSelected: 0
+  isClone: 0
+  originalCard: {fileID: 0}
+  hoverScaleFactor: 1.2
+  floatOffset: 100
+  floatSpeed: 10
+  isDragging: 0
+  canvas: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1 &4679423680369370150
 GameObject:
   m_ObjectHideFlags: 0
@@ -626,8 +649,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
