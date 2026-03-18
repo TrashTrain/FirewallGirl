@@ -5,12 +5,6 @@ using UnityEngine;
 
 public class Troy : Virus
 {
-    void Start()
-    {
-        Debug.Log("InTroy");
-        InitData();
-
-    }
 
     //void Update()
     //{

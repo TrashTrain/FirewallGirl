@@ -86,7 +86,7 @@ public class Virus : MonoBehaviour
         }
 
         InitData();
-
+        Debug.Log("asdfasdf");
         // 시작할 때 아이콘 나오도록
         RollNextActionAndUpdateIcon();
     }
