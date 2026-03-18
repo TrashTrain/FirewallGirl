@@ -372,7 +372,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 854181112}
         m_TargetAssemblyTypeName: MainScreenBG, Assembly-CSharp
-        m_MethodName: LoadStageScene
+        m_MethodName: LoadDeckBuildingScene
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

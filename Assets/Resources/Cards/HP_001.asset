@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardIndex: 5
   cardName: "\uBCF4\uC548 \uC5C5\uB370\uC774\uD2B8"
-  cardImage: {fileID: 21300000, guid: d91e93f8e08c23c4b9a1254826a9da94, type: 3}
+  cardImage: {fileID: 21300000, guid: e4dea00266a1a43f88512fc10679e663, type: 3}
   positiveStatType: 3
   negativeStatType: 2
   positiveStatValue: 5
