@@ -46,7 +46,7 @@ public class CardMgr : MonoBehaviour
         }
         else
         {
-            Destroy(gameObject);
+            Destroy(this);
         }
 
         foreach (CardObject card in CardObject)

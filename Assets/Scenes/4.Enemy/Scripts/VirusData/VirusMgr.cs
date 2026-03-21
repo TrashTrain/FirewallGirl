@@ -19,7 +19,7 @@ public class VirusMgr : MonoBehaviour
         }
         else
         {
-            Destroy(gameObject);
+            Destroy(this);
         }
     }
 
