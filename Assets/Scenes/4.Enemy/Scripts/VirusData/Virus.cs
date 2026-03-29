@@ -23,7 +23,7 @@ public class Virus : MonoBehaviour
 
     public EnemyUIController enemyUIController;
 
-    public State NextAction { get; private set; }
+    public State NextAction { get; protected set; }
 
     private Coroutine _actionCo;
     private Vector3 _originPos;
@@ -67,6 +67,9 @@ public class Virus : MonoBehaviour
         Atk,
         Def,
         Sup,
+        Ready,      // 폭발 준비
+        Bomb,
+        Debuf,
         Death
     }
 
@@ -104,10 +107,14 @@ public class Virus : MonoBehaviour
     public void RollNextActionAndUpdateIcon()
     {
         RollNextAction();
-        enemyUIController.state.UpdateStateImage(NextAction);
+
+        if (enemyUIController != null)
+        {
+            enemyUIController.state.UpdateStateImage(NextAction);
+        }
     }
 
-    private void RollNextAction()
+    protected virtual void RollNextAction()
     {
         GetRandState();
         NextAction = (State)RandState;
@@ -222,21 +229,21 @@ public class Virus : MonoBehaviour
     {
 
         // 행동 시작
-        yield return StartCoroutine(CoRunStateAction(NextAction));
+        yield return CoRunStateAction(NextAction);
     }
 
-    private IEnumerator CoRunStateAction(State s)
+    protected virtual IEnumerator CoRunStateAction(State s)
     {
         switch (s)
         {
             case State.Atk:
-                yield return StartCoroutine(CoAttack());
+                yield return CoAttack();
                 break;
             case State.Sup:
-                yield return StartCoroutine(CoSupport());
+                yield return CoSupport();
                 break;
             case State.Def:
-                yield return StartCoroutine(CoDefend());
+                yield return CoDefend();
                 break;
             case State.Death:
                 Destroy(gameObject);
@@ -282,7 +289,7 @@ public class Virus : MonoBehaviour
         return remaining;
     }
     // 죽음 처리를 담당하는 함수 추가
-    private void OnDeath()
+    protected virtual void OnDeath()
     {
         VirusSpawn.instance.SetDiscountVirusCount();
         

@@ -1,8 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+
+// [추가] 여러 턴 동안 유지되는 상태 이상을 관리하기 위한 클래스
+[System.Serializable]
+public class StatModifier
+{
+    public StatType statType;
+    public int amount;
+    public int durationTurns; // 남은 유지 턴 수
+}
 
 public class PlayerManager : MonoBehaviour
 {
@@ -13,16 +21,20 @@ public class PlayerManager : MonoBehaviour
     public int totalCost;
     public int attackPower;
     public int defensePower;
-    
+
+    // GetFinalStat 함수가 업데이트되어 이제 activeModifiers도 반영합니다.
     public int AttackPower => GetFinalStat(StatType.Attack);
     public int DefensePower => GetFinalStat(StatType.Defense);
     public int MaxHP => GetFinalStat(StatType.Health);
     public int TotalCost => GetFinalStat(StatType.Cost);
     public int Evasion => GetFinalStat(StatType.Evasion);
-    
 
-    private int[] baseStats; // 턴 종료 전 기본 스탯
-    private int[] turnDeltaStats; // 턴 종료 전까지 적용될 임시 스탯
+    private int[] baseStats; // 기본 스탯
+    private int[] turnDeltaStats; // 1턴(이번 턴) 임시 스탯
+
+    // [추가] 다중 턴 상태이상 리스트 & 방어도 획득 불가 턴 카운터
+    public List<StatModifier> activeModifiers = new List<StatModifier>();
+    public int cannotGainDefenseTurns = 0;
 
     private Vector3 _originPos;
 
@@ -31,13 +43,13 @@ public class PlayerManager : MonoBehaviour
     public CostUI costUI;
 
     public static PlayerManager instance;
-    
+
     private bool _running = false;
 
     private void Awake()
     {
         int statCount = Enum.GetNames(typeof(StatType)).Length;
-        
+
         baseStats = new int[statCount];
         turnDeltaStats = new int[statCount];
 
@@ -49,32 +61,66 @@ public class PlayerManager : MonoBehaviour
 
         currentHP = baseStats[(int)StatType.Health];
         currentCost = baseStats[(int)StatType.Cost];
-        
+
         ResetTurnDeltaStats();
         UpdateUI();
-        
+
         _originPos = transform.position;
-        
+
         if (instance == null)
         {
             instance = this;
-            // 씬이 바뀌어도 이 오브젝트는 파괴되지 않습니다.
             DontDestroyOnLoad(gameObject);
         }
         else
         {
-            Destroy(gameObject); // 중복 생성 방지
+            Destroy(gameObject);
             return;
         }
     }
-    
+
     public int GetBaseStat(StatType type) => baseStats[(int)type];
     public void SetBaseStat(StatType type, int value) => baseStats[(int)type] = value;
 
     public int GetFinalStat(StatType type)
     {
         int idx = (int)type;
-        return Mathf.Max(0, baseStats[idx] + turnDeltaStats[idx]);
+        int multiTurnBonus = 0;
+
+        // [추가] 유지 중인 다중 턴 버프/디버프를 모두 합산합니다.
+        foreach (var mod in activeModifiers)
+        {
+            if (mod.statType == type) multiTurnBonus += mod.amount;
+        }
+
+        return Mathf.Max(0, baseStats[idx] + turnDeltaStats[idx] + multiTurnBonus);
+    }
+
+    // [추가] 외부(ErrorVirus 등)에서 다중 턴 디버프를 걸 때 사용합니다.
+    public void AddMultiTurnStat(StatType type, int amount, int duration)
+    {
+        activeModifiers.Add(new StatModifier { statType = type, amount = amount, durationTurns = duration });
+        UpdateUI();
+    }
+
+    // [추가] 턴 종료/시작 시 호출하여 디버프 지속 시간을 깎습니다.
+    public void OnTurnEndProcess()
+    {
+        // 방어 불가 턴 감소
+        if (cannotGainDefenseTurns > 0) cannotGainDefenseTurns--;
+
+        // 역순으로 순회하며 기간이 다 된 디버프 제거
+        for (int i = activeModifiers.Count - 1; i >= 0; i--)
+        {
+            activeModifiers[i].durationTurns--;
+            if (activeModifiers[i].durationTurns <= 0)
+            {
+                activeModifiers.RemoveAt(i);
+            }
+        }
+
+        ResetTurnDeltaStats();
+        UpdateUI();
     }
 
     public void ResetTurnDeltaStats()
@@ -90,50 +136,48 @@ public class PlayerManager : MonoBehaviour
     {
         switch (stat)
         {
-            case StatType.Attack or StatType.Defense:
-                // 공격력은 0보다 작아질 수 없음
+            case StatType.Attack:
+                turnDeltaStats[(int)stat] += value;
+                break;
+
+            case StatType.Defense:
+                // [수정] 방어력 획득 불가 상태라면 긍정적인(증가) 효과를 무시합니다.
+                if (value > 0 && cannotGainDefenseTurns > 0)
+                {
+                    Debug.Log("방어력 획득 불가 상태로 인해 방어도 증가가 차단되었습니다.");
+                    break;
+                }
                 turnDeltaStats[(int)stat] += value;
                 break;
 
             case StatType.Health:
-                if (value > 0) // 긍정 효과 (+)
+                if (value > 0)
                 {
-                    // 최대 체력과 현재 체력을 동시에 증가시킴 (예: 80/100 -> 83/103)
                     turnDeltaStats[(int)stat] += value;
                     currentHP += value;
                 }
-                else // 부정 효과 (-)
+                else
                 {
-                    // 체력 감소 시 0보다 작아질 수 없음
                     currentHP = Mathf.Max(0, currentHP + value);
-                    // (선택사항) 최대 체력도 깎고 싶다면: maxHP = Mathf.Max(1, maxHP + amount);
                 }
                 break;
 
             case StatType.Cost:
-                // 코스트 전체 총량 변경
                 turnDeltaStats[(int)stat] += value;
-                // 현재 코스트도 0보다 작아질 수 없음
                 currentCost = Mathf.Max(0, currentCost + value);
                 break;
 
             case StatType.Evasion:
-                // 회피율(필요 시 변수 추가)도 0보다 작아질 수 없음
-                // evasionRate = Mathf.Max(0, evasionRate + amount);
                 break;
         }
 
         UpdateUI();
     }
 
-    // 카드의 스탯을 실제로 반영하는 함수 (증강체)
     public void ApplyCardStats(UpDownMgr.GenerateCard pos, UpDownMgr.GenerateCard neg)
     {
-        // 긍정 효과 적용
         ModifyStat(pos.stat, pos.valueAmount);
-        // 부정 효과 적용 (GenerateCard의 ToString이나 내부 로직에 따라 -값이 필요함)
         ModifyStat(neg.stat, -neg.valueAmount);
-
         UpdateUI();
     }
 
@@ -142,53 +186,44 @@ public class PlayerManager : MonoBehaviour
         switch (stat)
         {
             case StatType.Attack:
-                // 공격력은 0보다 작아질 수 없음
-                // attackPower = Mathf.Max(0, attackPower += amount);
                 baseStats[(int)stat] = Mathf.Max(0, baseStats[(int)stat] += amount);
                 break;
 
             case StatType.Defense:
-                // 방어력은 0보다 작아질 수 없음
-                // defensePower = Mathf.Max(0, defensePower += amount);
+                // [수정] 영구 스탯 변경 시에도 방어력 획득 불가 플래그를 체크합니다.
+                if (amount > 0 && cannotGainDefenseTurns > 0)
+                {
+                    Debug.Log("방어력 획득 불가 상태입니다.");
+                    break;
+                }
                 baseStats[(int)stat] = Mathf.Max(0, baseStats[(int)stat] += amount);
                 break;
 
             case StatType.Health:
-                if (amount > 0) // 긍정 효과 (+)
+                if (amount > 0)
                 {
-                    // 최대 체력과 현재 체력을 동시에 증가시킴 (예: 80/100 -> 83/103)
                     baseStats[(int)stat] += amount;
-                    // maxHP += amount;
                     currentHP += amount;
                 }
-                else // 부정 효과 (-)
+                else
                 {
-                    // 체력 감소 시 0보다 작아질 수 없음
                     currentHP = Mathf.Max(0, currentHP + amount);
-                    // (선택사항) 최대 체력도 깎고 싶다면: maxHP = Mathf.Max(1, maxHP + amount);
                 }
                 break;
 
             case StatType.Cost:
-                // 코스트 전체 총량 변경
                 baseStats[(int)stat] = Mathf.Max(0, baseStats[(int)stat] + amount);
-                // 현재 코스트도 0보다 작아질 수 없음
                 currentCost = Mathf.Max(0, currentCost + amount);
                 break;
 
             case StatType.Evasion:
-                // 회피율(필요 시 변수 추가)도 0보다 작아질 수 없음
-                // evasionRate = Mathf.Max(0, evasionRate + amount);
                 break;
         }
     }
 
     public void TakeDamage(int damage)
     {
-        // 방어력을 뺀 최종 데미지 계산 (방어력이 더 높더라도 최소 0)
         int finalDamage = Mathf.Max(0, damage - DefensePower);
-
-        // 체력 감소 (0 미만 제한)
         currentHP = Mathf.Max(0, currentHP - finalDamage);
 
         Debug.Log($"받은 데미지: {finalDamage}, 남은 체력: {currentHP}");
@@ -197,23 +232,14 @@ public class PlayerManager : MonoBehaviour
 
         if (currentHP <= 0)
         {
-            // GameManager.Instance.GameOver(); // 게임 오버 로직 호출
+            // GameManager.Instance.GameOver(); 
         }
     }
 
     public void StartPlayerTurn()
     {
-        if (_running)
-        {
-            return;
-        }
-
-        if (!GameManager.PlayerTurn)
-        {
-            return;
-        }
-        
-        // [ToDo] 턴 시작 전 카드 적용으로 증감된 임시 스탯 저장 (턴 종료 후 초기화)
+        if (_running) return;
+        if (!GameManager.PlayerTurn) return;
 
         StartCoroutine(CoPlayerTurnSequence());
     }
@@ -224,50 +250,43 @@ public class PlayerManager : MonoBehaviour
         _running = true;
 
         int remainingDamage = AttackPower;
-        
+
         Virus[] enemies = FindObjectsOfType<Virus>();
         System.Array.Sort(enemies, (a, b) => a.spawnNum.CompareTo(b.spawnNum));
 
         for (int i = 0; i < enemies.Length; i++)
         {
-            if (remainingDamage <= 0)
-            {
-                break;
-            }
-            
-            Virus enemy =  enemies[i];
+            if (remainingDamage <= 0) break;
+
+            Virus enemy = enemies[i];
             if (enemy == null) continue;
             if (enemy.virusData.CurHpCnt <= 0) continue;
 
             yield return StartCoroutine(CoAttack(enemy));
-            
+
             remainingDamage = enemy.ApplyDamage(remainingDamage);
         }
-        
+
         _running = false;
         GameManager.PlayerTurn = false;
-        
+
         Debug.Log("플레이어 턴 종료");
     }
 
     protected IEnumerator CoAttack(Virus enemy)
     {
-        // 목표: 적 위치까지 갔다가 복귀
         Transform enemyTr = enemy.transform;
         if (enemyTr == null) yield break;
 
         Vector3 start = _originPos;
         Vector3 target = enemyTr.position;
-
         target.y = start.y;
 
         yield return LerpPos(start, target, 0.3f);
-        
         yield return new WaitForSeconds(0.1f);
-        
         transform.position = start;
     }
-    
+
     private IEnumerator LerpPos(Vector3 start, Vector3 target, float dur)
     {
         float t = 0f;
@@ -285,12 +304,6 @@ public class PlayerManager : MonoBehaviour
 
     public void UpdateUI()
     {
-        // 씬이 바뀌면 UI 참조가 끊길 수 있으므로 체크 후 업데이트
-        // if (hpBar != null) hpBar.UpdateHPBar(currentHP, maxHP);
-        // if (powerUI != null) powerUI.UpdateAttackPowerUI(attackPower);
-        // if (powerUI != null) powerUI.UpdateDefensePowerUI(defensePower);
-        // if (costUI != null) costUI.UpdateCostUI(currentCost, totalCost);
-        
         if (hpBar != null) hpBar.UpdateHPBar(currentHP, MaxHP);
         if (powerUI != null) powerUI.UpdateAttackPowerUI(AttackPower);
         if (powerUI != null) powerUI.UpdateDefensePowerUI(DefensePower);

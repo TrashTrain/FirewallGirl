@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e028157dd81b6946951edc677004ac1, type: 3}
+  m_Name: BombVirus
+  m_EditorClassIdentifier: 
+  virusIndex: 102
+  virusImage: {fileID: 21300000, guid: 26e25f95a3dc4bf4ab9cd9a0b32447f3, type: 3}
+  virusName: "\uBC14\uC774\uB7EC\uC2A4 \uD30C\uC77C"
+  virusAtk: 0
+  virusDef: 5
+  virusHp: 5
+  AttackType: 0

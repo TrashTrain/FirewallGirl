@@ -319,6 +319,8 @@ MonoBehaviour:
   prefabVirus:
   - {fileID: 1786381171166047068, guid: fd7260cb9cc55e446b847d9bc24c923a, type: 3}
   - {fileID: 7750796116713643236, guid: ae71dc134fe945b40a5c035a1043964d, type: 3}
+  - {fileID: 5368261607086323737, guid: 8686617d91b6cd94ebe01dd85a1682b3, type: 3}
+  - {fileID: 7422016813165637500, guid: 4b55001154b3bef46a25427179ae0c77, type: 3}
   virusCnt: 0
 --- !u!114 &119638774 stripped
 MonoBehaviour:
@@ -2006,6 +2008,7 @@ GameObject:
   - component: {fileID: 815336198}
   - component: {fileID: 815336197}
   - component: {fileID: 815336196}
+  - component: {fileID: 815336199}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -2087,6 +2090,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &815336199
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 815336195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a6cd2aee7f6a854cb786a3071d4f741, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &854836674
 GameObject:
   m_ObjectHideFlags: 0
@@ -2800,6 +2815,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cardPrefab: {fileID: 4631881173365916910, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
+  cardScale: 0.7
   fanSpacing: 80
   fanYDrop: 15
   fanAngleSpacing: 5
@@ -3258,6 +3274,8 @@ MonoBehaviour:
   totalCost: 5
   attackPower: 5
   defensePower: 5
+  activeModifiers: []
+  cannotGainDefenseTurns: 0
   hpBar: {fileID: 373234982}
   powerUI: {fileID: 854836676}
   costUI: {fileID: 854836675}
@@ -4521,6 +4539,8 @@ MonoBehaviour:
   viruses:
   - {fileID: 11400000, guid: 0b5834fdc55122a409221512e7846618, type: 2}
   - {fileID: 11400000, guid: 43c76ea980f87d445bb867d365bd3ba4, type: 2}
+  - {fileID: 11400000, guid: 170f3a3923984ef4bac3af0b22cae038, type: 2}
+  - {fileID: 11400000, guid: b114e4bf9a7c4fd4a88c8ec2ec395774, type: 2}
 --- !u!114 &1686374161
 MonoBehaviour:
   m_ObjectHideFlags: 0

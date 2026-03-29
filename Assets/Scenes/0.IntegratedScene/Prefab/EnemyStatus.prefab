@@ -1007,10 +1007,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75e02bfdb7fa4274891875d688dd0fcf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stateImages:
-  - {fileID: 21300000, guid: c876508700c7fbc46a053127c53fc4f7, type: 3}
-  - {fileID: 21300000, guid: 74978ab35d69d184d978cf7e937a028e, type: 3}
-  - {fileID: 21300000, guid: 9eb52fc80be92c349b5218d77eb1dfb2, type: 3}
+  stateIcons:
+  - state: 1
+    iconSprite: {fileID: 21300000, guid: 7bc8f3343f2eea942ba1d058f6b2e782, type: 3}
+  - state: 2
+    iconSprite: {fileID: 21300000, guid: 0ac4114d096854f41b98677566cbb796, type: 3}
+  - state: 3
+    iconSprite: {fileID: 21300000, guid: bcfdeaa78d19cb340b4c71f7ac32478e, type: 3}
+  - state: 6
+    iconSprite: {fileID: 21300000, guid: b8da070defe9be249a5477aa428f8165, type: 3}
+  - state: 4
+    iconSprite: {fileID: 21300000, guid: f586a5b805d957740b915ca93f2084de, type: 3}
+  - state: 5
+    iconSprite: {fileID: 21300000, guid: 5ee536dd27ec29e4bb5db7eed9401da0, type: 3}
 --- !u!1 &8476003739890128113
 GameObject:
   m_ObjectHideFlags: 0

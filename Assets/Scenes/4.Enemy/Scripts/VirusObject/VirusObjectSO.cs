@@ -9,9 +9,8 @@ public enum AttackType
 
 public enum VirusKind
 {
-    Troy,
-    Worm,
-    SpyWare,
+    Normal,         // 공격, 수비, 버프
+    NotNormal,      // 자폭, 소환 등 특수 기믹
     Elite
 }
 
