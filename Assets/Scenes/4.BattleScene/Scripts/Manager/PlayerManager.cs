@@ -118,6 +118,13 @@ public class PlayerManager : MonoBehaviour
                 activeModifiers.RemoveAt(i);
             }
         }
+        
+        // 활성화된 모든 카드의 쿨타임 1씩 감소
+        PlayerCard[] activeCards = FindObjectsOfType<PlayerCard>();
+        foreach (PlayerCard card in activeCards)
+        {
+            card.DecreaseCooldown();
+        }
 
         ResetTurnDeltaStats();
         UpdateUI();

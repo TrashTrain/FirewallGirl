@@ -134,7 +134,9 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
         if (currentMode == CardMode.Battle && PlayerManager.instance != null && playerCard != null)
         {
-            SetCardUsableVisual(PlayerManager.instance.currentCost >= playerCard.cost);
+            bool isUsable = (PlayerManager.instance.currentCost >= playerCard.cost) &&
+                            (playerCard.currentCoolTime == 0);
+            SetCardUsableVisual(isUsable);
         }
     }
     
@@ -273,7 +275,7 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         if (currentMode == CardMode.DeckBuilding) return;
         if (!isFloating) return;
         if (PlayerManager.instance == null) return;
-        if (PlayerManager.instance.currentCost < playerCard.cost) return;
+        if (PlayerManager.instance.currentCost < playerCard.cost || playerCard.currentCoolTime > 0) return;
 
         isDragging = true;
         card = gameObject;
@@ -351,18 +353,26 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
                     if (playerManager.currentCost < cost)
                     {
-                        // [TODO] current cost에 따라 사용 가능한 카드만 하이라이트 효과 적용 + 사용 불가능한 카드의 raycast 해제
                         Debug.Log("현재 코스트보다 큰 카드는 사용 불가");
                     }
                     else
                     {
-                        // [TODO] 함수화 & 카드 속성에 따라 다르게 적용
                         StatType posType = playerCard.cardData.positiveStatType;
                         StatType negType = playerCard.cardData.negativeStatType;
                         
                         playerManager.AddTurnStatDelta(posType, posValue);
                         playerManager.AddTurnStatDelta(negType, -negValue);
                         playerManager.currentCost = Mathf.Max(0, playerManager.currentCost - cost);
+
+                        if (playerCard.cardData.coolTime > 0)
+                        {
+                            playerCard.currentCoolTime = playerCard.cardData.coolTime + 1;
+                        }
+                        else
+                        {
+                            playerCard.currentCoolTime = 0;
+                        }
+                        
                         
                         playerManager.UpdateUI();
                     }
