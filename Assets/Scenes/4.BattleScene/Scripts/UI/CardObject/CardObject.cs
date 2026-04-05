@@ -17,6 +17,7 @@ public class CardObject : ScriptableObject
     public int negativeStatValue;
     
     public int cost;
+    public int coolTime = 0;
     
     [TextArea]
     public string description;

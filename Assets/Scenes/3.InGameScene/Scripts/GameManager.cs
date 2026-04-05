@@ -16,6 +16,12 @@ public class GameManager : MonoBehaviour
         Instance = this;
         PlayerTurn = true;
         
+        // 게임 시작 시 첫 턴 전처리
+        if (PlayerManager.instance != null)
+        {
+            PlayerManager.instance.OnTurnEndProcess();
+        }
+        
 
         //checkTurn = PlayerTurn;
     }

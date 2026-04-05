@@ -19,6 +19,8 @@ public class PlayerCard : MonoBehaviour
     // 카드 설명 추가.
     private string description;
 
+    [HideInInspector] public int currentCoolTime = 0;
+
     public int posValue
     {
         get { return positiveStatValue; }
@@ -87,5 +89,13 @@ public class PlayerCard : MonoBehaviour
         
         costText.text = costValue.ToString();
         descriptionText.text = cardData.description;
+    }
+    
+    public void DecreaseCooldown()
+    {
+        if (currentCoolTime > 0)
+        {
+            currentCoolTime--;
+        }
     }
 }
