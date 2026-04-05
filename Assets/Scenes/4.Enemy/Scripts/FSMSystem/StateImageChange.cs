@@ -36,6 +36,7 @@ public class StateImageChange : MonoBehaviour
         {
             if (mapping.state == state)
             {
+                Debug.Log("mapping state : " + mapping.state);
                 _imageComponent.sprite = mapping.iconSprite;
                 return; // 찾았으니 함수 종료
             }

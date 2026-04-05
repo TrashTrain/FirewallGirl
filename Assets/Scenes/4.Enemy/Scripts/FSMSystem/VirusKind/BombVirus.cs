@@ -21,9 +21,9 @@ public class BombVirus : Virus
             // 2턴째: 폭발 카운트다운 진행 중
             NextAction = State.Ready;
         }
-        else if (_turnCount >= 2)
+        else if (_turnCount >= 3)
         {
-            // 3턴째: 마침내 폭발
+            // 4턴째: 마침내 폭발
             NextAction = State.Bomb;
         }
     }

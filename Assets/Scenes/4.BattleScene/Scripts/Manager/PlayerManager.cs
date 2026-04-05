@@ -46,6 +46,10 @@ public class PlayerManager : MonoBehaviour
 
     private bool _running = false;
 
+    [Header("Debuff States")]
+    public int lagDebuffTurns = 0; // Lag 디버프 유지 턴 수 (0이면 안 걸린 상태)
+    public int lagDebuffValue = 1; // 쿨타임을 얼마나 증가시킬 것인가 (기본 1)
+
     private void Awake()
     {
         int statCount = Enum.GetNames(typeof(StatType)).Length;
@@ -108,6 +112,9 @@ public class PlayerManager : MonoBehaviour
     {
         // 방어 불가 턴 감소
         if (cannotGainDefenseTurns > 0) cannotGainDefenseTurns--;
+
+        // 💡 [추가] 쿨타임 증가(Lag) 디버프 턴 감소
+        if (lagDebuffTurns > 0) lagDebuffTurns--;
 
         // 역순으로 순회하며 기간이 다 된 디버프 제거
         for (int i = activeModifiers.Count - 1; i >= 0; i--)

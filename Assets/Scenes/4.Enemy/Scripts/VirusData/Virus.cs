@@ -114,16 +114,21 @@ public class Virus : MonoBehaviour
         }
     }
 
+    //protected virtual void RollNextAction()
+    //{
+    //    GetRandState();
+    //    NextAction = (State)RandState;
+    //}
     protected virtual void RollNextAction()
     {
-        GetRandState();
-        NextAction = (State)RandState;
+        // 1. 일반적인 몬스터(부모 로직을 그대로 쓰는 애들)의 행동 풀
+        State[] basicStates = { State.Atk, State.Def, State.Sup };
+
+        // 2. 배열 안에서만 무작위로 선택
+        int randomIndex = Random.Range(0, basicStates.Length);
+        NextAction = basicStates[randomIndex];
     }
 
-    public void GetRandState()
-    {
-        RandState = ChangeStateRand((int)State.Death);
-    }
 
     public int ChangeStateRand(int endNum)
     {

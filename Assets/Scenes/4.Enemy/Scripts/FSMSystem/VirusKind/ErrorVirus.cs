@@ -65,7 +65,8 @@ public class ErrorVirus : Virus
             {
                 case DebuffType.Lag:
                     // [주의점 1 참고] 전투 카드 매니저와 연동 필요
-                    Debug.Log("효과: 모든 카드의 쿨타임 증가 (1턴)");
+                    PlayerManager.instance.lagDebuffTurns = 1;
+                    Debug.Log($"효과: 모든 카드의 쿨타임이 {PlayerManager.instance.lagDebuffValue} 증가 (1턴)");
                     break;
 
                 case DebuffType.Backdoor:
