@@ -35,6 +35,10 @@ public class PlayerManager : MonoBehaviour
     // [추가] 다중 턴 상태이상 리스트 & 방어도 획득 불가 턴 카운터
     public List<StatModifier> activeModifiers = new List<StatModifier>();
     public int cannotGainDefenseTurns = 0;
+    
+    // 플레이어가 현재 보유 중인 증강체 리스트
+    public List<AugmentBase> activeAugments = new List<AugmentBase>();
+    public List<CardObject> masterDeck = new List<CardObject>();
 
     private Vector3 _originPos;
 
@@ -322,5 +326,62 @@ public class PlayerManager : MonoBehaviour
         if (powerUI != null) powerUI.UpdateAttackPowerUI(AttackPower);
         if (powerUI != null) powerUI.UpdateDefensePowerUI(DefensePower);
         if (costUI != null) costUI.UpdateCostUI(currentCost, TotalCost);
+    }
+    
+    // 1. 증강체를 새로 획득했을 때 호출할 함수
+    public void AcquireAugment(AugmentBase newAugment)
+    {
+        activeAugments.Add(newAugment);
+        Debug.Log($"증강체 획득 완료: {newAugment.augmentName}");
+
+        // 획득 즉시 발동해야 하는 효과(OnEquip) 처리
+        BattleContext context = new BattleContext 
+        {
+            player = this,
+            // 주의: 실제 게임 덱을 관리하는 리스트를 넘겨야 합니다.
+            cards = new List<PlayerCard>(FindObjectsOfType<PlayerCard>()), 
+            viruses = null 
+        };
+        
+        newAugment.OnEquip(context);
+    }
+    
+    // 2. 전투 시작 시 호출할 함수 (GameManager 등에서 호출)
+    public void TriggerBattleStart(List<PlayerCard> currentHand, List<Virus> currentMonsters)
+    {
+        BattleContext context = new BattleContext 
+        {
+            player = this,
+            cards = currentHand,
+            viruses = currentMonsters
+        };
+
+        foreach (var augment in activeAugments)
+        {
+            augment.OnBattleStart(context);
+        }
+    }
+    
+    // 3. 몬스터 처치 시 호출할 함수 (Virus 스크립트에서 호출)
+    public void TriggerVirusKilled(Virus killedVirus)
+    {
+        BattleContext context = new BattleContext 
+        {
+            player = this,
+            cards = null, // 처치 시점엔 카드가 필요 없을 수 있음
+            viruses = new List<Virus> { killedVirus } 
+        };
+
+        foreach (var augment in activeAugments)
+        {
+            augment.OnVirusKilled(context);
+        }
+    }
+    
+    public void AddCardToDeck(CardObject originalCardData)
+    {
+        CardObject clonedCard = Instantiate(originalCardData);
+        clonedCard.name = originalCardData.cardName; 
+        masterDeck.Add(clonedCard);
     }
 }

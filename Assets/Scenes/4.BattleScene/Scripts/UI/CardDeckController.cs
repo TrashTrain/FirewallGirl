@@ -87,11 +87,10 @@ public class CardDeckController : MonoBehaviour, IPointerEnterHandler, IPointerE
     {
         if (CardDatabaseManager.instance == null) return;
 
-        List<int> deckIds = CardDatabaseManager.instance.GetCurrentDeck();
+        List<CardObject> deck = CardDatabaseManager.instance.GetCurrentDeck();
 
-        foreach (int id in deckIds)
+        foreach (CardObject cardData in deck)
         {
-            CardObject cardData = CardDatabaseManager.instance.GetCardById(id);
             if (cardData != null)
             {
                 // 프리팹 생성
@@ -102,7 +101,7 @@ public class CardDeckController : MonoBehaviour, IPointerEnterHandler, IPointerE
                 CardController cc = newCard.GetComponent<CardController>();
                 if (cc != null) cc.currentMode = CardController.CardMode.Battle;
 
-                // 데이터 주입
+                // 데이터 주입 (미리 클론된 데이터가 들어가므로 스탯 유지됨!)
                 PlayerCard pc = newCard.GetComponent<PlayerCard>();
                 if (pc != null) pc.cardData = cardData;
 
@@ -125,7 +124,14 @@ public class CardDeckController : MonoBehaviour, IPointerEnterHandler, IPointerE
         if (costText != null) costText.text = data.cost.ToString();
 
         TextMeshProUGUI descText = FindChild<TextMeshProUGUI>(cardObj.transform, "DescText");
-        if (descText != null) descText.text = data.description;
+        if (descText != null)
+        {
+            string dynamicDesc = data.description
+                .Replace("{0}", data.positiveStatValue.ToString("+#;-#;0"))
+                .Replace("{1}", data.negativeStatValue.ToString("+#;-#;0"));
+            
+            descText.text = dynamicDesc;
+        }
     }
     
     private T FindChild<T>(Transform parent, string name) where T : Component

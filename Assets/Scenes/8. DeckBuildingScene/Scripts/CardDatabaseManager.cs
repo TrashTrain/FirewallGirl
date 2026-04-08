@@ -10,7 +10,8 @@ public class CardDatabaseManager : MonoBehaviour
 
     [Header("Current Run Data")]
     [Tooltip("다음 씬(배틀)에서 사용할 덱의 ID 리스트입니다.")]
-    public List<int> currentDeckIds = new List<int>();
+    // public List<int> currentDeckIds = new List<int>();
+    public List<CardObject> masterDeck = new List<CardObject>();
 
     [Header("Player Progress (Optional)")]
     [Tooltip("플레이어가 현재 보유 중인 카드 ID 리스트 (컬렉션 표시용)")]
@@ -48,15 +49,26 @@ public class CardDatabaseManager : MonoBehaviour
         Debug.Log($"총 {cardDictionary.Count}장의 카드를 동적으로 불러왔습니다!");
     }
     
-    public void SetCurrentDeck(List<int> ids)
+    // public void SetCurrentDeck(List<int> ids)
+    // {
+    //     currentDeckIds = new List<int>(ids); // 리스트 깊은 복사
+    //     Debug.Log($"[Database] 현재 덱 저장 완료: {currentDeckIds.Count}장");
+    // }
+    //
+    // public List<int> GetCurrentDeck()
+    // {
+    //     return currentDeckIds;
+    // }
+    
+    public void SetCurrentDeck(List<CardObject> deck)
     {
-        currentDeckIds = new List<int>(ids); // 리스트 깊은 복사
-        Debug.Log($"[Database] 현재 덱 저장 완료: {currentDeckIds.Count}장");
+        masterDeck = new List<CardObject>(deck);
+        Debug.Log($"[Database] 마스터 덱 저장 완료: {masterDeck.Count}장");
     }
     
-    public List<int> GetCurrentDeck()
+    public List<CardObject> GetCurrentDeck()
     {
-        return currentDeckIds;
+        return masterDeck;
     }
     
     public CardObject GetCardById(int id)

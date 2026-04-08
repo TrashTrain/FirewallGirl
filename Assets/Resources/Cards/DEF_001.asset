@@ -18,8 +18,8 @@ MonoBehaviour:
   positiveStatType: 1
   negativeStatType: 3
   positiveStatValue: 2
-  negativeStatValue: 3
+  negativeStatValue: -3
   cost: 2
-  coolTime: 0
+  coolTime: 1
   description: "\uBC29\uD654\uBCBD\uC744 \uC124\uCE58\uD574 \uD53C\uD574\uB97C \uC904\uC778\uB2E4.\n\uBC29\uC5B4\uB825
-    +2 / \uD68C\uD53C\uB825 -3"
+    {0} / \uD68C\uD53C\uB825 {1}"

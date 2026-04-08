@@ -32,13 +32,35 @@ public class DeckManager : MonoBehaviour
             cardsToLoad = CardDatabaseManager.instance.GetAllCards();
             Debug.Log($"[DeckManager] DB에서 {cardsToLoad.Count}장의 카드를 성공적으로 불러왔습니다.");
         }
-        else
+        
+        foreach (CardObject cardData in cardsToLoad)
         {
-            Debug.LogError("[DeckManager] CardDatabaseManager를 찾을 수 없습니다! 씬에 매니저가 있는지 확인하세요.");
+            if (cardData == null) continue;
+
+            GameObject cardObj = Instantiate(cardPrefab, collectionContainer);
+            PlayerCard playerCard = cardObj.GetComponent<PlayerCard>();
+            
+            if (playerCard != null)
+            {
+                // ✅ [수정] 원본 SO를 그대로 쓰지 않고 복사본(Clone)을 생성하여 할당합니다.
+                // 이렇게 하면 증강체로 값을 바꿔도 원본 파일이 손상되지 않습니다.
+                CardObject clonedData = Instantiate(cardData);
+                clonedData.name = cardData.name; // (Clone) 이름 제거 (선택사항)
+                playerCard.cardData = clonedData;
+            }
+
+            CardController cardCtrl = cardObj.GetComponent<CardController>();
+            if (cardCtrl != null)
+            {
+                cardCtrl.currentMode = CardController.CardMode.DeckBuilding;
+                cardCtrl.SetCollectionState(true);
+            }
+
+            cardObj.transform.localScale = Vector3.one * collectionScale;
         }
 
-        // 2. 카드 생성 및 초기화
-        InitializeCollection(cardsToLoad);
+        // // 2. 카드 생성 및 초기화
+        // InitializeCollection(cardsToLoad);
     }
     
     void InitializeCollection(List<CardObject> dataList)
@@ -120,29 +142,52 @@ public class DeckManager : MonoBehaviour
 
     void SelectCard(CardController card)
     {
-        if (selectedCards.Count >= maxDeckSize)
+        if (selectedCards.Count >= maxDeckSize) return;
+        if (selectedCards.Contains(card)) return;
+        
+        // GameObject cloneObj = Instantiate(card.gameObject, selectedContainer);
+        // cloneObj.name = card.name + "_Clone";
+        //
+        // card.SetCollectionState(false);
+        //
+        // CardController cloneController = cloneObj.GetComponent<CardController>();
+        //
+        // if (cloneController != null)
+        // {
+        //     cloneController.SetupForDeckBuilding(this);
+        //     cloneController.isClone = true;
+        //     cloneController.originalCard = card; 
+        //     cloneController.SetCollectionState(true);
+        //
+        //     cloneController.SetScale(selectedScale);
+        //     selectedCards.Add(cloneController);
+        // }
+        
+        GameObject selectedObj = Instantiate(cardPrefab, selectedContainer);
+        CardController selectedCtrl = selectedObj.GetComponent<CardController>();
+        
+        PlayerCard selectedPlayerCard = selectedObj.GetComponent<PlayerCard>();
+        PlayerCard originalPlayerCard = card.GetComponent<PlayerCard>();
+
+        if (selectedPlayerCard != null && originalPlayerCard != null)
         {
-            Debug.Log("덱이 가득 찼습니다!");
-            return;
+            // ✅ [수정] 선택된 영역에 생성될 때도 원본(이미 클론일 수 있음)을 다시 복제하여 할당합니다.
+            CardObject selectedClone = Instantiate(originalPlayerCard.cardData);
+            selectedClone.name = originalPlayerCard.cardData.name;
+            selectedPlayerCard.cardData = selectedClone;
         }
-        
-        GameObject cloneObj = Instantiate(card.gameObject, selectedContainer);
-        cloneObj.name = card.name + "_Clone";
-        
+
+        if (selectedCtrl != null)
+        {
+            selectedCtrl.currentMode = CardController.CardMode.DeckBuilding;
+            selectedCtrl.isSelected = true;
+            selectedCtrl.isClone = true;
+            selectedCtrl.originalCard = card;
+            selectedCards.Add(selectedCtrl);
+        }
+
+        selectedObj.transform.localScale = Vector3.one * selectedScale;
         card.SetCollectionState(false);
-        
-        CardController cloneController = cloneObj.GetComponent<CardController>();
-
-        if (cloneController != null)
-        {
-            cloneController.SetupForDeckBuilding(this);
-            cloneController.isClone = true;
-            cloneController.originalCard = card; 
-            cloneController.SetCollectionState(true);
-
-            cloneController.SetScale(selectedScale);
-            selectedCards.Add(cloneController);
-        }
     }
 
     void DeselectCard(CardController card)
@@ -168,35 +213,70 @@ public class DeckManager : MonoBehaviour
         return null;
     }
     
+    // public void OnConfirmClicked()
+    // {
+    //     // 1. 덱 최소 개수 조건 확인 (옵션)
+    //     if (selectedCards.Count == 0)
+    //     {
+    //         Debug.LogWarning("카드를 한 장 이상 선택해야 합니다!");
+    //         return;
+    //     }
+    //
+    //     // 2. 선택된 카드들의 ID 추출
+    //     List<int> selectedIds = new List<int>();
+    //
+    //     foreach (CardController cardCtrl in selectedCards)
+    //     {
+    //         CardObject cardData = cardCtrl.GetComponent<PlayerCard>().cardData;
+    //         
+    //         if (cardCtrl.originalCard != null && cardData != null)
+    //         {
+    //             selectedIds.Add(cardData.cardIndex);
+    //         }
+    //     }
+    //
+    //     // 3. DB 매니저에 현재 덱 정보 저장
+    //     if (CardDatabaseManager.instance != null)
+    //     {
+    //         CardDatabaseManager.instance.SetCurrentDeck(selectedIds);
+    //         Debug.Log($"덱 저장 완료: {selectedIds.Count}장");
+    //         
+    //         // 4. 씬 전환
+    //         Debug.Log(nextSceneName);
+    //         SceneManager.LoadScene(nextSceneName);
+    //     }
+    //     else
+    //     {
+    //         Debug.LogError("CardDatabaseManager가 없습니다! 씬 전환 불가.");
+    //     }
+    // }
+    
     public void OnConfirmClicked()
     {
-        // 1. 덱 최소 개수 조건 확인 (옵션)
         if (selectedCards.Count == 0)
         {
             Debug.LogWarning("카드를 한 장 이상 선택해야 합니다!");
             return;
         }
 
-        // 2. 선택된 카드들의 ID 추출
-        List<int> selectedIds = new List<int>();
+        // ✅ 수정: ID(int)가 아니라 CardObject 리스트를 만듭니다.
+        List<CardObject> finalDeck = new List<CardObject>();
 
         foreach (CardController cardCtrl in selectedCards)
         {
             CardObject cardData = cardCtrl.GetComponent<PlayerCard>().cardData;
-            
+        
             if (cardCtrl.originalCard != null && cardData != null)
             {
-                selectedIds.Add(cardData.cardIndex);
+                finalDeck.Add(cardData);
             }
         }
 
-        // 3. DB 매니저에 현재 덱 정보 저장
         if (CardDatabaseManager.instance != null)
         {
-            CardDatabaseManager.instance.SetCurrentDeck(selectedIds);
-            Debug.Log($"덱 저장 완료: {selectedIds.Count}장");
-            
-            // 4. 씬 전환
+            CardDatabaseManager.instance.SetCurrentDeck(finalDeck);
+            Debug.Log($"덱 저장 완료: {finalDeck.Count}장");
+        
             Debug.Log(nextSceneName);
             SceneManager.LoadScene(nextSceneName);
         }

@@ -361,12 +361,12 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
                         StatType negType = playerCard.cardData.negativeStatType;
                         
                         playerManager.AddTurnStatDelta(posType, posValue);
-                        playerManager.AddTurnStatDelta(negType, -negValue);
+                        playerManager.AddTurnStatDelta(negType, negValue);
                         playerManager.currentCost = Mathf.Max(0, playerManager.currentCost - cost);
 
                         if (playerCard.cardData.coolTime > 0)
                         {
-                            playerCard.currentCoolTime = playerCard.cardData.coolTime + 1;
+                            playerCard.currentCoolTime = playerCard.cardData.coolTime;
                         }
                         else
                         {
