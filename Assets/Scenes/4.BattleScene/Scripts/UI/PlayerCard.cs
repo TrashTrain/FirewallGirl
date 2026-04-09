@@ -57,11 +57,8 @@ public class PlayerCard : MonoBehaviour
 
     private void Start()
     {
-        if (cardData == null)
-        {
-            Debug.LogError("cardData ¾øÀ½.");
-            return;
-        }
+        if (cardData == null) return;
+        
         costValue = cardData.cost;
         positiveStatValue = cardData.positiveStatValue;
         negativeStatValue = cardData.negativeStatValue;
@@ -88,7 +85,14 @@ public class PlayerCard : MonoBehaviour
         negStatText.text = negativeStatValue.ToString();
         
         costText.text = costValue.ToString();
-        descriptionText.text = cardData.description;
+        if (descriptionText != null && cardData != null)
+        {
+            string dynamicDesc = cardData.description
+                .Replace("{0}", cardData.positiveStatValue.ToString("+#;-#;0"))
+                .Replace("{1}", cardData.negativeStatValue.ToString("+#;-#;0"));
+                
+            descriptionText.text = dynamicDesc;
+        }
     }
     
     public void DecreaseCooldown()

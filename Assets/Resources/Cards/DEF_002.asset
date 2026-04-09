@@ -20,6 +20,6 @@ MonoBehaviour:
   positiveStatValue: 5
   negativeStatValue: 2
   cost: 3
-  coolTime: 0
+  coolTime: 1
   description: "\uC774\uC911 \uC778\uC99D\uC73C\uB85C \uACF5\uACA9\uC744 \uCC28\uB2E8\uD55C\uB2E4.\n\uBC29\uC5B4\uB825
-    +5 / \uCF54\uC2A4\uD2B8 -2"
+    {0} / \uCF54\uC2A4\uD2B8 {1}"

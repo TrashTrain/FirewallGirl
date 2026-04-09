@@ -58,6 +58,9 @@ public class UpDownMgr : MonoBehaviour
 
     // 현재 생성된 카드들의 정보를 저장해둘 리스트
     private List<(GenerateCard pos, GenerateCard neg)> currentCardsInfo = new();
+    
+    // 현재 화면에 뜬 증강체들을 기억할 리스트
+    private List<AugmentBase> currentAugmentRewards = new List<AugmentBase>();
 
 
 
@@ -116,11 +119,72 @@ public class UpDownMgr : MonoBehaviour
     }
 
     // 증감 시스템 
+    // public void CardSystem()
+    // {
+    //     Debug.Log("CardSystem 시작");
+    //     usedCombinations.Clear();
+    //     currentCardsInfo.Clear(); // 리스트 초기화
+    //
+    //     for (int i = 0; i < Card.Length; i++)
+    //     {
+    //         if (Card[i] == null) continue;
+    //
+    //         Card[i].gameObject.SetActive(true);
+    //
+    //         
+    //         HashSet<StatType> localUsedStats = new HashSet<StatType>();
+    //
+    //         // 긍정 스탯 생성 및 기록
+    //         GenerateCard pos = GenerateStat(ValueType.Positive, localUsedStats);
+    //         usedCombinations.Add((pos.stat, ValueType.Positive));
+    //         localUsedStats.Add(pos.stat); // 같은 카드 내 중복 방지
+    //
+    //         // 부정 스탯 생성 및 기록
+    //         GenerateCard neg = GenerateStat(ValueType.Negative, localUsedStats);
+    //         usedCombinations.Add((neg.stat, ValueType.Negative));
+    //         localUsedStats.Add(neg.stat);
+    //
+    //         // 정보 저장 (나중에 클릭 시 사용)
+    //         currentCardsInfo.Add((pos, neg));
+    //
+    //         RewardCard rewardCardScript = Card[i].GetComponent<RewardCard>();
+    //         if (rewardCardScript != null)
+    //         {
+    //             rewardCardScript.SetupCard(
+    //                 pos, neg,
+    //                 GetSprite(pos.stat, pos.valueType),
+    //                 GetSprite(neg.stat, neg.valueType)
+    //             );
+    //             Debug.Log($"{i}번 카드 세팅 완료: {pos.stat} / {neg.stat}");
+    //         }
+    //
+    //         int index = i;
+    //
+    //         UpDownCardClickHandler clickHandler = Card[index].GetComponent<UpDownCardClickHandler>();
+    //         if (clickHandler == null)
+    //         {
+    //             clickHandler = Card[index].gameObject.AddComponent<UpDownCardClickHandler>();
+    //         }
+    //
+    //         clickHandler.Init(index, OnCardClicked);
+    //     }
+    // }
+    
     public void CardSystem()
     {
-        Debug.Log("CardSystem 시작");
-        usedCombinations.Clear();
-        currentCardsInfo.Clear(); // 리스트 초기화
+        Debug.Log("증강체 보상 시스템 시작");
+        currentAugmentRewards.Clear();
+
+        // 1. Resources/Augments 폴더에 있는 모든 증강체(ScriptableObject)를 불러옵니다.
+        // 주의: 파일들이 반드시 Assets/Resources/Augments 경로 안에 있어야 합니다!
+        AugmentBase[] loadedAugments = Resources.LoadAll<AugmentBase>("Augments");
+        List<AugmentBase> augmentPool = new List<AugmentBase>(loadedAugments);
+
+        if (augmentPool.Count == 0)
+        {
+            Debug.LogError("Resources/Augments 경로에 증강체 데이터가 없습니다!");
+            return;
+        }
 
         for (int i = 0; i < Card.Length; i++)
         {
@@ -128,36 +192,30 @@ public class UpDownMgr : MonoBehaviour
 
             Card[i].gameObject.SetActive(true);
 
-            
-            HashSet<StatType> localUsedStats = new HashSet<StatType>();
+            // 2. 풀(Pool)에서 무작위 증강체를 하나 뽑고, 리스트에서 제거 (중복 방지)
+            if (augmentPool.Count == 0) 
+            {
+                Debug.LogWarning("더 이상 뽑을 증강체가 없습니다!");
+                break;
+            }
 
-            // 긍정 스탯 생성 및 기록
-            GenerateCard pos = GenerateStat(ValueType.Positive, localUsedStats);
-            usedCombinations.Add((pos.stat, ValueType.Positive));
-            localUsedStats.Add(pos.stat); // 같은 카드 내 중복 방지
+            int randomIndex = Random.Range(0, augmentPool.Count);
+            AugmentBase selectedAugment = augmentPool[randomIndex];
+            augmentPool.RemoveAt(randomIndex); 
 
-            // 부정 스탯 생성 및 기록
-            GenerateCard neg = GenerateStat(ValueType.Negative, localUsedStats);
-            usedCombinations.Add((neg.stat, ValueType.Negative));
-            localUsedStats.Add(neg.stat);
+            // 클릭 시 어떤 증강체인지 알기 위해 리스트에 저장
+            currentAugmentRewards.Add(selectedAugment);
 
-            // 정보 저장 (나중에 클릭 시 사용)
-            currentCardsInfo.Add((pos, neg));
-
+            // 3. UI 갱신 (위에서 만든 함수 호출)
             RewardCard rewardCardScript = Card[i].GetComponent<RewardCard>();
             if (rewardCardScript != null)
             {
-                rewardCardScript.SetupCard(
-                    pos, neg,
-                    GetSprite(pos.stat, pos.valueType),
-                    GetSprite(neg.stat, neg.valueType)
-                );
-                Debug.Log($"{i}번 카드 세팅 완료: {pos.stat} / {neg.stat}");
+                rewardCardScript.SetupAugmentCard(selectedAugment);
             }
 
+            // 4. 클릭 이벤트 연결
             int index = i;
-
-            UpDownCardClickHandler clickHandler = Card[index].GetComponent<UpDownCardClickHandler>();
+            UpDownCardClickHandler clickHandler = Card[i].GetComponent<UpDownCardClickHandler>();
             if (clickHandler == null)
             {
                 clickHandler = Card[index].gameObject.AddComponent<UpDownCardClickHandler>();
@@ -168,13 +226,26 @@ public class UpDownMgr : MonoBehaviour
     }
 
     //카드를 선택한 경우 스테이지 씬으로
+    // void OnCardClicked(int index)
+    // {
+    //     // 1. 선택한 카드의 데이터를 PlayerManager에 적용
+    //     var selected = currentCardsInfo[index];
+    //     PlayerManager.instance.ApplyCardStats(selected.pos, selected.neg);
+    //     StageSaveManager.ClearStage(StageSaveManager.CurrentStageIdx);
+    //
+    //     SceneManager.LoadScene("StageScene");
+    // }
+    
     void OnCardClicked(int index)
     {
-        // 1. 선택한 카드의 데이터를 PlayerManager에 적용
-        var selected = currentCardsInfo[index];
-        PlayerManager.instance.ApplyCardStats(selected.pos, selected.neg);
-        StageSaveManager.ClearStage(StageSaveManager.CurrentStageIdx);
+        // 1. 내가 클릭한 증강체 가져오기
+        AugmentBase selectedAugment = currentAugmentRewards[index];
+        Debug.Log($"선택한 증강체: {selectedAugment.augmentName}");
 
+        PlayerManager.instance.AcquireAugment(selectedAugment);
+
+        // 3. 씬 전환
+        StageSaveManager.ClearStage(StageSaveManager.CurrentStageIdx);
         SceneManager.LoadScene("StageScene");
     }
 

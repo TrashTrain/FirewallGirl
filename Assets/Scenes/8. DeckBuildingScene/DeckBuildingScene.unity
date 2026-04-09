@@ -1425,7 +1425,6 @@ MonoBehaviour:
   selectedScale: 0.5
   collectionContainer: {fileID: 188457824}
   selectedContainer: {fileID: 1337324120}
-  testCardDataList: []
 --- !u!114 &1588040504
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1438,7 +1437,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 944e5995a90c43c45a84a40153ab0ec5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardLibrary: []
   currentDeckIds: 
   ownedCardIds: 
 --- !u!1 &1874932950
