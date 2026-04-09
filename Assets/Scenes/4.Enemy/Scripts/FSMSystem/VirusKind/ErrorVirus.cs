@@ -76,7 +76,7 @@ public class ErrorVirus : Virus
                     break;
 
                 case DebuffType.PacketLoss:
-                    // [주의점 3 참고] 방어 불가 상태 추가 필요    수정완료
+                    // [주의점 3 참고] 방어 불가 상태 추가 필요    수정완료    // 방어도 증가/감소 수정 필요
                     PlayerManager.instance.cannotGainDefenseTurns = 1;
                     Debug.Log("효과: 방어도 쌓기 불가 (1턴)");
                     break;
