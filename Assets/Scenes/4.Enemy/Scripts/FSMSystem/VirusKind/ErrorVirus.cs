@@ -65,13 +65,13 @@ public class ErrorVirus : Virus
             {
                 case DebuffType.Lag:
                     // [주의점 1 참고] 전투 카드 매니저와 연동 필요
-                    PlayerManager.instance.lagDebuffTurns = 1;
+                    PlayerManager.instance.lagDebuffTurns += PlayerManager.instance.lagDebuffValue + 1;
                     Debug.Log($"효과: 모든 카드의 쿨타임이 {PlayerManager.instance.lagDebuffValue} 증가 (1턴)");
                     break;
 
                 case DebuffType.Backdoor:
                     // [주의점 2 참고] 다중 턴 유지 로직 필요     수정완료
-                    PlayerManager.instance.AddMultiTurnStat(StatType.Attack, -1, 2);
+                    PlayerManager.instance.AddMultiTurnStat(StatType.Attack, -1, 3);
                     Debug.Log("효과: 플레이어 공격력 감소 (2턴)");
                     break;
 
