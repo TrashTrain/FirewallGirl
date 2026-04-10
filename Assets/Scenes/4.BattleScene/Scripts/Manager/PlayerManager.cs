@@ -277,7 +277,7 @@ public class PlayerManager : MonoBehaviour
 
         if (currentHP <= 0)
         {
-            // GameManager.Instance.GameOver(); 
+            GameManager.Instance.GameOver(); 
         }
     }
     
@@ -446,5 +446,35 @@ public class PlayerManager : MonoBehaviour
         CardObject clonedCard = Instantiate(originalCardData);
         clonedCard.name = originalCardData.cardName; 
         masterDeck.Add(clonedCard);
+    }
+    
+    // ✅ 외부(증강체 등)에서 플레이어의 영구 스탯을 올리고 내릴 때 사용하는 함수
+    public void AddPermanentStat(StatType type, int amount)
+    {
+        // 1. baseStats 배열에 적용 
+        int index = (int)type;
+        if (baseStats != null && index >= 0 && index < baseStats.Length)
+        {
+            baseStats[index] += amount;
+        }
+
+        // 2. Inspector에 노출된 기본 변수들도 함께 동기화
+        switch (type)
+        {
+            case StatType.Attack:
+                attackPower = Mathf.Max(0, attackPower + amount);
+                break;
+            case StatType.Defense:
+                defensePower = Mathf.Max(0, defensePower + amount);
+                break;
+            case StatType.Health:
+                maxHP = Mathf.Max(1, maxHP + amount); // 최대 체력은 1 밑으로 내려가지 않음
+                currentHP = Mathf.Clamp(currentHP + amount, 1, maxHP); // 최대 체력이 깎이면 현재 체력도 동기화
+                break;
+            case StatType.Cost:
+                totalCost = Mathf.Max(0, totalCost + amount);
+                currentCost = Mathf.Clamp(currentCost + amount, 0, totalCost);
+                break;
+        }
     }
 }

@@ -365,6 +365,56 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 302848810}
   m_CullTransparentMesh: 1
+--- !u!1 &339733298
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 339733300}
+  - component: {fileID: 339733299}
+  m_Layer: 0
+  m_Name: DeckUIManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &339733299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 339733298}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aab5eaa9fcaec0746bd80e88904e3c09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxDeckSize: 5
+  cardPrefab: {fileID: 4631881173365916910, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
+  collectionScale: 0.7
+  selectedScale: 0.5
+  collectionContainer: {fileID: 188457824}
+  selectedContainer: {fileID: 1337324120}
+--- !u!4 &339733300
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 339733298}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &360791808
 GameObject:
   m_ObjectHideFlags: 0
@@ -778,7 +828,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1588040503}
+      - m_Target: {fileID: 339733299}
         m_TargetAssemblyTypeName: DeckManager, Assembly-CSharp
         m_MethodName: OnConfirmClicked
         m_Mode: 1
@@ -1366,10 +1416,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1588040502}
   - component: {fileID: 1588040497}
-  - component: {fileID: 1588040503}
   - component: {fileID: 1588040504}
   m_Layer: 0
-  m_Name: Manager
+  m_Name: DataBaseManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1407,24 +1456,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1588040503
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1588040496}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aab5eaa9fcaec0746bd80e88904e3c09, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxDeckSize: 5
-  cardPrefab: {fileID: 4631881173365916910, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
-  collectionScale: 0.7
-  selectedScale: 0.5
-  collectionContainer: {fileID: 188457824}
-  selectedContainer: {fileID: 1337324120}
 --- !u!114 &1588040504
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1684,3 +1715,4 @@ SceneRoots:
   - {fileID: 469666292}
   - {fileID: 1874932951}
   - {fileID: 1588040502}
+  - {fileID: 339733300}
