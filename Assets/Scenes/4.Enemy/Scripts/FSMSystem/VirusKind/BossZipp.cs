@@ -107,22 +107,56 @@ public class BossZipp : Virus
 
     protected override IEnumerator CoRunStateAction(State s)
     {
-        // 3페이즈 지속 피해 로직
+        // 💡 1. 3페이즈 지속 피해 (도트 데미지 흡혈)
         if (_currentPhase == 3)
         {
+            int hpBeforeDot = PlayerManager.instance.currentHP; // 피해 전 체력 저장
+
             Debug.Log($"[바이러스 침투] 플레이어에게 {_phase3DotDamage}의 지속 피해를 입힙니다.");
             PlayerManager.instance.TakeDamage(_phase3DotDamage);
-            _phase3DotDamage++;
 
+            // 실제 들어간 데미지 계산 및 흡혈
+            int dotDamageDealt = hpBeforeDot - PlayerManager.instance.currentHP;
+            if (dotDamageDealt > 0)
+            {
+                int healAmount = dotDamageDealt / 2; // 절반 회복 (소수점 버림)
+                if (healAmount > 0)
+                {
+                    virusData.CurHpCnt = Mathf.Min(virusData.HpCnt, virusData.CurHpCnt + healAmount);
+                    UpdateData();
+                    Debug.Log($"[침투 흡혈] 지속 피해의 절반인 {healAmount}만큼 보스가 회복했습니다!");
+                }
+            }
+
+            _phase3DotDamage++;
             yield return new WaitForSeconds(0.5f);
         }
 
-        // 상태에 따른 실제 행동 실행
+        // 💡 2. 상태에 따른 실제 행동 실행 및 기본 공격 흡혈
         switch (s)
         {
             case State.Atk:
-                yield return CoAttack();
+                int hpBeforeAtk = PlayerManager.instance.currentHP; // 공격 전 체력 저장
+
+                yield return CoAttack(); // 부모의 기본 공격 실행 (데미지 적용됨)
+
+                // 3페이즈라면 기본 공격 후 흡혈 로직 실행
+                if (_currentPhase == 3)
+                {
+                    int atkDamageDealt = hpBeforeAtk - PlayerManager.instance.currentHP;
+                    if (atkDamageDealt > 0)
+                    {
+                        int healAmount = atkDamageDealt / 2; // 절반 회복
+                        if (healAmount > 0)
+                        {
+                            virusData.CurHpCnt = Mathf.Min(virusData.HpCnt, virusData.CurHpCnt + healAmount);
+                            UpdateData();
+                            Debug.Log($"[공격 흡혈] 입힌 피해({atkDamageDealt})의 절반인 {healAmount}만큼 보스가 회복했습니다!");
+                        }
+                    }
+                }
                 break;
+
             case State.Sup:
                 yield return CoUnzipSummon();
                 break;
@@ -133,7 +167,7 @@ public class BossZipp : Virus
                 yield return CoCapacitySecure();
                 break;
             default:
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(0.5f);
                 break;
         }
     }
@@ -183,9 +217,9 @@ public class BossZipp : Virus
         VirusSpawn.instance.SpawnVirus(spawnIndex, prefabToSpawn);
 
         // 💡 [선택사항] 몬스터가 늘어났으므로 GameManager의 적 숫자도 올려줍니다 (스테이지 클리어 판정 오류 방지)
-        if (GameManager.Instance != null)
+        if (VirusSpawn.instance != null)
         {
-            GameManager.Instance.enemyCount++;
+            VirusSpawn.instance.virusCnt++;
         }
     }
 

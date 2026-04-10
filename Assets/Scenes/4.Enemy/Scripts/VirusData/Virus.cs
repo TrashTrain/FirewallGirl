@@ -313,7 +313,7 @@ public class Virus : MonoBehaviour
 
 
         // 만약 UI도 같이 꺼야 한다면:
-        if (enemyUIController != null) enemyUIController.gameObject.SetActive(false);
+        if (enemyUIController != null) enemyUIController.panel.SetActive(false);
 
         Destroy(gameObject);
     }
