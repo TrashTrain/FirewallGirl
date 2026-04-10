@@ -34,6 +34,7 @@ public class CardMgr : MonoBehaviour
                                         cardObject.positiveStatValue,
                                         cardObject.negativeStatValue,
                                         cardObject.cost,
+                                        cardObject.summaryDescription,
                                         cardObject.description);
         return cardData;
     }

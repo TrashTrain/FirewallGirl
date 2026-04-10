@@ -18,7 +18,8 @@ public class CardData
     private int negativeStat;
 
     private int cost;
-
+    
+    private string summaryDescription;
     private string description;
 
     // public CardData(int cardNum, Sprite cardImage, string cardName, int positiveNum, int negativeNum, int costNum, string description = null)
@@ -33,7 +34,7 @@ public class CardData
     // }
 
     public CardData(int cardIndex, string cardName, Sprite cardImage, StatType positiveStatType, StatType negaStatType,
-        int positiveStat, int negativeStat, int cost, string description = null)
+        int positiveStat, int negativeStat, int cost, string summaryDescription = null, string description = null)
     {
         this.CardIndex = cardIndex;
         this.CardName = cardName;
@@ -43,6 +44,7 @@ public class CardData
         this.PositiveStat = positiveStat;
         this.NegativeStat = negativeStat;
         this.Cost = cost;
+        this.SummaryDescription = summaryDescription;
         this.Description = description;
     }
 
@@ -54,5 +56,6 @@ public class CardData
     public int PositiveStat { get => positiveStat; set => positiveStat = value; }
     public int NegativeStat { get => negativeStat; set => negativeStat = value; }
     public int Cost { get => cost; set => cost = value; }
+    public string SummaryDescription { get => summaryDescription; set => summaryDescription = value; }
     public string Description { get => description; set => description = value; }
 }
