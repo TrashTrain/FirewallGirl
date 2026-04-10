@@ -38,6 +38,7 @@ public class DeckManager : MonoBehaviour
             if (cardData == null) continue;
 
             GameObject cardObj = Instantiate(cardPrefab, collectionContainer);
+            cardObj.transform.localScale = Vector3.one * collectionScale;
             PlayerCard playerCard = cardObj.GetComponent<PlayerCard>();
             
             if (playerCard != null)
@@ -47,6 +48,9 @@ public class DeckManager : MonoBehaviour
                 CardObject clonedData = Instantiate(cardData);
                 clonedData.name = cardData.name; // (Clone) 이름 제거 (선택사항)
                 playerCard.cardData = clonedData;
+                playerCard.posValue = cardData.positiveStatValue;
+                playerCard.negValue = cardData.negativeStatValue;
+                playerCard.cost = cardData.cost;
             }
 
             CardController cardCtrl = cardObj.GetComponent<CardController>();
@@ -55,8 +59,8 @@ public class DeckManager : MonoBehaviour
                 cardCtrl.currentMode = CardController.CardMode.DeckBuilding;
                 cardCtrl.SetCollectionState(true);
             }
-
-            cardObj.transform.localScale = Vector3.one * collectionScale;
+            
+            UpdateCardVisuals(cardObj, cardData);
         }
 
         // // 2. 카드 생성 및 초기화
@@ -109,20 +113,50 @@ public class DeckManager : MonoBehaviour
     {
         // 1. 아이콘 이미지 설정 (이름으로 찾거나 태그로 찾기)
         // 프리팹 구조에 따라 경로 수정 필요 (예: "Front/Icon")
-        Image icon = cardObj.transform.Find("Icon")?.GetComponent<Image>(); 
-        if (icon == null) icon = cardObj.transform.Find("Front/Icon")?.GetComponent<Image>(); // 예시 경로
-        if (icon != null) icon.sprite = data.cardImage;
+        // Image icon = cardObj.transform.Find("Icon")?.GetComponent<Image>(); 
+        // if (icon == null) icon = cardObj.transform.Find("Front/Icon")?.GetComponent<Image>(); // 예시 경로
+        // if (icon != null) icon.sprite = data.cardImage;
+        //
+        // // 2. 텍스트 설정 (TextMeshProUGUI 사용 가정)
+        // // 프리팹 자식 오브젝트 이름이 "NameText", "CostText", "DescText"라고 가정
+        // TextMeshProUGUI nameText = FindChild<TextMeshProUGUI>(cardObj.transform, "NameText");
+        // if (nameText != null) nameText.text = data.cardName;
+        //
+        // TextMeshProUGUI costText = FindChild<TextMeshProUGUI>(cardObj.transform, "CostText");
+        // if (costText != null) costText.text = data.cost.ToString();
+        //
+        // TextMeshProUGUI descText = FindChild<TextMeshProUGUI>(cardObj.transform, "DescText");
+        // if (descText != null) descText.text = data.description;
+        
+        Transform closeBtn = FindChild<Transform>(cardObj.transform, "CloseBtn");
+        if (closeBtn != null) closeBtn.gameObject.SetActive(false);
+        
+        Transform useBtn = FindChild<Transform>(cardObj.transform, "UseBtn");
+        if (useBtn != null) useBtn.gameObject.SetActive(false);
+        
+        TextMeshProUGUI detailNameText = FindChild<TextMeshProUGUI>(cardObj.transform, "CardName/Text");
+        if (detailNameText != null) detailNameText.text = data.cardName;
+        
+        Image detailIconImg = FindChild<Image>(cardObj.transform, "Content");
+        if (detailIconImg != null) detailIconImg.sprite = data.cardImage;
+        
+        TextMeshProUGUI detailPosText = FindChild<TextMeshProUGUI>(cardObj.transform, "PositiveStat/Text");
+        if (detailPosText != null) detailPosText.text = data.positiveStatValue.ToString("+#;-#;0");
 
-        // 2. 텍스트 설정 (TextMeshProUGUI 사용 가정)
-        // 프리팹 자식 오브젝트 이름이 "NameText", "CostText", "DescText"라고 가정
-        TextMeshProUGUI nameText = FindChild<TextMeshProUGUI>(cardObj.transform, "NameText");
-        if (nameText != null) nameText.text = data.cardName;
+        TextMeshProUGUI detailNegText = FindChild<TextMeshProUGUI>(cardObj.transform, "NegativeStat/Text");
+        if (detailNegText != null) detailNegText.text = data.negativeStatValue.ToString("+#;-#;0");
 
-        TextMeshProUGUI costText = FindChild<TextMeshProUGUI>(cardObj.transform, "CostText");
-        if (costText != null) costText.text = data.cost.ToString();
-
-        TextMeshProUGUI descText = FindChild<TextMeshProUGUI>(cardObj.transform, "DescText");
-        if (descText != null) descText.text = data.description;
+        TextMeshProUGUI detailCostText = FindChild<TextMeshProUGUI>(cardObj.transform, "Cost/CostText");
+        if (detailCostText != null) detailCostText.text = data.cost.ToString();
+        
+        TextMeshProUGUI detailDescText = FindChild<TextMeshProUGUI>(cardObj.transform, "Description");
+        if (detailDescText != null)
+        {
+            string dynamicDesc = data.description
+                .Replace("{0}", data.positiveStatValue.ToString("+#;-#;0"))
+                .Replace("{1}", data.negativeStatValue.ToString("+#;-#;0"));
+            detailDescText.text = dynamicDesc;
+        }
     }
 
     // CardController의 OnPointerClick에서 호출됨
@@ -175,6 +209,8 @@ public class DeckManager : MonoBehaviour
             CardObject selectedClone = Instantiate(originalPlayerCard.cardData);
             selectedClone.name = originalPlayerCard.cardData.name;
             selectedPlayerCard.cardData = selectedClone;
+            
+            UpdateCardVisuals(selectedObj, selectedClone);
         }
 
         if (selectedCtrl != null)
@@ -256,6 +292,12 @@ public class DeckManager : MonoBehaviour
         if (selectedCards.Count == 0)
         {
             Debug.LogWarning("카드를 한 장 이상 선택해야 합니다!");
+            return;
+        }
+        
+        if (selectedCards.Count != maxDeckSize)
+        {
+            Debug.LogWarning($"카드를 정확히 {maxDeckSize}장 선택해야 합니다! (현재 선택된 카드: {selectedCards.Count}장)");
             return;
         }
 

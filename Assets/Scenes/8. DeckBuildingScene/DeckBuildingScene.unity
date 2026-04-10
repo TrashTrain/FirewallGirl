@@ -1254,9 +1254,9 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 4
-  m_Spacing: -500
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
+  m_Spacing: 100
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
@@ -1437,7 +1437,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 944e5995a90c43c45a84a40153ab0ec5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentDeckIds: 
+  masterDeck: []
   ownedCardIds: 
 --- !u!1 &1874932950
 GameObject:

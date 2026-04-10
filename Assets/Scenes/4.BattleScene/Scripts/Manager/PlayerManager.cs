@@ -243,16 +243,77 @@ public class PlayerManager : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        int finalDamage = Mathf.Max(0, damage - DefensePower);
+        // int finalDamage = Mathf.Max(0, damage - DefensePower);
+        // currentHP = Mathf.Max(0, currentHP - finalDamage);
+        //
+        // Debug.Log($"받은 데미지: {finalDamage}, 남은 체력: {currentHP}");
+        //
+        // UpdateUI();
+        //
+        // if (currentHP <= 0)
+        // {
+        //     // GameManager.Instance.GameOver(); 
+        // }
+        
+        // 1. 현재 총 방어력 가져오기
+        int currentDef = DefensePower;
+        
+        // 2. 방어력으로 막을 수 있는 데미지와 실제 체력에 들어갈 데미지 계산
+        int blockedDamage = Mathf.Min(damage, currentDef);
+        int finalDamage = damage - blockedDamage;
+
+        // 3. 방어력 차감 (새로 추가한 ConsumeDefense 로직 호출)
+        if (blockedDamage > 0)
+        {
+            ConsumeDefense(blockedDamage);
+        }
+
+        // 4. 남은 데미지만큼 체력 차감
         currentHP = Mathf.Max(0, currentHP - finalDamage);
 
-        Debug.Log($"받은 데미지: {finalDamage}, 남은 체력: {currentHP}");
+        Debug.Log($"적 공격: {damage} / 방어됨: {blockedDamage} / 실제 받은 데미지: {finalDamage} / 남은 체력: {currentHP}");
 
         UpdateUI();
 
         if (currentHP <= 0)
         {
             // GameManager.Instance.GameOver(); 
+        }
+    }
+    
+    private void ConsumeDefense(int amount)
+    {
+        int defIndex = (int)StatType.Defense;
+
+        // 1순위: 이번 턴 임시 방어도 (turnDeltaStats) 먼저 소모
+        if (turnDeltaStats[defIndex] > 0)
+        {
+            int consume = Mathf.Min(amount, turnDeltaStats[defIndex]);
+            turnDeltaStats[defIndex] -= consume;
+            amount -= consume;
+        }
+
+        if (amount <= 0) return;
+
+        // 2순위: 다중 턴 유지 방어도 버프 (activeModifiers) 소모
+        for (int i = 0; i < activeModifiers.Count; i++)
+        {
+            if (activeModifiers[i].statType == StatType.Defense && activeModifiers[i].amount > 0)
+            {
+                int consume = Mathf.Min(amount, activeModifiers[i].amount);
+                activeModifiers[i].amount -= consume;
+                amount -= consume;
+
+                if (amount <= 0) return;
+            }
+        }
+
+        // 3순위: 영구 기본 방어도 (baseStats) 소모
+        if (baseStats[defIndex] > 0)
+        {
+            int consume = Mathf.Min(amount, baseStats[defIndex]);
+            baseStats[defIndex] -= consume;
+            amount -= consume;
         }
     }
 
