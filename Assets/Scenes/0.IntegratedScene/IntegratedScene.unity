@@ -3276,9 +3276,13 @@ MonoBehaviour:
   defensePower: 5
   activeModifiers: []
   cannotGainDefenseTurns: 0
+  activeAugments: []
+  masterDeck: []
   hpBar: {fileID: 373234982}
   powerUI: {fileID: 854836676}
   costUI: {fileID: 854836675}
+  lagDebuffTurns: 0
+  lagDebuffValue: 1
 --- !u!4 &1217457105
 Transform:
   m_ObjectHideFlags: 0

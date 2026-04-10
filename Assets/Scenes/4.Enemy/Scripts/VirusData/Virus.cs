@@ -80,7 +80,7 @@ public class Virus : MonoBehaviour
         _originScale = transform.localScale;
     }
 
-    private void Start()
+    protected virtual void Start()
     {
         if (VirusMgr.instance == null)
         {

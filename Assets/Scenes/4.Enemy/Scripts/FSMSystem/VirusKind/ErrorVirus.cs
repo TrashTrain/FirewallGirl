@@ -9,7 +9,7 @@ public class ErrorVirus : Virus
         Lag,            // 카드 쿨타임 증가 (1턴)
         Backdoor,       // 공격력 감소 (2턴)
         PacketLoss,     // 방어도 쌓기 불가 (1턴)
-        CardLock        // 특정 카드 사용 불가 (1턴)
+        //CardLock        // 특정 카드 사용 불가 (1턴)
     }
 
     private DebuffType _nextDebuff;
@@ -22,8 +22,8 @@ public class ErrorVirus : Virus
         if (Random.Range(0, 100) < 75)
         {
             NextAction = State.Debuf;
-            // 4가지 디버프 중 랜덤 1개 선택
-            _nextDebuff = (DebuffType)Random.Range(0, 4);
+            // 3가지 디버프 중 랜덤 1개 선택
+            _nextDebuff = (DebuffType)Random.Range(0, 3);
         }
         else
         {
@@ -81,10 +81,10 @@ public class ErrorVirus : Virus
                     Debug.Log("효과: 방어도 쌓기 불가 (1턴)");
                     break;
 
-                case DebuffType.CardLock:
-                    // [주의점 1 참고] 전투 중인 손패(Hand) 제어 필요
-                    Debug.Log("효과: N번 카드 사용 불가 (1턴)");
-                    break;
+                //case DebuffType.CardLock:
+                //    // [주의점 1 참고] 전투 중인 손패(Hand) 제어 필요
+                //    Debug.Log("효과: N번 카드 사용 불가 (1턴)");
+                //    break;
             }
         }
 
