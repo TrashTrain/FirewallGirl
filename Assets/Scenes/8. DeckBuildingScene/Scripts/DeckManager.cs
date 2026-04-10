@@ -20,7 +20,7 @@ public class DeckManager : MonoBehaviour
     // 현재 선택된 카드들을 추적하는 리스트
     private List<CardController> selectedCards = new List<CardController>();
     
-    private string nextSceneName = "IntegratedScene";
+    private string nextSceneName = "StageScene";
     
     private void Start()
     {
@@ -142,7 +142,8 @@ public class DeckManager : MonoBehaviour
         
         TextMeshProUGUI detailPosText = FindChild<TextMeshProUGUI>(cardObj.transform, "PositiveStat/Text");
         if (detailPosText != null) detailPosText.text = data.positiveStatValue.ToString("+#;-#;0");
-
+        
+        Debug.Log($"부정수치: {data.negativeStatValue}");
         TextMeshProUGUI detailNegText = FindChild<TextMeshProUGUI>(cardObj.transform, "NegativeStat/Text");
         if (detailNegText != null) detailNegText.text = data.negativeStatValue.ToString("+#;-#;0");
 
