@@ -18,7 +18,7 @@ MonoBehaviour:
   positiveStatType: 3
   negativeStatType: 2
   positiveStatValue: 5
-  negativeStatValue: 2
+  negativeStatValue: -2
   cost: 0
   coolTime: 1
   summaryDescription: "\uCD5C\uB300 \uCCB4\uB825 {0} / \uCD5C\uB300 \uCF54\uC2A4\uD2B8

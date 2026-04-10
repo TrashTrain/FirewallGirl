@@ -185,6 +185,22 @@ public class UpDownMgr : MonoBehaviour
             Debug.LogError("Resources/Augments 경로에 증강체 데이터가 없습니다!");
             return;
         }
+        
+        // ✅ 2. 가중치 풀(Pool) 생성 로직
+        foreach (var aug in loadedAugments)
+        {
+            if (aug is PlayerStatRandomizeAugment)
+            {
+                // 랜덤 스탯 증강체는 확률을 대폭 높이기 위해 통에 4개를 넣습니다. 
+                // (선택지에 2개 이상 중복 등장 가능)
+                for (int j = 0; j < 5; j++) augmentPool.Add(aug);
+            }
+            else
+            {
+                // 다른 일반 증강체는 1개씩만 넣습니다.
+                augmentPool.Add(aug);
+            }
+        }
 
         for (int i = 0; i < Card.Length; i++)
         {
@@ -192,28 +208,44 @@ public class UpDownMgr : MonoBehaviour
 
             Card[i].gameObject.SetActive(true);
 
-            // 2. 풀(Pool)에서 무작위 증강체를 하나 뽑고, 리스트에서 제거 (중복 방지)
             if (augmentPool.Count == 0) 
             {
                 Debug.LogWarning("더 이상 뽑을 증강체가 없습니다!");
                 break;
             }
 
+            // ✅ 3. 추첨 및 중복 방지 로직
             int randomIndex = Random.Range(0, augmentPool.Count);
-            AugmentBase selectedAugment = augmentPool[randomIndex];
-            augmentPool.RemoveAt(randomIndex); 
+            AugmentBase originalAugment = augmentPool[randomIndex];
+            
+            if (originalAugment is PlayerStatRandomizeAugment)
+            {
+                // 뽑힌 랜덤 증강체 딱 1개만 제거 (통에 여러 개가 남았으므로 다음 칸에 또 나올 수 있음)
+                augmentPool.RemoveAt(randomIndex);
+            }
+            else
+            {
+                // 일반 증강체라면, 다른 칸에 또 나오는 것을 막기 위해 통에서 완전히 제거
+                augmentPool.RemoveAll(a => a == originalAugment);
+            }
 
-            // 클릭 시 어떤 증강체인지 알기 위해 리스트에 저장
-            currentAugmentRewards.Add(selectedAugment);
+            // ✅ 4. 핵심: 클론 생성(Instantiate) 및 초기화(Initialize)
+            // 이렇게 해야 원본 ScriptableObject가 오염되지 않고, 
+            // 랜덤 증강체가 2개 떴을 때 각각 다른 스탯과 수치를 가지게 됩니다.
+            AugmentBase clonedAugment = Instantiate(originalAugment);
+            clonedAugment.Initialize(); 
 
-            // 3. UI 갱신 (위에서 만든 함수 호출)
+            // 클릭 시 데이터를 넘겨주기 위해 '클론'을 저장
+            currentAugmentRewards.Add(clonedAugment);
+
+            // 5. UI 갱신
             RewardCard rewardCardScript = Card[i].GetComponent<RewardCard>();
             if (rewardCardScript != null)
             {
-                rewardCardScript.SetupAugmentCard(selectedAugment);
+                rewardCardScript.SetupAugmentCard(clonedAugment);
             }
 
-            // 4. 클릭 이벤트 연결
+            // 6. 클릭 이벤트 연결
             int index = i;
             UpDownCardClickHandler clickHandler = Card[i].GetComponent<UpDownCardClickHandler>();
             if (clickHandler == null)
