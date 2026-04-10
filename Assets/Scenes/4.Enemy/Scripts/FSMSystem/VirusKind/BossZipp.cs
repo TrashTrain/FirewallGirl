@@ -16,7 +16,7 @@ public class BossZipp : Virus
     private int _turnInPhase = 0; // 현재 페이즈에서 진행된 턴 수
     private int _phase3DotDamage = 1; // 3페이즈 누적 지속 피해량
 
-    private void Start()
+    protected override void Start()
     {
         if (VirusMgr.instance == null) return;
         InitData();
@@ -133,7 +133,7 @@ public class BossZipp : Virus
                 yield return CoCapacitySecure();
                 break;
             default:
-                yield return new WaitForSeconds(0.5f);
+                yield return new WaitForSeconds(1f);
                 break;
         }
     }
@@ -149,19 +149,18 @@ public class BossZipp : Virus
         int summonCount = (_currentPhase == 1) ? 2 : 1;
         int spawned = 0;
 
-        Transform spawn1 = GameObject.Find("Spawn1")?.transform;
-        Transform spawn2 = GameObject.Find("Spawn2")?.transform;
-
-        if (spawn1 != null && spawn1.childCount == 0 && spawned < summonCount)
+        // 💡 [수정] VirusSpawn 인스턴스를 통해 스폰 위치와 빈 공간을 확인합니다.
+        if (VirusSpawn.instance != null)
         {
-            SpawnRandomVirus(spawn1);
-            spawned++;
-        }
-
-        if (spawn2 != null && spawn2.childCount == 0 && spawned < summonCount)
-        {
-            SpawnRandomVirus(spawn2);
-            spawned++;
+            // 스폰 슬롯 0번(Spawn1)과 1번(Spawn2)을 확인
+            for (int i = 0; i < 2; i++)
+            {
+                if (VirusSpawn.instance.spawns[i].childCount == 0 && spawned < summonCount)
+                {
+                    SpawnRandomVirus(i); // 인덱스 번호를 넘겨줌
+                    spawned++;
+                }
+            }
         }
 
         if (spawned == 0)
@@ -172,12 +171,22 @@ public class BossZipp : Virus
         yield return new WaitForSeconds(0.5f);
     }
 
-    private void SpawnRandomVirus(Transform parentSlot)
+    // 💡 [수정] 스포너의 SpawnVirus를 호출하여 몬스터 생성과 UI 할당을 동시에 처리합니다.
+    private void SpawnRandomVirus(int spawnIndex)
     {
         if (randomVirusPrefabs == null || randomVirusPrefabs.Length == 0) return;
 
         int rand = Random.Range(0, randomVirusPrefabs.Length);
-        Instantiate(randomVirusPrefabs[rand], parentSlot);
+        GameObject prefabToSpawn = randomVirusPrefabs[rand];
+
+        // 스포너에게 특정 위치(spawnIndex)에 특정 몬스터(prefabToSpawn)를 소환하라고 명령
+        VirusSpawn.instance.SpawnVirus(spawnIndex, prefabToSpawn);
+
+        // 💡 [선택사항] 몬스터가 늘어났으므로 GameManager의 적 숫자도 올려줍니다 (스테이지 클리어 판정 오류 방지)
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.enemyCount++;
+        }
     }
 
     private IEnumerator CoZipHeal()

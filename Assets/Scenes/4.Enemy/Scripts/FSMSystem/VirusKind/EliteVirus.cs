@@ -10,7 +10,7 @@ public class EliteVirus : Virus
     public float sequence;
 
 
-    void Start()
+    protected override void Start()
     {
         Debug.Log("InTroy");
         InitData();

@@ -366,8 +366,8 @@ MonoBehaviour:
   randomVirusPrefabs:
   - {fileID: 1786381171166047068, guid: fd7260cb9cc55e446b847d9bc24c923a, type: 3}
   - {fileID: 7422016813165637500, guid: 4b55001154b3bef46a25427179ae0c77, type: 3}
-  - {fileID: 1786381171166047068, guid: fd7260cb9cc55e446b847d9bc24c923a, type: 3}
   - {fileID: 5368261607086323737, guid: 8686617d91b6cd94ebe01dd85a1682b3, type: 3}
+  - {fileID: 7750796116713643236, guid: ae71dc134fe945b40a5c035a1043964d, type: 3}
   phase1Sprite: {fileID: 21300000, guid: f63c6c61b366ee34281b809e7cd68cda, type: 3}
   phase2Sprite: {fileID: 21300000, guid: 900303ce17e87fa4fa574d6960cee6ec, type: 3}
   phase3Sprite: {fileID: 21300000, guid: 326024bbbd0360643a386aed8b93942c, type: 3}

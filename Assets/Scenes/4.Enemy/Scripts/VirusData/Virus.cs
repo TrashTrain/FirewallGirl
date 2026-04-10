@@ -89,7 +89,13 @@ public class Virus : MonoBehaviour
         }
 
         InitData();
-        Debug.Log("asdfasdf");
+        
+        if (enemyUIController != null)
+        {
+            enemyUIController.panel.SetActive(true); // 혹시 꺼져있을 UI 패널 강제 활성화
+            UpdateData(); // 내부 체력, 공격력, 방어력을 UI 텍스트에 확실하게 갱신 (이미 만들어두신 함수 활용!)
+        }
+        
         // 시작할 때 아이콘 나오도록
         RollNextActionAndUpdateIcon();
     }
@@ -302,11 +308,14 @@ public class Virus : MonoBehaviour
         {
             VirusSpawn.instance.StartCoroutine(VirusSpawn.instance.GetReward());
         }
-        gameObject.SetActive(false);
+
+        //gameObject.SetActive(false);
+
 
         // 만약 UI도 같이 꺼야 한다면:
         if (enemyUIController != null) enemyUIController.gameObject.SetActive(false);
-        
+
+        Destroy(gameObject);
     }
 
     
