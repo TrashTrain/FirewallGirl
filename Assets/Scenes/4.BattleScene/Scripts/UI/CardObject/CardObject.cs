@@ -20,5 +20,8 @@ public class CardObject : ScriptableObject
     public int coolTime = 0;
     
     [TextArea]
+    public string summaryDescription;
+    
+    [TextArea]
     public string description;
 }

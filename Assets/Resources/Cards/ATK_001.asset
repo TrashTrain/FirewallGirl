@@ -21,6 +21,8 @@ MonoBehaviour:
   negativeStatValue: -2
   cost: 2
   coolTime: 1
+  summaryDescription: "\uACF5\uACA9\uB825 <color=#FF0000>{0}</color> / \uBC29\uC5B4\uB825
+    <color=#0000FF>{1}</color>"
   description: "\uBC14\uC774\uB7EC\uC2A4\uB97C \uC0AD\uC81C\uD574 \uACF5\uACA9\uB825\uC774
     \uAC15\uD654\uB41C\uB2E4.\n\uACF5\uACA9\uB825 <color=#FF0000>{0}</color> / \uBC29\uC5B4\uB825
     <color=#0000FF>{1}</color>"
