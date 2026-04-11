@@ -114,7 +114,10 @@ public class VirusSpawn : MonoBehaviour
     // 몬스터 갯수 세기
     public int GetVirusCount()
     {
-        virusCnt += spawns.Count;
+        foreach (Transform spawn in spawns)
+        {
+            virusCnt += spawn.childCount;
+        }
 
         Debug.Log("count : " + virusCnt);
         return virusCnt;
