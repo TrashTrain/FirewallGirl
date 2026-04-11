@@ -257,4 +257,19 @@ public class BossZipp : Virus
 
         yield return new WaitForSeconds(0.5f);
     }
+
+    protected override void OnDeath()
+    {
+        VirusSpawn.instance.SetDiscountVirusCount();
+        
+        if (VirusSpawn.instance.virusCnt <= 0)
+        {
+            // 게임 클리어 로직
+            GameManager.Instance.GameClear();
+        }
+        
+        if (enemyUIController != null) enemyUIController.panel.SetActive(false);
+
+        Destroy(gameObject);
+    }
 }

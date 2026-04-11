@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     public int enemyCount = 0;
     
     public GameObject gameOverPanel;
+    public GameObject gameClearPanel;
 
    // private bool checkTurn;
     // Start is called before the first frame update
@@ -105,6 +106,55 @@ public class GameManager : MonoBehaviour
         // 루프가 끝난 후 목표 상태로 정확히 고정
         canvasGroup.alpha = 1f;
         gameOverPanel.transform.localScale = Vector3.one;
+    }
+    
+    public void GameClear()
+    {
+        Debug.Log("게임 클리어!");
+        Time.timeScale = 0f; // 진행 멈춤
+
+        if (gameClearPanel != null)
+        {
+            StartCoroutine(ShowGameClearUIAnim());
+        }
+    }
+    
+    private IEnumerator ShowGameClearUIAnim()
+    {
+        CanvasGroup canvasGroup = gameClearPanel.GetComponent<CanvasGroup>();
+        if (canvasGroup == null) canvasGroup = gameClearPanel.AddComponent<CanvasGroup>();
+
+        canvasGroup.alpha = 0f;
+        // 원래 크기의 절반(0.5배)에서 시작
+        gameClearPanel.transform.localScale = new Vector3(0.5f, 0.5f, 1f); 
+        gameClearPanel.SetActive(true);
+
+        float duration = 0.5f; // 클리어는 조금 더 여유롭게 (0.5초)
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = elapsed / duration;
+
+            // 투명도는 부드럽게 진해짐 (일반 Ease-out)
+            float alphaEase = 1f - Mathf.Pow(1f - t, 3f);
+            canvasGroup.alpha = Mathf.Lerp(0f, 1f, alphaEase);
+
+            // 크기는 통통 튀는 Ease-Out Back 공식 적용 (목표치인 1을 살짝 넘었다가 돌아옴)
+            float c1 = 1.70158f;
+            float c3 = c1 + 1f;
+            float t2 = t - 1f;
+            float bounceEase = 1f + c3 * Mathf.Pow(t2, 3f) + c1 * Mathf.Pow(t2, 2f);
+
+            // LerpUnclamped를 사용해야 1을 초과하는 크기(바운스 효과)가 정상적으로 적용됩니다.
+            gameClearPanel.transform.localScale = Vector3.LerpUnclamped(new Vector3(0.5f, 0.5f, 1f), Vector3.one, bounceEase);
+
+            yield return null;
+        }
+
+        canvasGroup.alpha = 1f;
+        gameClearPanel.transform.localScale = Vector3.one;
     }
     
     public void GoToMainMenu()
