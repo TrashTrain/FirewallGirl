@@ -9,6 +9,11 @@ public class CardDeckController : MonoBehaviour
     public GameObject cardPrefab;
     public float cardScale = 1.0f;
     
+    public Sprite attackIcon;
+    public Sprite defenseIcon;
+    public Sprite healthIcon;
+    public Sprite costIcon;
+    
     // public float fanSpacing = 80f;     // 부채꼴 좌우 간격
     // public float fanYDrop = 15f;       // 부채꼴 가장자리 아래로 떨어지는 정도
     // public float fanAngleSpacing = 5f; // 부채꼴 회전 각도
@@ -99,6 +104,9 @@ public class CardDeckController : MonoBehaviour
     
     private void UpdateCardVisuals(GameObject cardObj, CardObject data)
     {
+        string posValueStr = $"<color=#E24E3A>{data.positiveStatValue.ToString("+#;-#;0")}</color>";
+        string negValueStr = $"<color=#4152E5>{data.negativeStatValue.ToString("+#;-#;0")}</color>";
+        
         // 1. 미니 뷰 (최상위) 업데이트
         TextMeshProUGUI nameText = FindChild<TextMeshProUGUI>(cardObj.transform, "CardName");
         if (nameText != null) nameText.text = data.cardName;
@@ -131,24 +139,42 @@ public class CardDeckController : MonoBehaviour
         Transform detailView = cardObj.transform.Find("Card");
         if (detailView != null)
         {
+            Transform useBtn = FindChild<Transform>(detailView, "UseBtn");
+            TextMeshProUGUI useBtnText = FindChild<TextMeshProUGUI>(useBtn, "Text");
+            if (useBtnText != null) useBtnText.text = $"적용 ({data.cost.ToString()})";
+            
             TextMeshProUGUI detailNameText = FindChild<TextMeshProUGUI>(detailView, "CardName/Text");
-            if (detailNameText != null) detailNameText.text = data.cardName;
+            if (detailNameText != null) detailNameText.text = data.cardNameEng;
+            
+            TextMeshProUGUI detailNameTextBody = FindChild<TextMeshProUGUI>(detailView, "CardNameBody/Text");
+            if (detailNameTextBody != null) detailNameTextBody.text = $"{data.cardNameEng}\n{data.cardName}";
 
-            // Content 이미지 (아이콘)
-            Image detailIconImg = FindChild<Image>(detailView, "Content");
-            if (detailIconImg != null) detailIconImg.sprite = data.cardImage;
-
-            // 스탯 텍스트 (+, - 부호 포함)
+            // ✅ 긍정 스탯 텍스트 및 아이콘 변경 (한글 스탯 이름 + 색상 수치)
+            string posStatName = GetStatNameKorean(data.positiveStatType);
             TextMeshProUGUI detailPosText = FindChild<TextMeshProUGUI>(detailView, "PositiveStat/Text");
-            if (detailPosText != null) detailPosText.text = data.positiveStatValue.ToString("+#;-#;0");
+            if (detailPosText != null)
+            {
+                detailPosText.text = $"{posStatName} <color=#E24E3A>{data.positiveStatValue.ToString("+#;-#;0")}</color>";
+            }
 
+            Image detailPosIcon = FindChild<Image>(detailView, "PositiveStat");
+            if (detailPosIcon != null) detailPosIcon.sprite = GetStatIcon(data.positiveStatType);
+
+            // ✅ 부정 스탯 텍스트 및 아이콘 변경 (한글 스탯 이름 + 색상 수치)
+            string negStatName = GetStatNameKorean(data.negativeStatType);
             TextMeshProUGUI detailNegText = FindChild<TextMeshProUGUI>(detailView, "NegativeStat/Text");
-            if (detailNegText != null) detailNegText.text = data.negativeStatValue.ToString("+#;-#;0");
+            if (detailNegText != null)
+            {
+                detailNegText.text = $"{negStatName} <color=#4152E5>{data.negativeStatValue.ToString("+#;-#;0")}</color>";
+            }
 
-            TextMeshProUGUI detailCostText = FindChild<TextMeshProUGUI>(detailView, "Cost/CostText");
-            if (detailCostText != null) detailCostText.text = data.cost.ToString();
+            Image detailNegIcon = FindChild<Image>(detailView, "NegativeStat");
+            if (detailNegIcon != null) detailNegIcon.sprite = GetStatIcon(data.negativeStatType);
 
-            // 설명 텍스트 ({0}, {1} 치환 로직 포함)
+            // TextMeshProUGUI detailCostText = FindChild<TextMeshProUGUI>(detailView, "Cost/CostText");
+            // if (detailCostText != null) detailCostText.text = data.cost.ToString();
+
+            // 설명 텍스트 치환 (색상 적용)
             TextMeshProUGUI detailDescText = FindChild<TextMeshProUGUI>(detailView, "Description");
             if (detailDescText != null)
             {
@@ -349,4 +375,29 @@ public class CardDeckController : MonoBehaviour
     //         linePositions[i] = new Vector2(x, baseY);
     //     }
     // }
+    
+    private string GetStatNameKorean(StatType type)
+    {
+        switch (type)
+        {
+            case StatType.Attack: return "공격력";
+            case StatType.Defense: return "방어력";
+            case StatType.Health: return "체력";
+            case StatType.Cost: return "코스트";
+            default: return type.ToString();
+        }
+    }
+
+    // 🎯 스탯 타입에 맞는 아이콘(Sprite)을 반환해주는 함수
+    private Sprite GetStatIcon(StatType type)
+    {
+        switch (type)
+        {
+            case StatType.Attack: return attackIcon;
+            case StatType.Defense: return defenseIcon;
+            case StatType.Health: return healthIcon;
+            case StatType.Cost: return costIcon;
+            default: return null;
+        }
+    }
 }
