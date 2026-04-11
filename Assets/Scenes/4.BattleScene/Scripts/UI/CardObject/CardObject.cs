@@ -8,7 +8,6 @@ public class CardObject : ScriptableObject
 {
     public int cardIndex;
     public string cardName;
-    public string cardNameEng;
     public Sprite cardImage;
 
     public StatType positiveStatType;
