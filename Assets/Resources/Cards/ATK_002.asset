@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardIndex: 2
   cardName: "\uAC15\uC81C \uC885\uB8CC"
+  cardNameEng: FORCE QUIT
   cardImage: {fileID: 21300000, guid: 5fcdbfa04eac3ca49a83025f01349f4d, type: 3}
   positiveStatType: 0
   negativeStatType: 3
@@ -21,7 +22,7 @@ MonoBehaviour:
   negativeStatValue: -3
   cost: 4
   coolTime: 1
-  summaryDescription: "\uACF5\uACA9\uB825 {0} / \uCD5C\uB300 \uCCB4\uB825 {1}"
+  summaryDescription: "\uACF5\uACA9\uB825 <color=#E24E3A>{0}</color> / \uCD5C\uB300
+    \uCCB4\uB825 <color=#4152E5>{1}</color>"
   description: "\uAC15\uC81C \uC885\uB8CC \uBA85\uB839\uC5B4\uB85C \uC801\uC744 \uD06C\uAC8C
-    \uD0C0\uACA9\uD55C\uB2E4.\n\uACF5\uACA9\uB825 {0} / \uCD5C\uB300 \uCCB4\uB825
-    {1}"
+    \uD0C0\uACA9\uD55C\uB2E4."

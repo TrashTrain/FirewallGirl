@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6f070819ac81d14dbbeb90f61e2080c, type: 3}
   m_Name: AUG_001
   m_EditorClassIdentifier: 
-  augmentName: "\uCD95\uBCF51"
-  description: "\uAE0D\uC815 \uC218\uCE58\uAC00 1\uB9CC\uD07C \uC99D\uAC00\uD569\uB2C8\uB2E4.
-    \uBD80\uC815\uC218\uCE58\uAC00 1\uB9CC\uD07C \uAC10\uC18C\uD569\uB2C8\uB2E4."
+  augmentName: "\uCD95\uBCF5"
+  description: "\uAE0D\uC815 \uC218\uCE58\uAC00 1\uB9CC\uD07C \uC99D\uAC00\uD569\uB2C8\uB2E4.\n\uBD80\uC815\uC218\uCE58\uAC00
+    1\uB9CC\uD07C \uAC10\uC18C\uD569\uB2C8\uB2E4."
   icon: {fileID: 21300000, guid: 5b0cb8b0f83f4374fa1c14faa03d42ce, type: 3}
   posChangeValue: 1
   negChangeValue: 1

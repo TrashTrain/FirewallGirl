@@ -10,8 +10,13 @@ public class DeckManager : MonoBehaviour
     [Header("Configuration")]
     public int maxDeckSize = 5; // 최대 선택 가능한 카드 수
     public GameObject cardPrefab; // 카드 prefab
-    public float collectionScale = 0.7f; // 컬렉션에 있을 때 카드 크기
+    public float collectionScale = 0.6f; // 컬렉션에 있을 때 카드 크기
     public float selectedScale = 0.5f; // 선택했을 때 카드 크기
+    
+    public Sprite attackIcon;
+    public Sprite defenseIcon;
+    public Sprite healthIcon;
+    public Sprite costIcon;
 
     [Header("Containers")]
     public Transform collectionContainer; // 컬렉션 영역 (Grid Layout)
@@ -111,44 +116,57 @@ public class DeckManager : MonoBehaviour
     // 카드 프리팹 내부의 UI 요소들을 찾아 데이터를 넣어주는 함수
     void UpdateCardVisuals(GameObject cardObj, CardObject data)
     {
-        // 1. 아이콘 이미지 설정 (이름으로 찾거나 태그로 찾기)
-        // 프리팹 구조에 따라 경로 수정 필요 (예: "Front/Icon")
-        // Image icon = cardObj.transform.Find("Icon")?.GetComponent<Image>(); 
-        // if (icon == null) icon = cardObj.transform.Find("Front/Icon")?.GetComponent<Image>(); // 예시 경로
-        // if (icon != null) icon.sprite = data.cardImage;
-        //
-        // // 2. 텍스트 설정 (TextMeshProUGUI 사용 가정)
-        // // 프리팹 자식 오브젝트 이름이 "NameText", "CostText", "DescText"라고 가정
-        // TextMeshProUGUI nameText = FindChild<TextMeshProUGUI>(cardObj.transform, "NameText");
-        // if (nameText != null) nameText.text = data.cardName;
-        //
-        // TextMeshProUGUI costText = FindChild<TextMeshProUGUI>(cardObj.transform, "CostText");
-        // if (costText != null) costText.text = data.cost.ToString();
-        //
-        // TextMeshProUGUI descText = FindChild<TextMeshProUGUI>(cardObj.transform, "DescText");
-        // if (descText != null) descText.text = data.description;
         
         Transform closeBtn = FindChild<Transform>(cardObj.transform, "CloseBtn");
         if (closeBtn != null) closeBtn.gameObject.SetActive(false);
         
         Transform useBtn = FindChild<Transform>(cardObj.transform, "UseBtn");
-        if (useBtn != null) useBtn.gameObject.SetActive(false);
+        if (useBtn != null)
+        {
+            Button btn = useBtn.GetComponent<Button>();
+
+            if (btn != null)
+            {
+                btn.interactable = false;
+            }
+        }
+        
+        TextMeshProUGUI useBtnText = FindChild<TextMeshProUGUI>(useBtn, "Text");
+        if (useBtnText != null) useBtnText.text = $"적용 ({data.cost.ToString()})";
         
         TextMeshProUGUI detailNameText = FindChild<TextMeshProUGUI>(cardObj.transform, "CardName/Text");
-        if (detailNameText != null) detailNameText.text = data.cardName;
+        if (detailNameText != null) detailNameText.text = data.cardNameEng;
         
-        Image detailIconImg = FindChild<Image>(cardObj.transform, "Content");
-        if (detailIconImg != null) detailIconImg.sprite = data.cardImage;
+        TextMeshProUGUI detailNameTextBody = FindChild<TextMeshProUGUI>(cardObj.transform, "CardNameBody/Text");
+        if (detailNameTextBody != null) detailNameTextBody.text = $"{data.cardNameEng}\n{data.cardName}";
+        
+        // Image detailIconImg = FindChild<Image>(cardObj.transform, "Content");
+        // if (detailIconImg != null) detailIconImg.sprite = data.cardImage;
+        
+        string posStatName = GetStatNameKorean(data.positiveStatType);
         
         TextMeshProUGUI detailPosText = FindChild<TextMeshProUGUI>(cardObj.transform, "PositiveStat/Text");
-        if (detailPosText != null) detailPosText.text = data.positiveStatValue.ToString("+#;-#;0");
-        
-        Debug.Log($"부정수치: {data.negativeStatValue}");
-        TextMeshProUGUI detailNegText = FindChild<TextMeshProUGUI>(cardObj.transform, "NegativeStat/Text");
-        if (detailNegText != null) detailNegText.text = data.negativeStatValue.ToString("+#;-#;0");
+        if (detailPosText != null)
+        {
+            detailPosText.text = $"{posStatName} <color=#E24E3A>{data.positiveStatValue.ToString("+#;-#;0")}</color>";
+        }
 
-        TextMeshProUGUI detailCostText = FindChild<TextMeshProUGUI>(cardObj.transform, "Cost/CostText");
-        if (detailCostText != null) detailCostText.text = data.cost.ToString();
+        Image detailPosIcon = FindChild<Image>(cardObj.transform, "PositiveStat");
+        if (detailPosIcon != null) detailPosIcon.sprite = GetStatIcon(data.positiveStatType);
+        
+        string negStatName = GetStatNameKorean(data.negativeStatType);
+    
+        TextMeshProUGUI detailNegText = FindChild<TextMeshProUGUI>(cardObj.transform, "NegativeStat/Text");
+        if (detailNegText != null)
+        {
+            detailNegText.text = $"{negStatName} <color=#4152E5>{data.negativeStatValue.ToString("+#;-#;0")}</color>";
+        }
+    
+        Image detailNegIcon = FindChild<Image>(cardObj.transform, "NegativeStat");
+        if (detailNegIcon != null) detailNegIcon.sprite = GetStatIcon(data.negativeStatType);
+
+        // TextMeshProUGUI detailCostText = FindChild<TextMeshProUGUI>(cardObj.transform, "Cost/CostText");
+        // if (detailCostText != null) detailCostText.text = data.cost.ToString();
         
         TextMeshProUGUI detailDescText = FindChild<TextMeshProUGUI>(cardObj.transform, "Description");
         if (detailDescText != null)
@@ -326,6 +344,31 @@ public class DeckManager : MonoBehaviour
         else
         {
             Debug.LogError("CardDatabaseManager가 없습니다! 씬 전환 불가.");
+        }
+    }
+    
+    private string GetStatNameKorean(StatType type)
+    {
+        switch (type)
+        {
+            case StatType.Attack: return "공격력";
+            case StatType.Defense: return "방어력";
+            case StatType.Health: return "체력";
+            case StatType.Cost: return "코스트";
+            default: return type.ToString();
+        }
+    }
+
+// 🎯 스탯 타입에 맞는 아이콘(Sprite)을 반환해주는 함수
+    private Sprite GetStatIcon(StatType type)
+    {
+        switch (type)
+        {
+            case StatType.Attack: return attackIcon;
+            case StatType.Defense: return defenseIcon;
+            case StatType.Health: return healthIcon;
+            case StatType.Cost: return costIcon;
+            default: return null;
         }
     }
 }
