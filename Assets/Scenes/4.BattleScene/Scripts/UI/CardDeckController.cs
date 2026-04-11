@@ -111,8 +111,8 @@ public class CardDeckController : MonoBehaviour
         TextMeshProUGUI nameText = FindChild<TextMeshProUGUI>(cardObj.transform, "CardName");
         if (nameText != null) nameText.text = data.cardName;
 
-        Image iconImg = FindChild<Image>(cardObj.transform, "Content");
-        if (iconImg != null) iconImg.sprite = data.cardImage;
+        // Image iconImg = FindChild<Image>(cardObj.transform, "Content");
+        // if (iconImg != null) iconImg.sprite = data.cardImage;
 
         // 2. 호버 뷰 업데이트
         Transform hoverView = cardObj.transform.Find("HoverView");
@@ -121,8 +121,8 @@ public class CardDeckController : MonoBehaviour
             TextMeshProUGUI hoverName = FindChild<TextMeshProUGUI>(hoverView, "CardName");
             if (hoverName != null) hoverName.text = data.cardName;
             
-            Image hoverIconImg = FindChild<Image>(hoverView, "CardIcon");
-            if (hoverIconImg != null) hoverIconImg.sprite = data.cardImage;
+            // Image hoverIconImg = FindChild<Image>(hoverView, "CardIcon");
+            // if (hoverIconImg != null) hoverIconImg.sprite = data.cardImage;
 
             TextMeshProUGUI hoverStat = FindChild<TextMeshProUGUI>(hoverView, "StatText");
             if (hoverStat != null)
