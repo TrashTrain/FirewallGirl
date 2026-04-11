@@ -179,10 +179,11 @@ public class GameManager : MonoBehaviour
     
     public void QuitGame()
     {
-        Debug.Log("게임 완전 종료");
-        
-        // 에디터에서는 동작하지 않고, 실제 빌드된 게임에서만 프로그램이 종료됩니다.
-        Application.Quit();
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Apllication.Quit();
+#endif
     }
 
     private IEnumerator GameOverSequence()
