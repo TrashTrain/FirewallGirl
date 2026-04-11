@@ -455,6 +455,8 @@ MonoBehaviour:
   - {fileID: 7750796116713643236, guid: ae71dc134fe945b40a5c035a1043964d, type: 3}
   - {fileID: 5368261607086323737, guid: 8686617d91b6cd94ebe01dd85a1682b3, type: 3}
   - {fileID: 7422016813165637500, guid: 4b55001154b3bef46a25427179ae0c77, type: 3}
+  isBossStage: 0
+  bossPrefab: {fileID: 0}
   virusCnt: 0
 --- !u!114 &119638774 stripped
 MonoBehaviour:
@@ -5709,6 +5711,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyCount: 0
   gameOverPanel: {fileID: 710939166}
+  gameClearPanel: {fileID: 0}
 --- !u!114 &1686374162
 MonoBehaviour:
   m_ObjectHideFlags: 0
