@@ -113,6 +113,7 @@ public class BossZipp : Virus
             int hpBeforeDot = PlayerManager.instance.currentHP; // 피해 전 체력 저장
 
             Debug.Log($"[바이러스 침투] 플레이어에게 {_phase3DotDamage}의 지속 피해를 입힙니다.");
+            PlayerManager.instance.currentDotDamage = _phase3DotDamage; // UI 동기화용 변수 업데이트
             PlayerManager.instance.TakeDamage(_phase3DotDamage);
 
             // 실제 들어간 데미지 계산 및 흡혈

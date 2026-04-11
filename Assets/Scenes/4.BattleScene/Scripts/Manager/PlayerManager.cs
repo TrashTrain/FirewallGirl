@@ -10,6 +10,12 @@ public class StatModifier
     public StatType statType;
     public int amount;
     public int durationTurns; // 남은 유지 턴 수
+
+    [Header("UI Display")]
+    public Sprite statusIcon;     // 이 효과에 매핑될 범용 아이콘 (AtkUp, AtkDown 등)
+    public bool isBuff = false;     // true면 버프 패널, false면 디버프 패널에 표기
+    [TextArea]
+    public string descriptionText; // "공격력 감소" 등 플레이어에게 보여줄 실제 설명
 }
 
 public class PlayerManager : MonoBehaviour
@@ -39,6 +45,9 @@ public class PlayerManager : MonoBehaviour
     // 플레이어가 현재 보유 중인 증강체 리스트
     public List<AugmentBase> activeAugments = new List<AugmentBase>();
     public List<CardObject> masterDeck = new List<CardObject>();
+
+    [Header("Debuffs")]
+    public int currentDotDamage = 0; // 현재 턴당 입는 지속 피해량 (0이면 디버프 없음)
 
     private Vector3 _originPos;
 
@@ -105,9 +114,9 @@ public class PlayerManager : MonoBehaviour
     }
 
     // [추가] 외부(ErrorVirus 등)에서 다중 턴 디버프를 걸 때 사용합니다.
-    public void AddMultiTurnStat(StatType type, int amount, int duration)
+    public void AddMultiTurnStat(StatType type, int amount, int duration, string descriptionText)
     {
-        activeModifiers.Add(new StatModifier { statType = type, amount = amount, durationTurns = duration });
+        activeModifiers.Add(new StatModifier { statType = type, amount = amount, durationTurns = duration, descriptionText = descriptionText });
         UpdateUI();
     }
 
@@ -389,6 +398,9 @@ public class PlayerManager : MonoBehaviour
         if (powerUI != null) powerUI.UpdateAttackPowerUI(AttackPower);
         if (powerUI != null) powerUI.UpdateDefensePowerUI(DefensePower);
         if (costUI != null) costUI.UpdateCostUI(currentCost, TotalCost);
+
+        // 💡 [추가] 턴 종료/시작 등으로 스탯 변경이 끝난 후 상태 아이콘을 1번만 갱신합니다.
+        if (PlayerStatusUI.instance != null) PlayerStatusUI.instance.RefreshStatusUI();
     }
     
     // 1. 증강체를 새로 획득했을 때 호출할 함수
