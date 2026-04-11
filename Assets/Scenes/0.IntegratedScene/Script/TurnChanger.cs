@@ -10,6 +10,7 @@ public class TurnChanger : MonoBehaviour
     public void OnClickButton()
     {
         GameManager.Instance.OnTrunButtonClick();
+        //PlayerManager.instance.OnTurnEndProcess(); // 디버프/쿨타임 갱신
     }
 
 }
