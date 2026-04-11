@@ -71,13 +71,13 @@ public class ErrorVirus : Virus
 
                 case DebuffType.Backdoor:
                     // [주의점 2 참고] 다중 턴 유지 로직 필요     수정완료
-                    PlayerManager.instance.AddMultiTurnStat(StatType.Attack, -1, 3);
+                    PlayerManager.instance.AddMultiTurnStat(StatType.Attack, -1, 2+1, "공격력 감소");
                     Debug.Log("효과: 플레이어 공격력 감소 (2턴)");
                     break;
 
                 case DebuffType.PacketLoss:
                     // [주의점 3 참고] 방어 불가 상태 추가 필요    수정완료    // 방어도 증가/감소 수정 필요
-                    PlayerManager.instance.cannotGainDefenseTurns = 1;
+                    PlayerManager.instance.cannotGainDefenseTurns = 1+1;
                     Debug.Log("효과: 방어도 쌓기 불가 (1턴)");
                     break;
 
