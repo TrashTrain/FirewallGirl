@@ -13,6 +13,12 @@ public class MainScreenBG : MonoBehaviour
 
     public void LoadDeckBuildingScene()
     {
+        StageSaveManager.ResetStage();
+        SceneLoader.LoadDeckBuildingScene();
+    }
+
+    public void ResumeButton()
+    {
         SceneLoader.LoadDeckBuildingScene();
     }
 

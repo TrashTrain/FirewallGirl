@@ -6569,23 +6569,23 @@ PrefabInstance:
     - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
       propertyPath: stateIcons.Array.data[0].iconSprite
       value: 
-      objectReference: {fileID: 21300000, guid: c5f2406129fc0644089047d425f2fa2a, type: 3}
+      objectReference: {fileID: 21300000, guid: c1c2176bd51a3c94bb0de5391ab8d305, type: 3}
     - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
       propertyPath: stateIcons.Array.data[1].iconSprite
       value: 
-      objectReference: {fileID: 21300000, guid: 3b6921a5540aaa24ea7d5e7d9ce3cc89, type: 3}
+      objectReference: {fileID: 21300000, guid: fb8a2eec1ddde2a4291c8faaf233a354, type: 3}
     - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
       propertyPath: stateIcons.Array.data[2].iconSprite
       value: 
-      objectReference: {fileID: 21300000, guid: 3b6921a5540aaa24ea7d5e7d9ce3cc89, type: 3}
+      objectReference: {fileID: 21300000, guid: fb8a2eec1ddde2a4291c8faaf233a354, type: 3}
     - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
       propertyPath: stateIcons.Array.data[3].iconSprite
       value: 
-      objectReference: {fileID: 21300000, guid: 8073e423cfb531a429e653bc058adba8, type: 3}
+      objectReference: {fileID: 21300000, guid: 21537652c62f41e4a89fa17a477388c0, type: 3}
     - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
       propertyPath: stateIcons.Array.data[4].iconSprite
       value: 
-      objectReference: {fileID: 21300000, guid: 3b6921a5540aaa24ea7d5e7d9ce3cc89, type: 3}
+      objectReference: {fileID: 21300000, guid: fb8a2eec1ddde2a4291c8faaf233a354, type: 3}
     - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
       propertyPath: stateIcons.Array.data[1].description
       value: "\uCCB4\uB825\uC744 \uD68C\uBCF5\uD558\uB824 \uD558\uACE0 \uC788\uC2B5\uB2C8\uB2E4."
