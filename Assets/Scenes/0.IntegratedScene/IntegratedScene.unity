@@ -1956,7 +1956,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 569670593}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1686374161}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: QuitGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &569670593
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6392,13 +6404,13 @@ RectTransform:
   - {fileID: 184222007}
   - {fileID: 2049344466}
   - {fileID: 1048387848}
+  - {fileID: 39326031}
+  - {fileID: 2138883102}
+  - {fileID: 1525040784}
   - {fileID: 843590750}
   - {fileID: 854836677}
   - {fileID: 1301447414}
   - {fileID: 678049685}
-  - {fileID: 39326031}
-  - {fileID: 2138883102}
-  - {fileID: 1525040784}
   - {fileID: 1207680869}
   - {fileID: 1663036512}
   - {fileID: 658299192}
@@ -7057,6 +7069,38 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 1217457105}
+    - target: {fileID: 4978980839449122082, guid: db2b80a1d11b0d04985c7bebaabb3900, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4978980839449122082, guid: db2b80a1d11b0d04985c7bebaabb3900, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4978980839449122082, guid: db2b80a1d11b0d04985c7bebaabb3900, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4978980839449122082, guid: db2b80a1d11b0d04985c7bebaabb3900, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5712702772980482685, guid: db2b80a1d11b0d04985c7bebaabb3900, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5712702772980482685, guid: db2b80a1d11b0d04985c7bebaabb3900, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5712702772980482685, guid: db2b80a1d11b0d04985c7bebaabb3900, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5712702772980482685, guid: db2b80a1d11b0d04985c7bebaabb3900, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8395139514264665259, guid: db2b80a1d11b0d04985c7bebaabb3900, type: 3}
       propertyPath: m_Name
       value: PlayerStatus
