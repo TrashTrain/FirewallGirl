@@ -15,6 +15,6 @@ MonoBehaviour:
   augmentName: "\uCD95\uBCF5"
   description: "\uAE0D\uC815 \uC218\uCE58\uAC00 1\uB9CC\uD07C \uC99D\uAC00\uD569\uB2C8\uB2E4.\n\uBD80\uC815\uC218\uCE58\uAC00
     1\uB9CC\uD07C \uAC10\uC18C\uD569\uB2C8\uB2E4."
-  icon: {fileID: 21300000, guid: 5b0cb8b0f83f4374fa1c14faa03d42ce, type: 3}
+  icon: {fileID: 21300000, guid: 8073e423cfb531a429e653bc058adba8, type: 3}
   posChangeValue: 1
   negChangeValue: 1
