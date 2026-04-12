@@ -186,6 +186,16 @@ public class DeckManager : MonoBehaviour
             // 이미 선택된 상태 -> 컬렉션으로 반환
             DeselectCard(card);
         }
+        else if (card.isSelected)
+        {
+            CardController cloneToRemove = selectedCards.Find(c => c.originalCard == card);
+            
+            if (cloneToRemove != null)
+            {
+                // 찾은 복제본을 DeselectCard에 넘겨 삭제하고 상태를 복구합니다.
+                DeselectCard(cloneToRemove);
+            }
+        }
         else
         {
             // 선택되지 않은 상태 -> 덱으로 추가
