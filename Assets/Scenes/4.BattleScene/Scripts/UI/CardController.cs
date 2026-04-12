@@ -155,7 +155,7 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         // DeckBuilding 모드면 매니저에게 알림
         if (currentMode == CardMode.DeckBuilding && deckManager != null)
         {
-            if (!isInteractable) return;
+            // if (!isInteractable) return;
             
             deckManager.OnCardClicked(this);
         }
