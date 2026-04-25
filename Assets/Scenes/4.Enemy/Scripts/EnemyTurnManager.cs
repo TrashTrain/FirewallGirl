@@ -76,6 +76,7 @@ public class EnemyTurnManager : MonoBehaviour
         _running = false;
         
         PlayerManager.instance.OnTurnEndProcess(); // 디버프/쿨타임 갱신
+        PlayerManager.instance.PreparePlayerTurn(); 
         PlayerManager.instance.ResetTurnDeltaStats();
         PlayerManager.instance.currentCost = PlayerManager.instance.TotalCost;
         PlayerManager.instance.UpdateUI();

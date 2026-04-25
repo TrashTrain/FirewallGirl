@@ -8,7 +8,7 @@ using TMPro;
 public class DeckManager : MonoBehaviour
 {
     [Header("Configuration")]
-    public int maxDeckSize = 5; // 최대 선택 가능한 카드 수
+    public int maxDeckSize = 10; // 최대 선택 가능한 카드 수
     public GameObject cardPrefab; // 카드 prefab
     public float collectionScale = 0.6f; // 컬렉션에 있을 때 카드 크기
     public float selectedScale = 0.5f; // 선택했을 때 카드 크기

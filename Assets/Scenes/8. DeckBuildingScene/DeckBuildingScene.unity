@@ -409,7 +409,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aab5eaa9fcaec0746bd80e88904e3c09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxDeckSize: 5
+  maxDeckSize: 10
   cardPrefab: {fileID: 4631881173365916910, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
   collectionScale: 0.6
   selectedScale: 0.5
@@ -1021,7 +1021,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 44.69, y: -4}
+  m_AnchoredPosition: {x: 44.68994, y: -4}
   m_SizeDelta: {x: 200, y: 30}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1084439569

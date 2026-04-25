@@ -44,7 +44,6 @@ public class PlayerManager : MonoBehaviour
     
     // 플레이어가 현재 보유 중인 증강체 리스트
     public List<AugmentBase> activeAugments = new List<AugmentBase>();
-    public List<CardObject> masterDeck = new List<CardObject>();
 
     [Header("Debuffs")]
     public int currentDotDamage = 0; // 현재 턴당 입는 지속 피해량 (0이면 디버프 없음)
@@ -54,6 +53,15 @@ public class PlayerManager : MonoBehaviour
     public HealthBar hpBar;
     public PowerUI powerUI;
     public CostUI costUI;
+    
+    [Header("Deck & Card System")]
+    public GameObject cardPrefab;      // 생성할 카드 프리팹
+    public Transform handContainer;    // 카드가 배치될 UI 부모 (Horizontal Layout Group 권장)
+    
+    public List<CardObject> masterDeck = new List<CardObject>(); // 전체 덱
+    private List<CardObject> drawPile = new List<CardObject>();   // 뽑을 더미
+    [SerializeField]
+    private List<PlayerCard> handCards = new List<PlayerCard>();  // 현재 손에 든 카드 객체들
 
     public static PlayerManager instance;
 
@@ -93,6 +101,63 @@ public class PlayerManager : MonoBehaviour
         {
             Destroy(gameObject);
             return;
+        }
+    }
+    
+    public void SetSceneReferences(Transform container)
+    {
+        this.handContainer = container;
+        Debug.Log($"[PlayerManager] 새로운 씬의 HandContainer 연결 완료: {container.name}");
+    }
+
+    private void Start()
+    {
+        InitializeBattleDeck();
+    }
+    
+    public void InitializeBattleDeck()
+    {
+        masterDeck.Clear(); // 기존 리스트 초기화
+
+        // 1. CardDatabaseManager에서 확정된 덱 데이터 가져오기
+        if (CardDatabaseManager.instance != null)
+        {
+            List<CardObject> savedDeck = CardDatabaseManager.instance.GetCurrentDeck();
+
+            if (savedDeck != null && savedDeck.Count > 0)
+            {
+                foreach (CardObject cardData in savedDeck)
+                {
+                    // [중요] 원본 보호를 위해 복사본(Clone)을 생성하여 마스터 덱에 추가
+                    CardObject clonedCard = Instantiate(cardData);
+                    clonedCard.name = cardData.cardName; // 이름 깔끔하게 정리
+                    masterDeck.Add(clonedCard);
+                }
+                Debug.Log($"[PlayerManager] DB로부터 {masterDeck.Count}장의 카드를 로드하고 복제 완료했습니다.");
+            }
+            else
+            {
+                Debug.LogWarning("저장된 덱이 비어있습니다. CardDatabaseManager를 확인하세요.");
+            }
+        }
+        else
+        {
+            Debug.LogError("CardDatabaseManager 인스턴스를 찾을 수 없습니다!");
+        }
+        
+        drawPile.Clear();
+        drawPile.AddRange(masterDeck);
+    }
+    
+    // 리스트 셔플 (Fisher-Yates 알고리즘)
+    private void Shuffle(List<CardObject> list)
+    {
+        for (int i = list.Count - 1; i > 0; i--)
+        {
+            int rnd = UnityEngine.Random.Range(0, i + 1);
+            CardObject temp = list[i];
+            list[i] = list[rnd];
+            list[rnd] = temp;
         }
     }
 
@@ -325,13 +390,94 @@ public class PlayerManager : MonoBehaviour
             amount -= consume;
         }
     }
+    
+    public void PreparePlayerTurn()
+    {
+        // 2. 패 버리기, 셔플, 3장 드로우
+        ClearHand();
+        Shuffle(drawPile);
+        DrawCards(3);
+
+        UpdateUI();
+    }
 
     public void StartPlayerTurn()
     {
         if (_running) return;
         if (!GameManager.PlayerTurn) return;
 
+        UpdateUI();
+
         StartCoroutine(CoPlayerTurnSequence());
+    }
+    
+    public void DrawCards(int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            // 뽑을 카드가 없으면 버린 더미를 다시 섞음
+            if (drawPile.Count == 0) return;
+
+            // 카드 생성 및 데이터 할당
+            CardObject data = drawPile[0];
+            drawPile.RemoveAt(0);
+
+            GameObject cardObj = Instantiate(cardPrefab, handContainer);
+            PlayerCard pCard = cardObj.GetComponent<PlayerCard>();
+            
+            if (pCard != null)
+            {
+                pCard.SetCardData(data); // 데이터 주입 함수 필요
+                handCards.Add(pCard);
+            }
+        }
+        
+        if (CardDeckController.instance != null)
+        {
+            CardDeckController.instance.RefreshHandLayout(handCards);
+            CardDeckController.instance.UpdateDeckUI(drawPile.Count, 0); // 버린 더미는 없으므로 0
+        }
+    }
+
+    // 카드를 사용하거나 턴이 끝날 때 호출
+    public void OnCardUsed(PlayerCard card)
+    {
+        if (handCards.Contains(card))
+        {
+            // [핵심] 사용한 카드 데이터를 버리지 않고 덱에 바로 다시 넣습니다.
+            drawPile.Add(card.cardData); 
+            
+            handCards.Remove(card);
+            Destroy(card.gameObject);
+
+            // 레이아웃 갱신
+            if (CardDeckController.instance != null)
+            {
+                CardDeckController.instance.RefreshHandLayout(handCards);
+                CardDeckController.instance.UpdateDeckUI(drawPile.Count, 0);
+            }
+        }
+    }
+
+    private void ClearHand()
+    {
+        // 리스트를 역순으로 순회하며 오브젝트 파괴 및 덱 복구
+        for (int i = handCards.Count - 1; i >= 0; i--)
+        {
+            if (handCards[i] != null)
+            {
+                // 사용하지 않은 카드 데이터를 다시 덱에 넣음
+                drawPile.Add(handCards[i].cardData);
+                Destroy(handCards[i].gameObject);
+            }
+        }
+        handCards.Clear();
+
+        // [중요] 패가 비었음을 레이아웃 컨트롤러에 알림
+        if (CardDeckController.instance != null)
+        {
+            CardDeckController.instance.RefreshHandLayout(handCards);
+        }
     }
 
     private IEnumerator CoPlayerTurnSequence()

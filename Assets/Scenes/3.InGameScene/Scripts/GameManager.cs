@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
         // 게임 시작 시 첫 턴 전처리
         if (PlayerManager.instance != null)
         {
+            PlayerManager.instance.InitializeBattleDeck();
             PlayerManager.instance.OnTurnEndProcess();
         }
         
@@ -35,6 +36,11 @@ public class GameManager : MonoBehaviour
         if (EnemyTurnManager.Instance != null)
         {
             EnemyTurnManager.Instance.InitEnemyIntents();
+        }
+        
+        if (PlayerManager.instance != null)
+        {
+            PlayerManager.instance.PreparePlayerTurn();
         }
     }
     public void OnTrunButtonClick()
