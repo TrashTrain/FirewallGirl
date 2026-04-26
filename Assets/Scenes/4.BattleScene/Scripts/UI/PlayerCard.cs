@@ -123,6 +123,17 @@ public class PlayerCard : MonoBehaviour
         if (detailUseBtn != null) detailUseBtn.onClick.AddListener(UseCard);
     }
     
+    // 데이터를 외부에서 주입받는 함수 추가
+    public void SetCardData(CardObject data)
+    {
+        this.cardData = data;
+        // if (cardData == null) return;
+        
+        // 여기서 UI 텍스트(이름, 코스트 등)를 갱신하는 로직을 호출하세요.
+        // playerManager.UpdateUI();
+        CardDeckController.instance.UpdateCardVisuals(gameObject, data);
+    }
+    
     // 호버 애니메이션 토글
     public void ToggleHover(bool show)
     {
@@ -221,6 +232,8 @@ public class PlayerCard : MonoBehaviour
             playerManager.currentCost = Mathf.Max(0, playerManager.currentCost - cost);
 
             currentCoolTime = cardData.coolTime > 0 ? cardData.coolTime : 0;
+            
+            playerManager.OnCardUsed(this);
             
             playerManager.UpdateUI();
             Debug.Log($"{cardData.cardName} 사용 완료!");

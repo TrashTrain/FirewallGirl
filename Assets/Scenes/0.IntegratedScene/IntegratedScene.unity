@@ -3524,6 +3524,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6ae0e3b78c26914ea5044338012eb10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  drawPileText: {fileID: 0}
+  discardPileText: {fileID: 0}
+  cardSpacing: 160
+  moveSpeed: 15
   cardPrefab: {fileID: 4631881173365916910, guid: 2d2ab263df0f03642bb82ff7bf791f5c, type: 3}
   cardScale: 0.7
   attackIcon: {fileID: 0}
@@ -4195,11 +4199,14 @@ MonoBehaviour:
   activeModifiers: []
   cannotGainDefenseTurns: 0
   activeAugments: []
-  masterDeck: []
   currentDotDamage: 0
   hpBar: {fileID: 373234982}
   powerUI: {fileID: 854836676}
   costUI: {fileID: 854836675}
+  cardPrefab: {fileID: 502786108912653076, guid: 44fbe9c26dd39244cb133899a97abbb4, type: 3}
+  handContainer: {fileID: 409742039}
+  masterDeck: []
+  handCards: []
   lagDebuffTurns: 0
   lagDebuffValue: 1
 --- !u!4 &1217457105

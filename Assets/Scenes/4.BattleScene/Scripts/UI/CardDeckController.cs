@@ -6,6 +6,21 @@ using TMPro;
 
 public class CardDeckController : MonoBehaviour
 {
+    public static CardDeckController instance;
+    
+    [Header("Deck UI Info")]
+    public TextMeshProUGUI drawPileText;     // 남은 덱 장수 텍스트
+    public TextMeshProUGUI discardPileText;  // 버린 더미 장수 텍스트
+
+    [Header("Hand Layout Settings")]
+    public float cardSpacing = 160f;         // 카드 간의 가로 간격
+    public float moveSpeed = 15f;            // 목표 위치로 부드럽게 이동하는 속도 (Lerp)
+    
+    // 내부 관리용 변수
+    private List<RectTransform> currentHandRt = new List<RectTransform>();
+    private Vector2[] targetPositions;
+    private float startXOffset = 100f;
+    
     public GameObject cardPrefab;
     public float cardScale = 1.0f;
     
@@ -43,7 +58,7 @@ public class CardDeckController : MonoBehaviour
     void Start()
     {
         // 1. DB에서 카드를 불러와 동적으로 생성합니다.
-        SpawnCardsFromDatabase();
+        // SpawnCardsFromDatabase();
         
         // 자식 카드 모으기
         // foreach (Transform child in transform)
@@ -71,6 +86,43 @@ public class CardDeckController : MonoBehaviour
 
         // ✅ 호버 시 "일렬 펼침" 위치만 계산
         // BuildLineLayout();
+    }
+    
+    private void Awake()
+    {
+        instance = this;
+        
+        if (PlayerManager.instance != null)
+        {
+            // 만약 CardDeckController가 handContainer 역할을 한다면 this.transform 전달
+            PlayerManager.instance.SetSceneReferences(this.transform);
+        }
+    }
+    
+    // 1. 덱/묘지 카운트 UI 업데이트 (PlayerManager에서 카드를 뽑거나 버릴 때 호출)
+    public void UpdateDeckUI(int drawCount, int discardCount)
+    {
+        if (drawPileText != null) drawPileText.text = drawCount.ToString();
+        if (discardPileText != null) discardPileText.text = discardCount.ToString();
+    }
+    
+    // 2. 패에 카드가 추가/삭제될 때 호출하여 각 카드의 목표 위치를 재계산합니다.
+    public void RefreshHandLayout(List<PlayerCard> handCards)
+    {
+        currentHandRt.Clear();
+        targetPositions = new Vector2[handCards.Count];
+
+        for (int i = 0; i < handCards.Count; i++)
+        {
+            RectTransform rt = handCards[i].GetComponent<RectTransform>();
+            currentHandRt.Add(rt);
+
+            // [핵심] X좌표 = 여백(시작버튼 피하기) + (순서 * 카드간격)
+            float targetX = startXOffset + (i * cardSpacing);
+            
+            // Y좌표는 컨테이너 기준 중앙(0)으로 유지
+            targetPositions[i] = new Vector2(targetX, 0f); 
+        }
     }
     
     private void SpawnCardsFromDatabase()
@@ -102,7 +154,7 @@ public class CardDeckController : MonoBehaviour
         }
     }
     
-    private void UpdateCardVisuals(GameObject cardObj, CardObject data)
+    public void UpdateCardVisuals(GameObject cardObj, CardObject data)
     {
         string posValueStr = $"<color=#E24E3A>{data.positiveStatValue.ToString("+#;-#;0")}</color>";
         string negValueStr = $"<color=#4152E5>{data.negativeStatValue.ToString("+#;-#;0")}</color>";
@@ -204,6 +256,22 @@ public class CardDeckController : MonoBehaviour
                 return component;
         }
         return null;
+    }
+    
+    private void Update()
+    {
+        // 매 프레임마다 카드들을 할당된 '목표 위치'와 '목표 회전값(0도)'으로 부드럽게 이동시킵니다.
+        for (int i = 0; i < currentHandRt.Count; i++)
+        {
+            if (currentHandRt[i] == null) continue;
+
+            // 위치 이동 스무딩 처리
+            currentHandRt[i].anchoredPosition = Vector2.Lerp(
+                currentHandRt[i].anchoredPosition, 
+                targetPositions[i], 
+                Time.deltaTime * moveSpeed
+            );
+        }
     }
 
     // private void Update()
