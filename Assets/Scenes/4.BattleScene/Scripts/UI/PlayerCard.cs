@@ -26,6 +26,10 @@ public class PlayerCard : MonoBehaviour
     public Button hoverUseBtn;   // 호버 뷰의 사용 버튼
     public Button detailUseBtn;  // 디테일 뷰의 사용 버튼
     
+    public bool IsInPreview { get; private set; } 
+    public TextMeshProUGUI hoverUseBtnText;  // HoverView의 UseBtn 아래에 있는 텍스트
+    public TextMeshProUGUI detailUseBtnText; // DetailView의 UseBtn 아래에 있는 텍스트
+    
     private Transform originalDetailParent;
     private PlayerManager playerManager; // 카드 사용을 위해 필요
     private Coroutine hideHoverCoroutine;
@@ -68,43 +72,6 @@ public class PlayerCard : MonoBehaviour
 
     private void Start()
     {
-        // if (cardData == null) return;
-        //
-        // costValue = cardData.cost;
-        // positiveStatValue = cardData.positiveStatValue;
-        // negativeStatValue = cardData.negativeStatValue;
-        //
-        // Image cardImage = transform.Find("Content").GetComponent<Image>(); // 카드 그림
-        // TextMeshProUGUI cardName = transform.Find("CardName/Text").GetComponent<TextMeshProUGUI>(); // 카드 이름
-        //
-        // Image positiveIcon = transform.Find("PositiveStat").GetComponent<Image>();
-        // Image negativeIcon = transform.Find("NegativeStat").GetComponent<Image>();
-        //
-        // TextMeshProUGUI posStatText = transform.Find("PositiveStat/Text").GetComponent<TextMeshProUGUI>(); // 긍정 수치 텍스트
-        // TextMeshProUGUI negStatText = transform.Find("NegativeStat/Text").GetComponent<TextMeshProUGUI>(); // 부정 수치 텍스트
-        //
-        // TextMeshProUGUI costText = transform.Find("Cost/CostText").GetComponent<TextMeshProUGUI>(); // 코스트 수치 텍스트
-        // TextMeshProUGUI descriptionText = transform.Find("Description").GetComponent<TextMeshProUGUI>(); // 카드 설명 텍스트
-        //
-        // cardImage.sprite = cardData.cardImage;
-        // cardName.text = cardData.cardName;
-        //
-        // positiveIcon.sprite = GetStatIcon(cardData.positiveStatType);
-        // negativeIcon.sprite = GetStatIcon(cardData.negativeStatType);
-        //
-        // posStatText.text = positiveStatValue.ToString();
-        // negStatText.text = negativeStatValue.ToString();
-        //
-        // costText.text = costValue.ToString();
-        // if (descriptionText != null && cardData != null)
-        // {
-        //     string dynamicDesc = cardData.description
-        //         .Replace("{0}", cardData.positiveStatValue.ToString("+#;-#;0"))
-        //         .Replace("{1}", cardData.negativeStatValue.ToString("+#;-#;0"));
-        //         
-        //     descriptionText.text = dynamicDesc;
-        // }
-        
         playerManager = FindObjectOfType<PlayerManager>();
 
         costValue = cardData.cost;
@@ -119,8 +86,45 @@ public class PlayerCard : MonoBehaviour
         }
 
         // ? 두 버튼 모두 클릭 시 동일한 '사용' 로직을 실행하도록 연결
-        if (hoverUseBtn != null) hoverUseBtn.onClick.AddListener(UseCard);
-        if (detailUseBtn != null) detailUseBtn.onClick.AddListener(UseCard);
+        if (hoverUseBtn != null)
+        {
+            hoverUseBtn.onClick.RemoveAllListeners();
+            hoverUseBtn.onClick.AddListener(TogglePreviewState);
+        }
+
+        if (detailUseBtn != null)
+        {
+            detailUseBtn.onClick.RemoveAllListeners();
+            detailUseBtn.onClick.AddListener(TogglePreviewState);
+        }
+        
+        SetPreviewState(false);
+    }
+    
+    // PlayerManager에서 카드를 넣고 뺄 때 상태를 동기화해주는 함수
+    public void SetPreviewState(bool state)
+    {
+        IsInPreview = state;
+        string hoverBtnStr = IsInPreview ? "취소" : "적용";
+        string detailBtnStr = IsInPreview ? "취소" : $"적용 ({cost})";
+
+        if (hoverUseBtnText != null) hoverUseBtnText.text = hoverBtnStr;
+        if (detailUseBtnText != null) detailUseBtnText.text = detailBtnStr;
+    }
+    
+    // '적용/취소' 버튼을 눌렀을 때 실행되는 함수
+    public void TogglePreviewState()
+    {
+        if (PlayerManager.instance == null) return;
+        
+        // 매니저의 장바구니에 넣거나 뺌
+        PlayerManager.instance.ToggleCardInPreview(this);
+
+        // 만약 방금 '적용'을 눌러서 장바구니에 들어간 상태(IsInPreview == true)라면 상세창 닫기
+        if (IsInPreview)
+        {
+            HideDetailView();
+        }
     }
     
     // 데이터를 외부에서 주입받는 함수 추가
@@ -188,22 +192,22 @@ public class PlayerCard : MonoBehaviour
         
         Transform useBtnTransform = detailView.transform.Find("UseBtn"); 
         
-        if (useBtnTransform != null)
-        {
-            Button detailUseBtn = useBtnTransform.GetComponent<Button>();
-            
-            // 1. 이전에 봤던 카드의 UseCard가 실행되지 않도록 기존 연결을 모두 끊어줍니다. (매우 중요?)
-            detailUseBtn.onClick.RemoveAllListeners();
-            
-            // 2. '지금 클릭한 이 카드'의 UseCard() 함수를 버튼에 연결합니다.
-            detailUseBtn.onClick.AddListener(() => 
-            {
-                UseCard(); 
-                
-                // 필요하다면 카드를 사용한 뒤 디테일 뷰를 닫는 코드도 여기에 한 줄 추가할 수 있습니다.
-                detailView.SetActive(false);
-            });
-        }
+        // if (useBtnTransform != null)
+        // {
+        //     Button detailUseBtn = useBtnTransform.GetComponent<Button>();
+        //     
+        //     // 1. 이전에 봤던 카드의 UseCard가 실행되지 않도록 기존 연결을 모두 끊어줍니다. (매우 중요?)
+        //     detailUseBtn.onClick.RemoveAllListeners();
+        //     
+        //     // 2. '지금 클릭한 이 카드'의 UseCard() 함수를 버튼에 연결합니다.
+        //     detailUseBtn.onClick.AddListener(() => 
+        //     {
+        //         UseCard(); 
+        //         
+        //         // 필요하다면 카드를 사용한 뒤 디테일 뷰를 닫는 코드도 여기에 한 줄 추가할 수 있습니다.
+        //         detailView.SetActive(false);
+        //     });
+        // }
     }
 
     public void HideDetailView()
@@ -212,38 +216,6 @@ public class PlayerCard : MonoBehaviour
         {
             detailView.transform.SetParent(originalDetailParent, true);
             detailView.SetActive(false);
-        }
-    }
-
-    // ? 기존 CardController에 있던 드래그 사용 로직을 버튼 클릭용으로 이사 옴
-    public void UseCard()
-    {
-        if (playerManager == null || cardData == null) return;
-        if (PlayerManager.instance.currentCost < cost || currentCoolTime > 0) return;
-        
-        Debug.Log("카드 사용!!!");
-
-        if (playerManager.currentCost >= cost)
-        {
-            Debug.Log($"긍정 효과: {cardData.positiveStatType}, 긍정 수치: {posValue}");
-            Debug.Log($"부정 효과: {cardData.negativeStatType}, 부정 수치: {negValue}");
-            playerManager.AddTurnStatDelta(cardData.positiveStatType, posValue);
-            playerManager.AddTurnStatDelta(cardData.negativeStatType, negValue);
-            playerManager.currentCost = Mathf.Max(0, playerManager.currentCost - cost);
-
-            currentCoolTime = cardData.coolTime > 0 ? cardData.coolTime : 0;
-            
-            playerManager.OnCardUsed(this);
-            
-            playerManager.UpdateUI();
-            Debug.Log($"{cardData.cardName} 사용 완료!");
-
-            // 사용 후 처리 (디테일 뷰 닫고, 카드를 파괴하거나 묘지로 보냄)
-            HideDetailView();
-        }
-        else
-        {
-            Debug.Log("코스트 부족으로 사용 불가");
         }
     }
     

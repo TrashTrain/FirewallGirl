@@ -1,9 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
-// [추가] 여러 턴 동안 유지되는 상태 이상을 관리하기 위한 클래스
+// 여러 턴 동안 유지되는 상태 이상을 관리하기 위한 클래스
 [System.Serializable]
 public class StatModifier
 {
@@ -70,6 +73,14 @@ public class PlayerManager : MonoBehaviour
     [Header("Debuff States")]
     public int lagDebuffTurns = 0; // Lag 디버프 유지 턴 수 (0이면 안 걸린 상태)
     public int lagDebuffValue = 1; // 쿨타임을 얼마나 증가시킬 것인가 (기본 1)
+    
+    [Header("Sequence Queue System")]
+    public Transform sequenceContainer; // 대기열 카드가 표시될 UI 부모
+    public List<PlayerCard> sequenceQueue = new List<PlayerCard>(); // 사용 대기열 리스트
+    public TextMeshProUGUI sequenceSummaryText;
+    public Button executeCombinationBtn; 
+    private bool isCombinationUsedThisTurn = false;
+    private int previewTotalCost = 0;
 
     private void Awake()
     {
@@ -108,6 +119,193 @@ public class PlayerManager : MonoBehaviour
     {
         this.handContainer = container;
         Debug.Log($"[PlayerManager] 새로운 씬의 HandContainer 연결 완료: {container.name}");
+    }
+    
+    // 프리뷰에 카드를 넣거나 빼는 토글 함수
+    public void ToggleCardInPreview(PlayerCard card)
+    {
+        if (card.IsInPreview)
+        {
+            // 빼기 (취소)
+            sequenceQueue.Remove(card);
+            card.SetPreviewState(false);
+            Debug.Log($"[미리보기 취소] {card.cardData.cardName} 제거됨");
+        }
+        else
+        {
+            // 넣기 (적용)
+            if (sequenceQueue.Count >= 3)
+            {
+                Debug.Log("조합은 최대 3장까지만 가능합니다.");
+                return;
+            }
+            if (isCombinationUsedThisTurn)
+            {
+                Debug.Log("이번 턴에는 이미 조합 효과를 사용했습니다.");
+                return; 
+            }
+
+            sequenceQueue.Add(card);
+            card.SetPreviewState(true);
+            Debug.Log($"[미리보기 등록] {card.cardData.cardName} 추가됨");
+        }
+
+        // 큐 변동 시 즉시 UI 업데이트
+        UpdateSequenceSummaryUI();
+    }
+    
+    // 각 카드의 배율을 계산하여 반환
+    private Dictionary<PlayerCard, float> GetCardMultipliers()
+    {
+        Dictionary<PlayerCard, float> multipliers = new Dictionary<PlayerCard, float>();
+        
+        int roots = 0, vaccines = 0, patches = 0, others = 0;
+        
+        // 1. 속성별 개수 카운트
+        foreach (var c in sequenceQueue)
+        {
+            if (c.cardData.cardType == CardType.Root) roots++;
+            else if (c.cardData.cardType == CardType.Vaccine) vaccines++;
+            else if (c.cardData.cardType == CardType.Patch) patches++;
+            else others++;
+        }
+
+        int otherThanRoot = vaccines + patches + others;
+
+        // 2. 규칙에 따른 배율 결정
+        foreach (var c in sequenceQueue)
+        {
+            CardType t = c.cardData.cardType;
+            float mult = 1.0f;
+
+            if (roots == 1 && otherThanRoot > 0) {
+                mult = 1.0f; // 루트 1장 + 타 속성 : 변화 없음
+            }
+            else if (roots >= 2 && otherThanRoot > 0) {
+                mult = (t == CardType.Root) ? 1.5f : 0.5f; // 루트 2장 + 타 속성
+            }
+            else if (roots == sequenceQueue.Count && roots > 0) {
+                mult = 1.5f; // 루트만 있을 경우
+            }
+            else if (roots == 0 && vaccines > 0 && patches > 0) {
+                mult = 1.5f; // 루트 없이 백신+패치 조합
+            }
+            else {
+                mult = 1.0f; // 그 외 (동일 속성 통일 등)
+            }
+
+            multipliers[c] = mult;
+        }
+
+        return multipliers;
+    }
+    
+    // 대기열의 모든 효과를 합산하여 텍스트로 표시하는 함수
+    private void UpdateSequenceSummaryUI()
+    {
+        if (sequenceSummaryText == null) return;
+        if (sequenceQueue.Count == 0) 
+        { 
+            sequenceSummaryText.text = "카드를 선택하여 조합을 확인하세요";
+            if (executeCombinationBtn != null) executeCombinationBtn.interactable = false;
+            previewTotalCost = 0;
+            return;
+        }
+
+        // 1. 각 카드의 최종 배율 가져오기
+        Dictionary<PlayerCard, float> multipliers = GetCardMultipliers();
+
+        List<string> typeStrings = new List<string>();
+        Dictionary<StatType, int> totalDeltas = new Dictionary<StatType, int>();
+        previewTotalCost = 0;
+
+        foreach (var c in sequenceQueue)
+        {
+            float mult = multipliers[c];
+            string typeName = GetCardTypeNameKorean(c.cardData.cardType);
+            string formattedType = typeName; 
+
+            // 배율에 따른 색상 표기
+            if (mult == 1.5f) formattedType = $"<color=#55AAFF>{typeName}</color>"; 
+            else if (mult == 0.5f) formattedType = $"<color=#FF5555>{typeName}</color>"; 
+
+            typeStrings.Add(formattedType);
+
+            // 배율이 적용된 최종 수치 계산
+            int finalPos = Mathf.RoundToInt(c.posValue * mult);
+            int finalNeg = Mathf.RoundToInt(c.negValue * mult);
+            previewTotalCost += c.cost;
+
+            StatType pType = c.cardData.positiveStatType;
+            StatType nType = c.cardData.negativeStatType;
+            
+            if (!totalDeltas.ContainsKey(pType)) totalDeltas[pType] = 0;
+            if (!totalDeltas.ContainsKey(nType)) totalDeltas[nType] = 0;
+            
+            totalDeltas[pType] += finalPos;
+            totalDeltas[nType] += finalNeg;
+        }
+
+        // 2. 최종 텍스트 조립
+        string comboSequence = string.Join(" - ", typeStrings);
+        StringBuilder sb = new StringBuilder();
+        
+        sb.Append($"<color=#FFFFFF>현재 조합: {comboSequence}</color>\n");
+        sb.Append("<color=#FFFF00>[적용 예정 효과]</color>\n");
+        
+        foreach (var stat in totalDeltas)
+        {
+            if (stat.Value == 0) continue;
+            string sign = stat.Value > 0 ? "+" : "";
+            sb.Append($"{GetStatNameKorean(stat.Key)} {sign}{stat.Value}  ");
+        }
+
+        string costColor = (currentCost < previewTotalCost) ? "#FF0000" : "#00FF00";
+        sb.Append($"\n<color={costColor}>소모 코스트: {previewTotalCost} / {currentCost}</color>");
+        
+        sequenceSummaryText.text = sb.ToString();
+
+        // [신규] '효과 적용' 확정 버튼 활성화/비활성화 처리
+        if (executeCombinationBtn != null)
+        {
+            // 코스트가 충분하고, 이번 턴에 조합을 아직 쓰지 않았을 때만 활성화
+            executeCombinationBtn.interactable = !isCombinationUsedThisTurn && (currentCost >= previewTotalCost);
+        }
+    }
+    
+    // '효과 적용' 버튼을 눌렀을 때 1회 한정으로 실제 적용하는 함수
+    public void ExecuteCombination()
+    {
+        if (isCombinationUsedThisTurn || sequenceQueue.Count == 0) return;
+        if (currentCost < previewTotalCost) return;
+
+        isCombinationUsedThisTurn = true; // 턴당 1회 제한 발동
+
+        Dictionary<PlayerCard, float> multipliers = GetCardMultipliers();
+
+        // 복사본 리스트를 만들어 순회 (OnCardUsed에서 리스트가 파괴될 수 있으므로)
+        List<PlayerCard> cardsToExecute = new List<PlayerCard>(sequenceQueue);
+
+        foreach (var card in cardsToExecute)
+        {
+            float mult = multipliers[card];
+            int finalPos = Mathf.RoundToInt(card.posValue * mult);
+            int finalNeg = Mathf.RoundToInt(card.negValue * mult);
+
+            // 실제 스탯 반영
+            AddTurnStatDelta(card.cardData.positiveStatType, finalPos);
+            AddTurnStatDelta(card.cardData.negativeStatType, finalNeg);
+            
+            // 카드 소모 처리
+            OnCardUsed(card);
+        }
+
+        currentCost -= previewTotalCost;
+        sequenceQueue.Clear();
+        UpdateSequenceSummaryUI();
+        UpdateUI();
+
+        Debug.Log("조합 효과 적용 완료!");
     }
 
     private void Start()
@@ -188,6 +386,10 @@ public class PlayerManager : MonoBehaviour
     // [추가] 턴 종료/시작 시 호출하여 디버프 지속 시간을 깎습니다.
     public void OnTurnEndProcess()
     {
+        isCombinationUsedThisTurn = false;
+        sequenceQueue.Clear();
+        UpdateSequenceSummaryUI();
+        
         // 방어 불가 턴 감소
         if (cannotGainDefenseTurns > 0) cannotGainDefenseTurns--;
 
@@ -393,6 +595,10 @@ public class PlayerManager : MonoBehaviour
     
     public void PreparePlayerTurn()
     {
+        isCombinationUsedThisTurn = false; // 턴 시작 시 사용 제한 초기화
+        sequenceQueue.Clear();
+        UpdateSequenceSummaryUI();
+        
         // 2. 패 버리기, 셔플, 3장 드로우
         ClearHand();
         Shuffle(drawPile);
@@ -633,6 +839,29 @@ public class PlayerManager : MonoBehaviour
                 totalCost = Mathf.Max(0, totalCost + amount);
                 currentCost = Mathf.Clamp(currentCost + amount, 0, totalCost);
                 break;
+        }
+    }
+    
+    private string GetStatNameKorean(StatType type)
+    {
+        switch (type)
+        {
+            case StatType.Attack: return "공격력";
+            case StatType.Defense: return "방어력";
+            case StatType.Health: return "체력";
+            case StatType.Cost: return "코스트";
+            default: return type.ToString();
+        }
+    }
+    
+    private string GetCardTypeNameKorean(CardType type)
+    {
+        switch (type)
+        {
+            case CardType.Vaccine: return "백신";
+            case CardType.Patch: return "패치";
+            case CardType.Root: return "루트";
+            default: return "일반"; // CardType.None 등
         }
     }
 }

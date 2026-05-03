@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum CardType
+public enum CardTypeTemp
 {
     ATK, DEF, SUP
 }
@@ -21,5 +21,5 @@ public class PlayerCardObject : ScriptableObject
 
     [TextArea]
     public string description;
-    public CardType type;
+    public CardTypeTemp type;
 }
