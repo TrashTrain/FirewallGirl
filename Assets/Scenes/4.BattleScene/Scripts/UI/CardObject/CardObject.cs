@@ -2,7 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName="CardData", menuName="Create Card Data/CardData", order=int.MaxValue)]
+public enum CardType
+{
+    None,
+    Vaccine,
+    Patch,
+    Root
+}
+
+[CreateAssetMenu(fileName = "CardData", menuName = "Create Card Data/CardData", order = int.MaxValue)]
 
 public class CardObject : ScriptableObject
 {
@@ -13,6 +21,8 @@ public class CardObject : ScriptableObject
 
     public StatType positiveStatType;
     public StatType negativeStatType;
+    
+    public CardType cardType = CardType.None; // 카드의 속성 (백신, 패치, 루트)
 
     public int positiveStatValue;
     public int negativeStatValue;

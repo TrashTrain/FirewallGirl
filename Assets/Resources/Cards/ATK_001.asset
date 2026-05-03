@@ -18,6 +18,7 @@ MonoBehaviour:
   cardImage: {fileID: 21300000, guid: 5fcdbfa04eac3ca49a83025f01349f4d, type: 3}
   positiveStatType: 0
   negativeStatType: 1
+  cardType: 1
   positiveStatValue: 3
   negativeStatValue: -2
   cost: 2

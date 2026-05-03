@@ -145,15 +145,13 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     {
         if (currentMode == CardMode.Battle)
         {
-            if (!isDragging && playerCard != null)
+            if (playerCard != null)
             {
-                playerCard.ShowDetailView(); // 화면 중앙에 상세 뷰 띄우기
+                playerCard.ShowDetailView();
             }
-            return;
         }
-
         // DeckBuilding 모드면 매니저에게 알림
-        if (currentMode == CardMode.DeckBuilding && deckManager != null)
+        else if (currentMode == CardMode.DeckBuilding && deckManager != null)
         {
             // if (!isInteractable) return;
             
