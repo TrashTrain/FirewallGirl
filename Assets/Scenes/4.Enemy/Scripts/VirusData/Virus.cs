@@ -269,7 +269,7 @@ public class Virus : MonoBehaviour
         //RollNextAction();
     }
 
-    public int ApplyDamage(int damage)
+    public virtual int ApplyDamage(int damage)
     {
         int remaining = damage;
         

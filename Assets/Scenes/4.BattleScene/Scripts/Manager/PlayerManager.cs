@@ -49,7 +49,12 @@ public class PlayerManager : MonoBehaviour
     public List<AugmentBase> activeAugments = new List<AugmentBase>();
 
     [Header("Debuffs")]
-    public int currentDotDamage = 0; // 현재 턴당 입는 지속 피해량 (0이면 디버프 없음)
+    public int currentDotDamage = 0;
+
+    [Header("Boss Debuffs")]
+    public int reducedDrawCount = 0;        // 다음 턴 드로우 감소량 (패킷손실)
+    public float defenseMultiplier = 1.0f;  // 방어도 획득 배율 (3페이즈 0.5, 발악 5.0)
+    public bool isDefenseRetained = false;  // 발악 페이즈: 방어도 유지 여부
 
     private Vector3 _originPos;
 
@@ -421,8 +426,10 @@ public class PlayerManager : MonoBehaviour
 
     public void ResetTurnDeltaStats()
     {
+        int defIndex = (int)StatType.Defense;
         for (int i = 0; i < turnDeltaStats.Length; i++)
         {
+            if (i == defIndex && isDefenseRetained) continue;
             turnDeltaStats[i] = 0;
         }
     }
@@ -437,12 +444,13 @@ public class PlayerManager : MonoBehaviour
                 break;
 
             case StatType.Defense:
-                // [수정] 방어력 획득 불가 상태라면 긍정적인(증가) 효과를 무시합니다.
                 if (value > 0 && cannotGainDefenseTurns > 0)
                 {
                     Debug.Log("방어력 획득 불가 상태로 인해 방어도 증가가 차단되었습니다.");
                     break;
                 }
+                if (value > 0 && defenseMultiplier != 1.0f)
+                    value = Mathf.RoundToInt(value * defenseMultiplier);
                 turnDeltaStats[(int)stat] += value;
                 break;
 
@@ -595,14 +603,16 @@ public class PlayerManager : MonoBehaviour
     
     public void PreparePlayerTurn()
     {
-        isCombinationUsedThisTurn = false; // 턴 시작 시 사용 제한 초기화
+        isCombinationUsedThisTurn = false;
         sequenceQueue.Clear();
         UpdateSequenceSummaryUI();
-        
-        // 2. 패 버리기, 셔플, 3장 드로우
+
         ClearHand();
         Shuffle(drawPile);
-        DrawCards(3);
+
+        int drawCount = Mathf.Max(1, 3 - reducedDrawCount);
+        reducedDrawCount = 0;
+        DrawCards(drawCount);
 
         UpdateUI();
     }
@@ -645,18 +655,16 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    // 카드를 사용하거나 턴이 끝날 때 호출
     public void OnCardUsed(PlayerCard card)
     {
         if (handCards.Contains(card))
         {
-            // [핵심] 사용한 카드 데이터를 버리지 않고 덱에 바로 다시 넣습니다.
-            drawPile.Add(card.cardData); 
-            
+            if (!card.isTemporary)
+                drawPile.Add(card.cardData);
+
             handCards.Remove(card);
             Destroy(card.gameObject);
 
-            // 레이아웃 갱신
             if (CardDeckController.instance != null)
             {
                 CardDeckController.instance.RefreshHandLayout(handCards);
@@ -667,23 +675,38 @@ public class PlayerManager : MonoBehaviour
 
     private void ClearHand()
     {
-        // 리스트를 역순으로 순회하며 오브젝트 파괴 및 덱 복구
         for (int i = handCards.Count - 1; i >= 0; i--)
         {
             if (handCards[i] != null)
             {
-                // 사용하지 않은 카드 데이터를 다시 덱에 넣음
-                drawPile.Add(handCards[i].cardData);
+                if (!handCards[i].isTemporary)
+                    drawPile.Add(handCards[i].cardData);
                 Destroy(handCards[i].gameObject);
             }
         }
         handCards.Clear();
 
-        // [중요] 패가 비었음을 레이아웃 컨트롤러에 알림
         if (CardDeckController.instance != null)
         {
             CardDeckController.instance.RefreshHandLayout(handCards);
         }
+    }
+
+    // 보스 발악 페이즈 전용: 임시 카드를 손에 직접 추가 (덱에 들어가지 않음)
+    public void DrawFlashCard(CardObject cardData)
+    {
+        if (cardData == null || cardPrefab == null || handContainer == null) return;
+
+        GameObject cardObj = Instantiate(cardPrefab, handContainer);
+        PlayerCard pCard = cardObj.GetComponent<PlayerCard>();
+        if (pCard == null) return;
+
+        pCard.isTemporary = true;
+        pCard.SetCardData(cardData);
+        handCards.Add(pCard);
+
+        if (CardDeckController.instance != null)
+            CardDeckController.instance.RefreshHandLayout(handCards);
     }
 
     private IEnumerator CoPlayerTurnSequence()
