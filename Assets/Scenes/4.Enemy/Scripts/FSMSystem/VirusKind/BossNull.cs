@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -16,6 +17,44 @@ public class BossNull : Virus
 
     [Header("발악 페이즈 카드")]
     [SerializeField] private CardObject _flashCardData; // 데이터 전송 - 플래시 (0코스트, 방어도+5)
+
+    [Header("Status Effect Icons")]
+    [SerializeField] private Sprite _iconPhase1Damage;   // 1페이즈: 매 턴 고정 피해
+    [SerializeField] private Sprite _iconCostReduction;  // 1페이즈: 데이터 억제 (코스트 -1)
+    [SerializeField] private Sprite _iconReducedDraw;    // 2페이즈: 드로우 감소
+    [SerializeField] private Sprite _iconDefenseHalf;    // 3페이즈: 방어도 획득 50%
+    [SerializeField] private Sprite _iconDefenseRetain;  // 발악: 방어도 유지
+    [SerializeField] private Sprite _iconDefenseBoost;   // 발악: 방어도 획득 500%
+
+    private List<ActiveEffect> _bossEffects;
+
+    // ─── BossNull 전용 행동 열거형 ────────────────────────────
+    private enum NullAction
+    {
+        Overwrite,             // 1페이즈: 덧씌우기
+        DirectAtk,             // 2·3페이즈: 직접 공격
+        WeakAtk,               // 2페이즈: 약공격
+        SelfStabilize,         // 2페이즈: 자아안정
+        Stabilize,             // 3페이즈: 안정화
+        EnhancedSelfStabilize, // 3페이즈: 강화된 자아안정
+        DesperateAtk,          // 발악: 자아 폭주 공격
+        SelfDestruct           // 발악: 자멸
+    }
+
+    private NullAction _nullAction;
+
+    private void SetAction(NullAction action)
+    {
+        _nullAction = action;
+    }
+
+    public override void RollNextActionAndUpdateIcon()
+    {
+        RollNextAction();
+
+        if (enemyUIController != null)
+            enemyUIController.state.UpdateStateImage(_nullAction.ToString());
+    }
 
     // ─── 페이즈 추적 ───────────────────────────────────────────
     private int _currentPhase = 1;
@@ -53,7 +92,54 @@ public class BossNull : Virus
         if (spawnNum != 3)
             Debug.LogError("[BossNull] 보스는 반드시 Spawn3 위치에 스폰되어야 합니다!");
 
+        RegisterStatusEffects();
         RollNextActionAndUpdateIcon();
+    }
+
+    // ══════════════════════════════════════════════════════════
+    // 효과 레지스트리
+    // ══════════════════════════════════════════════════════════
+
+    private void RegisterStatusEffects()
+    {
+        if (PlayerManager.instance == null) return;
+
+        _bossEffects = new List<ActiveEffect>
+        {
+            new ActiveEffect(
+                _iconPhase1Damage, false,
+                () => _currentPhase == 1,
+                () => "매 턴 5 고정 피해"
+            ),
+            new ActiveEffect(
+                _iconCostReduction, false,
+                () => _costDebuffApplied,
+                () => "데이터 억제 (코스트 -1)"
+            ),
+            new ActiveEffect(
+                _iconReducedDraw, false,
+                () => PlayerManager.instance != null && PlayerManager.instance.reducedDrawCount > 0,
+                () => $"패킷손실\n다음 턴 드로우 -{PlayerManager.instance.reducedDrawCount}"
+            ),
+            new ActiveEffect(
+                _iconDefenseHalf, false,
+                () => _defHalfDebuffApplied && !_desperateActive,
+                () => "방어도 획득량 50%"
+            ),
+            new ActiveEffect(
+                _iconDefenseRetain, true,
+                () => PlayerManager.instance != null && PlayerManager.instance.isDefenseRetained,
+                () => "방어도 유지 중"
+            ),
+            new ActiveEffect(
+                _iconDefenseBoost, true,
+                () => _desperateActive,
+                () => "방어도 획득량 500%"
+            ),
+        };
+
+        foreach (var effect in _bossEffects)
+            PlayerManager.instance.RegisterEffect(effect);
     }
 
     // ══════════════════════════════════════════════════════════
@@ -69,7 +155,7 @@ public class BossNull : Virus
         {
             _desperateTurn++;
             // 3턴 공격 후에는 Death 상태로 자멸 예약
-            NextAction = (_desperateTurn > 3) ? State.Death : State.Atk;
+            SetAction(_desperateTurn > 3 ? NullAction.SelfDestruct : NullAction.DesperateAtk);
             return;
         }
 
@@ -173,7 +259,7 @@ public class BossNull : Virus
     private void RollPhase1Action()
     {
         // 유일한 행동: 덧씌우기 (매 턴 방어도 +5)
-        NextAction = State.Def;
+        SetAction(NullAction.Overwrite);
     }
 
     private void RollPhase2Action()
@@ -184,12 +270,11 @@ public class BossNull : Virus
 
         if (_selfStabilizeCooldown == 0)
         {
-            NextAction = State.Sup; // 자아안정
+            SetAction(NullAction.SelfStabilize);
         }
         else
         {
-            // 직접 공격(Atk) vs 1피해+방어도불가+공격력+2(Debuf) 랜덤 50/50
-            NextAction = (Random.Range(0, 2) == 0) ? State.Atk : State.Debuf;
+            SetAction(Random.Range(0, 2) == 0 ? NullAction.DirectAtk : NullAction.WeakAtk);
         }
     }
 
@@ -199,19 +284,19 @@ public class BossNull : Virus
         if (_nextActionIsEnhancedStabilize)
         {
             _nextActionIsEnhancedStabilize = false;
-            NextAction = State.Idle; // 강화된 자아안정 (Idle 재활용)
+            SetAction(NullAction.EnhancedSelfStabilize);
             return;
         }
 
         // 3의 배수 턴: 안정화 + 다음 턴 강화된 자아안정 예약
         if (_turnInPhase % 3 == 0)
         {
-            NextAction = State.Ready; // 안정화
+            SetAction(NullAction.Stabilize);
             _nextActionIsEnhancedStabilize = true;
         }
         else
         {
-            NextAction = State.Atk; // 직접 공격
+            SetAction(NullAction.DirectAtk);
         }
     }
 
@@ -224,7 +309,7 @@ public class BossNull : Virus
         // ─── 발악 페이즈 처리 ────────────────────────────────
         if (_desperateActive)
         {
-            if (s == State.Death)
+            if (_nullAction == NullAction.SelfDestruct)
             {
                 // 안전장치: 3턴 행동 후 자멸 (CoPhase3DirectAttack 내 처리가 주 경로)
                 yield return new WaitForSeconds(0.5f);
@@ -261,8 +346,8 @@ public class BossNull : Virus
         switch (_currentPhase)
         {
             case 1: yield return CoPhase1Action(); break;
-            case 2: yield return CoPhase2Action(s); break;
-            case 3: yield return CoPhase3Action(s); break;
+            case 2: yield return CoPhase2Action(); break;
+            case 3: yield return CoPhase3Action(); break;
         }
     }
 
@@ -338,15 +423,15 @@ public class BossNull : Virus
 
     // ─── 2페이즈 행동 코루틴 ──────────────────────────────────
 
-    private IEnumerator CoPhase2Action(State s)
+    private IEnumerator CoPhase2Action()
     {
-        switch (s)
+        switch (_nullAction)
         {
-            case State.Atk:
+            case NullAction.DirectAtk:
                 yield return CoPhase2DirectAttack();
                 break;
 
-            case State.Sup:
+            case NullAction.SelfStabilize:
                 // 자아안정: 방어도 +10, 쿨다운 3턴
                 virusData.DefCnt += 10;
                 UpdateData();
@@ -355,7 +440,7 @@ public class BossNull : Virus
                 yield return new WaitForSeconds(0.5f);
                 break;
 
-            case State.Debuf:
+            case NullAction.WeakAtk:
                 yield return CoPhase2DebufAttack();
                 break;
         }
@@ -389,20 +474,20 @@ public class BossNull : Virus
 
     // ─── 3페이즈 행동 코루틴 ──────────────────────────────────
 
-    private IEnumerator CoPhase3Action(State s)
+    private IEnumerator CoPhase3Action()
     {
-        switch (s)
+        switch (_nullAction)
         {
-            case State.Atk:
+            case NullAction.DirectAtk:
                 yield return CoPhase3DirectAttack();
                 break;
 
-            case State.Ready:
+            case NullAction.Stabilize:
                 // 안정화: 공격력 2배 방어도 획득 + 공격력 기본값 초기화
                 yield return CoStabilize();
                 break;
 
-            case State.Idle:
+            case NullAction.EnhancedSelfStabilize:
                 // 강화된 자아안정: 방어도만큼 회복 + 공격력 +5
                 yield return CoEnhancedSelfStabilize();
                 break;
@@ -528,6 +613,11 @@ public class BossNull : Virus
         if (_defHalfDebuffApplied || _desperateActive)
             PlayerManager.instance.defenseMultiplier = 1.0f;
         PlayerManager.instance.isDefenseRetained = false;
+
+        // 등록했던 효과 전부 해제
+        if (_bossEffects != null)
+            foreach (var effect in _bossEffects)
+                PlayerManager.instance.UnregisterEffect(effect);
 
         VirusSpawn.instance.SetDiscountVirusCount();
 

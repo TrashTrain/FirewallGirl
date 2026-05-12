@@ -112,7 +112,7 @@ public class Virus : MonoBehaviour
     //    }
     //}
 
-    public void RollNextActionAndUpdateIcon()
+    public virtual void RollNextActionAndUpdateIcon()
     {
         RollNextAction();
 

@@ -713,17 +713,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ded23473352e7fe4597fa6016d842d15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  virusObjectSO: {fileID: 0}
+  virusObjectSO: {fileID: 11400000, guid: 40f752847e34fdd428865f7d206b41aa, type: 2}
   image: {fileID: 0}
   RandState: 0
   spawnNum: 0
   virusState: 0
   enemyUIController: {fileID: 0}
-  phase1Sprite: {fileID: 0}
-  phase2Sprite: {fileID: 0}
-  phase3Sprite: {fileID: 0}
-  desperateSprite: {fileID: 0}
-  _flashCardData: {fileID: 0}
+  phase1Sprite: {fileID: 21300000, guid: f63c6c61b366ee34281b809e7cd68cda, type: 3}
+  phase2Sprite: {fileID: 21300000, guid: 900303ce17e87fa4fa574d6960cee6ec, type: 3}
+  phase3Sprite: {fileID: 21300000, guid: 326024bbbd0360643a386aed8b93942c, type: 3}
+  desperateSprite: {fileID: 21300000, guid: 26e25f95a3dc4bf4ab9cd9a0b32447f3, type: 3}
+  _flashCardData: {fileID: 11400000, guid: 96f4bd97f7fec5d4dacae5d5d14f7412, type: 2}
+  _iconPhase1Damage: {fileID: 21300000, guid: d625ac4c61f708240bd3fede526b5a33, type: 3}
+  _iconCostReduction: {fileID: 21300000, guid: d625ac4c61f708240bd3fede526b5a33, type: 3}
+  _iconReducedDraw: {fileID: 21300000, guid: d625ac4c61f708240bd3fede526b5a33, type: 3}
+  _iconDefenseHalf: {fileID: 21300000, guid: d625ac4c61f708240bd3fede526b5a33, type: 3}
+  _iconDefenseRetain: {fileID: 21300000, guid: d625ac4c61f708240bd3fede526b5a33, type: 3}
+  _iconDefenseBoost: {fileID: 21300000, guid: d625ac4c61f708240bd3fede526b5a33, type: 3}
 --- !u!61 &8560172551786634854
 BoxCollider2D:
   m_ObjectHideFlags: 0

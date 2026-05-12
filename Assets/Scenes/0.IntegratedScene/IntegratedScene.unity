@@ -4333,6 +4333,9 @@ MonoBehaviour:
   cannotGainDefenseTurns: 0
   activeAugments: []
   currentDotDamage: 0
+  reducedDrawCount: 0
+  defenseMultiplier: 1
+  isDefenseRetained: 0
   hpBar: {fileID: 373234982}
   powerUI: {fileID: 854836676}
   costUI: {fileID: 854836675}
@@ -5203,6 +5206,38 @@ PrefabInstance:
     - target: {fileID: 4960590866162583644, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: tooltipText
+      value: 
+      objectReference: {fileID: 5257528743385292513}
+    - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: tooltipPanel
+      value: 
+      objectReference: {fileID: 5257528743385292514}
+    - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: stateIcons.Array.data[0].key
+      value: Atk
+      objectReference: {fileID: 0}
+    - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: stateIcons.Array.data[1].key
+      value: Def
+      objectReference: {fileID: 0}
+    - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: stateIcons.Array.data[2].key
+      value: Sup
+      objectReference: {fileID: 0}
+    - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: stateIcons.Array.data[3].key
+      value: Debuf
+      objectReference: {fileID: 0}
+    - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: stateIcons.Array.data[4].key
+      value: Ready
+      objectReference: {fileID: 0}
+    - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: stateIcons.Array.data[5].key
+      value: Bomb
       objectReference: {fileID: 0}
     - target: {fileID: 8305384115846875450, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -7084,6 +7119,38 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: tooltipText
+      value: 
+      objectReference: {fileID: 5257528743385292513}
+    - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: tooltipPanel
+      value: 
+      objectReference: {fileID: 5257528743385292514}
+    - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: stateIcons.Array.data[0].key
+      value: Atk
+      objectReference: {fileID: 0}
+    - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: stateIcons.Array.data[1].key
+      value: Def
+      objectReference: {fileID: 0}
+    - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: stateIcons.Array.data[2].key
+      value: Sup
+      objectReference: {fileID: 0}
+    - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: stateIcons.Array.data[3].key
+      value: Debuf
+      objectReference: {fileID: 0}
+    - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: stateIcons.Array.data[4].key
+      value: Ready
+      objectReference: {fileID: 0}
+    - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: stateIcons.Array.data[5].key
+      value: Bomb
+      objectReference: {fileID: 0}
     - target: {fileID: 8305384115846875450, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 547
@@ -7411,6 +7478,30 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: stateIcons.Array.data[0].key
+      value: Atk
+      objectReference: {fileID: 0}
+    - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: stateIcons.Array.data[1].key
+      value: Def
+      objectReference: {fileID: 0}
+    - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: stateIcons.Array.data[2].key
+      value: Sup
+      objectReference: {fileID: 0}
+    - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: stateIcons.Array.data[3].key
+      value: Debuf
+      objectReference: {fileID: 0}
+    - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: stateIcons.Array.data[4].key
+      value: Ready
+      objectReference: {fileID: 0}
+    - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: stateIcons.Array.data[5].key
+      value: Bomb
+      objectReference: {fileID: 0}
     - target: {fileID: 6125776846283165939, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -7443,6 +7534,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bc774cf29d8b34a8f56b10d12b45f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5257528743385292513 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4272045622222828779, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+  m_PrefabInstance: {fileID: 5257528743385292511}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &5257528743385292514 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2757675771083624697, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+  m_PrefabInstance: {fileID: 5257528743385292511}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8325040727610720487
 PrefabInstance:
   m_ObjectHideFlags: 0

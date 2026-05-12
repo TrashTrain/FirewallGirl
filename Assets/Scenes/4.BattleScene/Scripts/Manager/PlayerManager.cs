@@ -15,10 +15,27 @@ public class StatModifier
     public int durationTurns; // 남은 유지 턴 수
 
     [Header("UI Display")]
-    public Sprite statusIcon;     // 이 효과에 매핑될 범용 아이콘 (AtkUp, AtkDown 등)
-    public bool isBuff = false;     // true면 버프 패널, false면 디버프 패널에 표기
+    public Sprite statusIcon;
+    public bool isBuff = false;
     [TextArea]
-    public string descriptionText; // "공격력 감소" 등 플레이어에게 보여줄 실제 설명
+    public string descriptionText;
+}
+
+// 보스 등 외부 소스가 등록하는 지속 효과 — PlayerStatusUI가 순회하며 표시
+public class ActiveEffect
+{
+    public Sprite icon;
+    public bool isBuff;
+    public Func<bool> isActive;   // 현재 유효한지 판단
+    public Func<string> getText;  // 표시 텍스트 (동적)
+
+    public ActiveEffect(Sprite icon, bool isBuff, Func<bool> isActive, Func<string> getText)
+    {
+        this.icon = icon;
+        this.isBuff = isBuff;
+        this.isActive = isActive;
+        this.getText = getText;
+    }
 }
 
 public class PlayerManager : MonoBehaviour
@@ -55,6 +72,13 @@ public class PlayerManager : MonoBehaviour
     public int reducedDrawCount = 0;        // 다음 턴 드로우 감소량 (패킷손실)
     public float defenseMultiplier = 1.0f;  // 방어도 획득 배율 (3페이즈 0.5, 발악 5.0)
     public bool isDefenseRetained = false;  // 발악 페이즈: 방어도 유지 여부
+
+    // ─── 효과 레지스트리 ───────────────────────────────────────
+    private readonly List<ActiveEffect> _registeredEffects = new List<ActiveEffect>();
+    public IReadOnlyList<ActiveEffect> RegisteredEffects => _registeredEffects;
+
+    public void RegisterEffect(ActiveEffect effect) => _registeredEffects.Add(effect);
+    public void UnregisterEffect(ActiveEffect effect) => _registeredEffects.Remove(effect);
 
     private Vector3 _originPos;
 
