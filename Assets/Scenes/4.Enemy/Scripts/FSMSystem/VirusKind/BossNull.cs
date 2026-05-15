@@ -19,14 +19,17 @@ public class BossNull : Virus
     [SerializeField] private CardObject _flashCardData; // 데이터 전송 - 플래시 (0코스트, 방어도+5)
 
     [Header("Status Effect Icons")]
-    [SerializeField] private Sprite _iconPhase1Damage;   // 1페이즈: 매 턴 고정 피해
-    [SerializeField] private Sprite _iconCostReduction;  // 1페이즈: 데이터 억제 (코스트 -1)
-    [SerializeField] private Sprite _iconReducedDraw;    // 2페이즈: 드로우 감소
-    [SerializeField] private Sprite _iconDefenseHalf;    // 3페이즈: 방어도 획득 50%
-    [SerializeField] private Sprite _iconDefenseRetain;  // 발악: 방어도 유지
-    [SerializeField] private Sprite _iconDefenseBoost;   // 발악: 방어도 획득 500%
+    [SerializeField] private Sprite _iconPhase1Damage;    // 1페이즈: 매 턴 고정 피해
+    [SerializeField] private Sprite _iconCostReduction;   // 1페이즈: 데이터 억제 (코스트 -1)
+    [SerializeField] private Sprite _iconReducedDraw;     // 2페이즈: 드로우 감소
+    [SerializeField] private Sprite _iconDefenseHalf;     // 3페이즈: 방어도 획득 50%
+    [SerializeField] private Sprite _iconSelfProtect;     // 3페이즈: 자아 보호 (공격 차단)
+    [SerializeField] private Sprite _iconDataAcquisition; // 3페이즈: 데이터 획득 (피해 시 공격력+1)
+    [SerializeField] private Sprite _iconDefenseRetain;   // 발악: 방어도 유지
+    [SerializeField] private Sprite _iconDefenseBoost;    // 발악: 방어도 획득 500%
 
-    private List<ActiveEffect> _bossEffects;
+    private List<ActiveEffect> _bossEffects;      // 플레이어 StatusUI에 표시되는 효과
+    private List<ActiveEffect> _bossOwnEffects;   // 보스 자신의 EnemyStatusUI에 표시되는 효과
 
     // ─── BossNull 전용 행동 열거형 ────────────────────────────
     private enum NullAction
@@ -37,6 +40,7 @@ public class BossNull : Virus
         SelfStabilize,         // 2페이즈: 자아안정
         Stabilize,             // 3페이즈: 안정화
         EnhancedSelfStabilize, // 3페이즈: 강화된 자아안정
+        DesperateWarning,      // 발악: 경고 (첫 발악 진입 시 1턴 대기 + 플래시 카드 지급)
         DesperateAtk,          // 발악: 자아 폭주 공격
         SelfDestruct           // 발악: 자멸
     }
@@ -72,12 +76,13 @@ public class BossNull : Virus
     private bool _dataAcquisitionActive = false; // 데이터 획득(피해 시 공격력+1) 활성
     private int _dataAcquisitionBonus = 0;       // 데이터 획득 누적량 (안정화 시 초기화 추적용)
     private bool _defHalfDebuffApplied = false;  // 패킷손실(방어도 50%) 적용 여부
-    private bool _nextActionIsEnhancedStabilize = false; // 강화된 자아안정 예약 플래그
+    private bool _nextActionIsEnhancedStabilize = false; // 안정화 사용 후 다음 턴 강화된 자아안정 확정 플래그
 
     // ─── 발악 페이즈 상태 ─────────────────────────────────────
     private bool _desperateActive = false;
     private bool _desperateTriggered = false;
-    private int _desperateTurn = 0; // 발악 1~3턴 (1=ATK20, 2=ATK40, 3=ATK60)
+    private bool _desperateWarningDone = false; // 경고 대기 턴 완료 여부
+    private int _desperateTurn = 0; // 발악 실제 공격 턴 수 (1=ATK20, 2=ATK40, 3=ATK60)
 
     // ══════════════════════════════════════════════════════════
     // 초기화
@@ -118,8 +123,15 @@ public class BossNull : Virus
             ),
             new ActiveEffect(
                 _iconReducedDraw, false,
-                () => PlayerManager.instance != null && PlayerManager.instance.reducedDrawCount > 0,
-                () => $"패킷손실\n다음 턴 드로우 -{PlayerManager.instance.reducedDrawCount}"
+                () => PlayerManager.instance != null &&
+                      (PlayerManager.instance.reducedDrawCount > 0 || PlayerManager.instance.appliedDrawReduction > 0),
+                () => {
+                    int pending = PlayerManager.instance?.reducedDrawCount ?? 0;
+                    int applied = PlayerManager.instance?.appliedDrawReduction ?? 0;
+                    if (pending > 0)
+                        return $"패킷손실\n다음 턴 드로우 -{pending}";
+                    return $"패킷손실\n드로우 -{applied} 적용됨";
+                }
             ),
             new ActiveEffect(
                 _iconDefenseHalf, false,
@@ -140,6 +152,25 @@ public class BossNull : Virus
 
         foreach (var effect in _bossEffects)
             PlayerManager.instance.RegisterEffect(effect);
+
+        // ── 보스 자신의 UI에 표시되는 효과 ──────────────────
+        _bossOwnEffects = new List<ActiveEffect>
+        {
+            new ActiveEffect(
+                _iconSelfProtect, true,
+                () => _selfProtectCount > 0,
+                () => $"자아 보호 ({_selfProtectCount})\n공격 {_selfProtectCount}회 차단"
+            ),
+            new ActiveEffect(
+                _iconDataAcquisition, true,
+                () => _dataAcquisitionActive,
+                () => $"데이터 획득 (+{_dataAcquisitionBonus})\n피해 시 공격력 +1"
+            ),
+        };
+
+        if (enemyUIController?.enemyStatusUI != null)
+            foreach (var effect in _bossOwnEffects)
+                enemyUIController.enemyStatusUI.RegisterEffect(effect);
     }
 
     // ══════════════════════════════════════════════════════════
@@ -153,9 +184,24 @@ public class BossNull : Virus
 
         if (_desperateActive)
         {
-            _desperateTurn++;
-            // 3턴 공격 후에는 Death 상태로 자멸 예약
-            SetAction(_desperateTurn > 3 ? NullAction.SelfDestruct : NullAction.DesperateAtk);
+            if (!_desperateWarningDone)
+            {
+                // 발악 진입 첫 턴: 경고 대기 상태 표시, 다음 공격 피해(20) 미리 보여줌
+                SetAction(NullAction.DesperateWarning);
+                virusData.AtkDmg = 20;
+                UpdateData();
+                return;
+            }
+
+            // 경고 완료 후: 다음 공격 턴 미리보기
+            int nextTurn = _desperateTurn + 1;
+            SetAction(nextTurn > 3 ? NullAction.SelfDestruct : NullAction.DesperateAtk);
+
+            if (nextTurn <= 3)
+            {
+                virusData.AtkDmg = nextTurn switch { 1 => 20, 2 => 40, _ => 60 };
+                UpdateData();
+            }
             return;
         }
 
@@ -252,6 +298,9 @@ public class BossNull : Virus
         PlayerManager.instance.defenseMultiplier = 5.0f;
 
         Debug.Log("[BossNull] 발악 페이즈 진입 — 자아 폭주 (3턴 무적), 방어도 5배, 방어도 유지");
+
+        // 보스 의도 아이콘을 즉시 업데이트하여 첫 발악 공격력(20) 표시
+        RollNextActionAndUpdateIcon();
     }
 
     // ─── 페이즈별 행동 결정 로직 ──────────────────────────────
@@ -280,7 +329,7 @@ public class BossNull : Virus
 
     private void RollPhase3Action()
     {
-        // 강화된 자아안정이 예약되어 있으면 즉시 실행 (turnInPhase 증가 없음)
+        // 안정화 사용 후 다음 턴은 강화된 자아안정 확정
         if (_nextActionIsEnhancedStabilize)
         {
             _nextActionIsEnhancedStabilize = false;
@@ -288,8 +337,15 @@ public class BossNull : Virus
             return;
         }
 
-        // 3의 배수 턴: 안정화 + 다음 턴 강화된 자아안정 예약
-        if (_turnInPhase % 3 == 0)
+        // 3턴 이전: 직접공격만 가능
+        if (_turnInPhase < 3)
+        {
+            SetAction(NullAction.DirectAtk);
+            return;
+        }
+
+        // 3턴 이후: 직접공격 / 안정화 균등 확률
+        if (Random.Range(0, 2) == 0)
         {
             SetAction(NullAction.Stabilize);
             _nextActionIsEnhancedStabilize = true;
@@ -309,20 +365,33 @@ public class BossNull : Virus
         // ─── 발악 페이즈 처리 ────────────────────────────────
         if (_desperateActive)
         {
-            if (_nullAction == NullAction.SelfDestruct)
+            // 경고 대기 턴: 공격 없이 플래시 카드만 지급
+            if (_nullAction == NullAction.DesperateWarning)
             {
-                // 안전장치: 3턴 행동 후 자멸 (CoPhase3DirectAttack 내 처리가 주 경로)
+                if (_flashCardData != null)
+                    PlayerManager.instance.pendingFlashCards.Add(_flashCardData);
+                _desperateWarningDone = true;
+                Debug.Log("[BossNull] 발악 경고: 플래시 카드 예약, 다음 턴부터 자아 폭주 개시");
+                yield return new WaitForSeconds(0.5f);
+                yield break;
+            }
+
+            // 실제 발악 공격: 카운터 증가 (RollNextAction은 미리보기만 했음)
+            _desperateTurn++;
+
+            if (_desperateTurn > 3 || _nullAction == NullAction.SelfDestruct)
+            {
                 yield return new WaitForSeconds(0.5f);
                 _desperateActive = false;
                 OnDeath();
                 yield break;
             }
 
-            // 플래시 카드 지급
+            // 매 발악 공격 턴마다 플래시 카드 지급
             if (_flashCardData != null)
-                PlayerManager.instance.DrawFlashCard(_flashCardData);
+                PlayerManager.instance.pendingFlashCards.Add(_flashCardData);
 
-            // 턴별 공격력 설정
+            // 턴별 공격력 설정 (RollNextAction에서 이미 설정됐지만 일관성 보장)
             virusData.AtkDmg = _desperateTurn switch { 1 => 20, 2 => 40, _ => 60 };
             UpdateData();
 
@@ -456,6 +525,7 @@ public class BossNull : Virus
         if (penetrated > 0)
         {
             PlayerManager.instance.reducedDrawCount++;
+            PlayerManager.instance.UpdateUI(); // 디버프 아이콘 즉시 갱신
             Debug.Log("[BossNull] 패킷손실: 다음 턴 드로우 -1");
         }
     }
@@ -614,10 +684,15 @@ public class BossNull : Virus
             PlayerManager.instance.defenseMultiplier = 1.0f;
         PlayerManager.instance.isDefenseRetained = false;
 
-        // 등록했던 효과 전부 해제
+        // 플레이어 UI에 등록했던 효과 해제
         if (_bossEffects != null)
             foreach (var effect in _bossEffects)
                 PlayerManager.instance.UnregisterEffect(effect);
+
+        // 보스 자신의 UI에 등록했던 효과 해제
+        if (_bossOwnEffects != null && enemyUIController?.enemyStatusUI != null)
+            foreach (var effect in _bossOwnEffects)
+                enemyUIController.enemyStatusUI.UnregisterEffect(effect);
 
         VirusSpawn.instance.SetDiscountVirusCount();
 

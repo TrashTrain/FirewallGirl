@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Recurse \"C:\\\\Users\\\\이재인\\\\Desktop\\\\창작\\\\전략카드게임\\\\FirewallGirl\" -Filter \"*Monster*\" -File)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Get-ChildItem -Recurse -Filter \"*.cs\")"
+    ]
+  }
+}

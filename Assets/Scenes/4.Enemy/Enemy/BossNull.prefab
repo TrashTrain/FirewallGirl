@@ -728,6 +728,8 @@ MonoBehaviour:
   _iconCostReduction: {fileID: 21300000, guid: d625ac4c61f708240bd3fede526b5a33, type: 3}
   _iconReducedDraw: {fileID: 21300000, guid: d625ac4c61f708240bd3fede526b5a33, type: 3}
   _iconDefenseHalf: {fileID: 21300000, guid: d625ac4c61f708240bd3fede526b5a33, type: 3}
+  _iconSelfProtect: {fileID: 21300000, guid: d625ac4c61f708240bd3fede526b5a33, type: 3}
+  _iconDataAcquisition: {fileID: 21300000, guid: d625ac4c61f708240bd3fede526b5a33, type: 3}
   _iconDefenseRetain: {fileID: 21300000, guid: d625ac4c61f708240bd3fede526b5a33, type: 3}
   _iconDefenseBoost: {fileID: 21300000, guid: d625ac4c61f708240bd3fede526b5a33, type: 3}
 --- !u!61 &8560172551786634854

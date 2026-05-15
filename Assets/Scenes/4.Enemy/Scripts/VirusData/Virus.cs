@@ -26,7 +26,7 @@ public class Virus : MonoBehaviour
     public State NextAction { get; protected set; }
 
     private Coroutine _actionCo;
-    private Vector3 _originPos;
+    protected Vector3 _originPos;
     private Vector3 _originScale;
 
     [Header("Action Params")]
@@ -60,6 +60,9 @@ public class Virus : MonoBehaviour
         enemyUIController.atk.text = virusData.AtkDmg.ToString();
         enemyUIController.def.text = virusData.DefCnt.ToString();
         enemyUIController.healthBar.UpdateHPBar(virusData.CurHpCnt, virusData.HpCnt);
+
+        // 보스 전용 상태 효과 UI 갱신 (일반 몬스터는 null이므로 자동 스킵)
+        enemyUIController.enemyStatusUI?.RefreshStatusUI();
     }
     public enum State
     {
@@ -209,7 +212,7 @@ public class Virus : MonoBehaviour
         transform.position = start;
     }
 
-    private IEnumerator LerpPos(Vector3 start, Vector3 target, float dur)
+    protected IEnumerator LerpPos(Vector3 start, Vector3 target, float dur)
     {
         float t = 0f;
         dur = Mathf.Max(0.0001f, dur);

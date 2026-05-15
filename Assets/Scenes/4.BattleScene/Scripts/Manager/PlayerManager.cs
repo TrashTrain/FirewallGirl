@@ -65,13 +65,29 @@ public class PlayerManager : MonoBehaviour
     // 플레이어가 현재 보유 중인 증강체 리스트
     public List<AugmentBase> activeAugments = new List<AugmentBase>();
 
+    [Header("Turn Card Tracking")]
+    public int turnVaccineCount = 0;
+    public int turnPatchCount = 0;
+    public int turnRootCount = 0;
+    public int turnTotalCardCount = 0;
+
+    [Header("Draw Bonus (오버클럭-과열)")]
+    public int bonusDrawCount = 0;
+
+    [Header("Heat Stacks (오버클럭-열기)")]
+    public int heatStacks = 0;
+
     [Header("Debuffs")]
     public int currentDotDamage = 0;
 
     [Header("Boss Debuffs")]
-    public int reducedDrawCount = 0;        // 다음 턴 드로우 감소량 (패킷손실)
+    public int reducedDrawCount = 0;        // 다음 턴 드로우 감소량 (패킷손실, 보스 공격 후 적용 예정)
+    public int appliedDrawReduction = 0;    // 이번 플레이어 턴에 실제 적용된 드로우 감소량 (UI 표시용)
     public float defenseMultiplier = 1.0f;  // 방어도 획득 배율 (3페이즈 0.5, 발악 5.0)
     public bool isDefenseRetained = false;  // 발악 페이즈: 방어도 유지 여부
+
+    [Header("Pending Flash Cards")]
+    public List<CardObject> pendingFlashCards = new List<CardObject>(); // 다음 플레이어 턴 지급 예정 임시 카드
 
     // ─── 효과 레지스트리 ───────────────────────────────────────
     private readonly List<ActiveEffect> _registeredEffects = new List<ActiveEffect>();
@@ -79,6 +95,17 @@ public class PlayerManager : MonoBehaviour
 
     public void RegisterEffect(ActiveEffect effect) => _registeredEffects.Add(effect);
     public void UnregisterEffect(ActiveEffect effect) => _registeredEffects.Remove(effect);
+
+    public void RecordCardUsed(CardType type)
+    {
+        turnTotalCardCount++;
+        switch (type)
+        {
+            case CardType.Vaccine: turnVaccineCount++; break;
+            case CardType.Patch:   turnPatchCount++;   break;
+            case CardType.Root:    turnRootCount++;    break;
+        }
+    }
 
     private Vector3 _originPos;
 
@@ -321,10 +348,16 @@ public class PlayerManager : MonoBehaviour
             int finalPos = Mathf.RoundToInt(card.posValue * mult);
             int finalNeg = Mathf.RoundToInt(card.negValue * mult);
 
+            // 오버클럭-열기: 카드 부정수치를 열기 스택만큼 악화
+            if (heatStacks > 0 && finalNeg < 0)
+                finalNeg -= heatStacks;
+
             // 실제 스탯 반영
             AddTurnStatDelta(card.cardData.positiveStatType, finalPos);
             AddTurnStatDelta(card.cardData.negativeStatType, finalNeg);
-            
+
+            RecordCardUsed(card.cardData.cardType);
+
             // 카드 소모 처리
             OnCardUsed(card);
         }
@@ -424,6 +457,9 @@ public class PlayerManager : MonoBehaviour
 
         // 💡 [추가] 쿨타임 증가(Lag) 디버프 턴 감소
         if (lagDebuffTurns > 0) lagDebuffTurns--;
+
+        // 이번 턴 적용된 드로우 감소 초기화 (플레이어 턴 종료 시)
+        appliedDrawReduction = 0;
 
         // 역순으로 순회하며 기간이 다 된 디버프 제거
         for (int i = activeModifiers.Count - 1; i >= 0; i--)
@@ -631,11 +667,23 @@ public class PlayerManager : MonoBehaviour
         sequenceQueue.Clear();
         UpdateSequenceSummaryUI();
 
+        turnVaccineCount = 0;
+        turnPatchCount = 0;
+        turnRootCount = 0;
+        turnTotalCardCount = 0;
+
         ClearHand();
         Shuffle(drawPile);
 
-        int drawCount = Mathf.Max(1, 3 - reducedDrawCount);
+        appliedDrawReduction = reducedDrawCount;
+        int drawCount = Mathf.Max(1, 3 - reducedDrawCount + bonusDrawCount);
         reducedDrawCount = 0;
+
+        // 발악 페이즈 등에서 예약된 임시 카드를 ClearHand 이후 지급
+        foreach (var flashCard in pendingFlashCards)
+            DrawFlashCard(flashCard);
+        pendingFlashCards.Clear();
+
         DrawCards(drawCount);
 
         UpdateUI();

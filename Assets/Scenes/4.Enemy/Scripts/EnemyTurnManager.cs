@@ -6,6 +6,9 @@ public class EnemyTurnManager : MonoBehaviour
 {
     public static EnemyTurnManager Instance;
 
+    // 플레이어 턴 종료 직후 (적 행동 전) 발행되는 이벤트
+    public static event System.Action OnPlayerTurnEnded;
+
     private bool _running = false;
 
     private void Awake()
@@ -36,10 +39,9 @@ public class EnemyTurnManager : MonoBehaviour
     private IEnumerator CoEnemyTurnSequence()
     {
         Debug.Log("적 턴 시작");
-        // _running = true;
 
-        // 플레이어 턴 종료 -> 적 턴 시작
-        // GameManager.PlayerTurn = false;
+        // 플레이어 턴 종료 직후 이벤트 발행 (적 행동 전)
+        OnPlayerTurnEnded?.Invoke();
 
         // 현재 살아있는 Virus들 가져오기
         Virus[] enemies = FindObjectsOfType<Virus>();
@@ -75,8 +77,8 @@ public class EnemyTurnManager : MonoBehaviour
 
         _running = false;
         
-        PlayerManager.instance.OnTurnEndProcess(); // 디버프/쿨타임 갱신
-        PlayerManager.instance.PreparePlayerTurn(); 
+        PlayerManager.instance.OnTurnEndProcess(); // 디버프 틱/쿨타임 갱신
+        PlayerManager.instance.PreparePlayerTurn();
         PlayerManager.instance.ResetTurnDeltaStats();
         PlayerManager.instance.currentCost = PlayerManager.instance.TotalCost;
         PlayerManager.instance.UpdateUI();
