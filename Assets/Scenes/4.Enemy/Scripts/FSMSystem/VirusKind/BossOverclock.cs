@@ -26,6 +26,7 @@ public class BossOverclock : Virus
     [SerializeField] private Sprite _iconOverclock;
     [SerializeField] private Sprite _iconDigestTempo;
     [SerializeField] private Sprite _iconDigestAuth;
+    [SerializeField] private Sprite _iconEnhance;
 
     // ─── 행동 열거형 ───────────────────────────────────────────────
     private enum OverclockAction
@@ -74,10 +75,36 @@ public class BossOverclock : Virus
 
     // ─── 효과 레지스트리 ───────────────────────────────────────────
     private List<ActiveEffect> _bossEffects;
+    private ActiveEffect _selfDamageEffect;
+    private ActiveEffect _enhanceBuff;
 
     // ══════════════════════════════════════════════════════════════
     // 초기화
     // ══════════════════════════════════════════════════════════════
+
+    private Dictionary<string, string> Phase1Descriptions() => new Dictionary<string, string>
+    {
+        { "SummonDecoy", "분신을 소환합니다." },
+        { "DirectAtk",   "강화 스택만큼 ATK·방어도를 증가시키고 공격합니다." },
+        { "Debuf",       "오버클럭-열기를 1 부여합니다.\n열기 스택만큼 카드 부정수치가 증가합니다." },
+        { "Stunned",     "행동불능 상태입니다." },
+    };
+
+    private Dictionary<string, string> Phase2Descriptions() => new Dictionary<string, string>
+    {
+        { "DirectAtk",  "공격합니다. 막힌 방어도만큼 자해합니다.\n향상 버프가 있으면 ATK+20 적용 후 소멸합니다." },
+        { "Enhance",    "ATK+20을 예약합니다.\n다음 행동이 직접공격으로 고정됩니다." },
+        { "Overheat",   "현재 발화 수치만큼 자해하고 2턴 행동불능 상태가 됩니다.\n스턴 중 받은 피해 50 초과 시 발화 최대치 증가." },
+        { "Stunned",    "행동불능 상태입니다." },
+    };
+
+    private Dictionary<string, string> Phase3Descriptions() => new Dictionary<string, string>
+    {
+        { "Explode",    "보스와 플레이어 각 20 피해를 주고받습니다." },
+        { "Rampage",    "루트 카드를 사용하지 않으면 소화-권한을 1 감소시킵니다." },
+        { "Reignite",   "패치 카드를 사용하지 않으면 재발화 스택을 1 증가시킵니다.\n(매 보스 행동 시 스택×10 자해)" },
+        { "Stunned",    "행동불능 상태입니다." },
+    };
 
     protected override void Start()
     {
@@ -87,6 +114,9 @@ public class BossOverclock : Virus
 
         if (spawnNum != 3)
             Debug.LogError("[BossOverclock] 보스는 Spawn3 위치에 스폰되어야 합니다!");
+
+        if (enemyUIController != null)
+            enemyUIController.state.OverrideDescriptions(Phase1Descriptions());
 
         RegisterStatusEffects();
         EnemyTurnManager.OnPlayerTurnEnded += HandlePlayerTurnEnded;
@@ -105,6 +135,20 @@ public class BossOverclock : Virus
     private void RegisterStatusEffects()
     {
         if (PlayerManager.instance == null) return;
+
+        _selfDamageEffect = new ActiveEffect(
+            _iconOverclock, false,
+            () => _currentPhase == 3,
+            () => "오버클럭-오버클럭\n매턴 50 자해. HP 0 → 플레이어 패배"
+        );
+        _enhanceBuff = new ActiveEffect(
+            _iconEnhance, true,
+            () => _currentPhase == 1 && _enhanceStack > 0,
+            () => $"오버클럭-강화 (스택 {_enhanceStack})\n다음 직접공격 시 ATK·방어도 +{_enhanceStack + 1}"
+        );
+        enemyUIController?.enemyStatusUI?.RegisterEffect(_selfDamageEffect);
+        enemyUIController?.enemyStatusUI?.RegisterEffect(_enhanceBuff);
+        enemyUIController?.enemyStatusUI?.RefreshStatusUI();
 
         _bossEffects = new List<ActiveEffect>
         {
@@ -127,11 +171,6 @@ public class BossOverclock : Virus
                 _iconFire, false,
                 () => _currentPhase == 2,
                 () => $"오버클럭-발화\nATK 변화: {_fireAtkBonus:+0;-0;0}"
-            ),
-            new ActiveEffect(
-                _iconOverclock, false,
-                () => _currentPhase == 3,
-                () => "오버클럭-오버클럭\n매턴 50 자해. HP 0 → 플레이어 패배"
             ),
             new ActiveEffect(
                 _iconDigestTempo, true,
@@ -410,6 +449,7 @@ public class BossOverclock : Virus
 
         UpdateData();
         PlayerManager.instance.UpdateUI();
+        enemyUIController?.state.OverrideDescriptions(Phase2Descriptions());
         Debug.Log("[BossOverclock] 2페이즈 진입");
     }
 
@@ -431,6 +471,7 @@ public class BossOverclock : Virus
 
         UpdateData();
         PlayerManager.instance.UpdateUI();
+        enemyUIController?.state.OverrideDescriptions(Phase3Descriptions());
         Debug.Log("[BossOverclock] 3페이즈 진입");
     }
 
@@ -686,6 +727,7 @@ public class BossOverclock : Virus
         }
 
         UpdateData();
+        CheckPhaseTransition();
         Debug.Log($"[BossOverclock] 피해 {damage} → 체력: {virusData.CurHpCnt}");
         return remaining;
     }
@@ -736,6 +778,9 @@ public class BossOverclock : Virus
         if (_bossEffects != null)
             foreach (var e in _bossEffects)
                 PlayerManager.instance.UnregisterEffect(e);
+
+        enemyUIController?.enemyStatusUI?.UnregisterEffect(_selfDamageEffect);
+        enemyUIController?.enemyStatusUI?.UnregisterEffect(_enhanceBuff);
 
         PlayerManager.instance.UpdateUI();
     }
