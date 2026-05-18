@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -99,8 +100,9 @@ public class Virus : MonoBehaviour
         {
             enemyUIController.panel.SetActive(true); // Ȥ�� �������� UI �г� ���� Ȱ��ȭ
             UpdateData(); // ���� ü��, ���ݷ�, ������ UI �ؽ�Ʈ�� Ȯ���ϰ� ���� (�̹� �����ν� �Լ� Ȱ��!)
+            enemyUIController.state.OverrideDescriptions(GetActionDescriptions());
         }
-        
+
         // ������ �� ������ ��������
         RollNextActionAndUpdateIcon();
     }
@@ -114,6 +116,8 @@ public class Virus : MonoBehaviour
     //        Destroy(gameObject);
     //    }
     //}
+
+    protected virtual Dictionary<string, string> GetActionDescriptions() => new Dictionary<string, string>();
 
     public virtual void RollNextActionAndUpdateIcon()
     {

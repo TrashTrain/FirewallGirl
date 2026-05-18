@@ -54,6 +54,17 @@ public class StateImageChange : MonoBehaviour, IPointerEnterHandler, IPointerExi
         Debug.LogWarning($"[StateImageChange] '{key}'에 해당하는 아이콘이 설정되지 않았습니다! (오브젝트명: {gameObject.name})");
     }
 
+    public void OverrideDescriptions(Dictionary<string, string> overrides)
+    {
+        for (int i = 0; i < stateIcons.Count; i++)
+        {
+            var mapping = stateIcons[i];
+            if (overrides.TryGetValue(mapping.key, out string desc))
+                mapping.description = desc;
+            stateIcons[i] = mapping;
+        }
+    }
+
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (tooltipPanel != null && tooltipText != null)

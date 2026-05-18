@@ -256,6 +256,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 21250171}
   m_CullTransparentMesh: 1
+--- !u!1 &31087514 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2757675771083624697, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+  m_PrefabInstance: {fileID: 1525040783}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &32494188
 GameObject:
   m_ObjectHideFlags: 0
@@ -4161,6 +4166,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1149361806}
   m_CullTransparentMesh: 1
+--- !u!114 &1205052983 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4272045622222828779, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+  m_PrefabInstance: {fileID: 1525040783}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1207680868
 GameObject:
   m_ObjectHideFlags: 0
@@ -5097,6 +5113,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1472208573 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2757675771083624697, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+  m_PrefabInstance: {fileID: 2138883101}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1525040783
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5220,11 +5241,11 @@ PrefabInstance:
     - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
       propertyPath: tooltipText
       value: 
-      objectReference: {fileID: 5257528743385292513}
+      objectReference: {fileID: 1205052983}
     - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
       propertyPath: tooltipPanel
       value: 
-      objectReference: {fileID: 5257528743385292514}
+      objectReference: {fileID: 31087514}
     - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
       propertyPath: stateIcons.Array.data[0].key
       value: Atk
@@ -5587,6 +5608,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1681921673}
   m_CullTransparentMesh: 1
+--- !u!114 &1682904415 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4272045622222828779, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+  m_PrefabInstance: {fileID: 2138883101}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1685078541
 GameObject:
   m_ObjectHideFlags: 0
@@ -7164,11 +7196,11 @@ PrefabInstance:
     - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
       propertyPath: tooltipText
       value: 
-      objectReference: {fileID: 5257528743385292513}
+      objectReference: {fileID: 1682904415}
     - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
       propertyPath: tooltipPanel
       value: 
-      objectReference: {fileID: 5257528743385292514}
+      objectReference: {fileID: 1472208573}
     - target: {fileID: 5716941435176422974, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
       propertyPath: stateIcons.Array.data[0].key
       value: Atk
@@ -7576,22 +7608,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72bc774cf29d8b34a8f56b10d12b45f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &5257528743385292513 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4272045622222828779, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
-  m_PrefabInstance: {fileID: 5257528743385292511}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!1 &5257528743385292514 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2757675771083624697, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
-  m_PrefabInstance: {fileID: 5257528743385292511}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8325040727610720487
 PrefabInstance:
   m_ObjectHideFlags: 0

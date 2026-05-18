@@ -1,10 +1,18 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MemoryLeak : Virus
 {
     private const int SelfHealAmount = 3;
     private const int SelfDefGain = 2;
+
+    protected override Dictionary<string, string> GetActionDescriptions() =>
+        new Dictionary<string, string>
+        {
+            { "Atk", $"공격 후 플레이어의 다음 턴 코스트를 1 감소시킵니다." },
+            { "Def", $"체력을 {SelfHealAmount} 회복하고 방어도를 {SelfDefGain} 획득합니다." },
+        };
 
     // 40% 공격(코스트 감소), 60% 자가 복구
     protected override void RollNextAction()

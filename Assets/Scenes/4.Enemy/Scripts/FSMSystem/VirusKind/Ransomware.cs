@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Ransomware : Virus
@@ -7,6 +8,13 @@ public class Ransomware : Virus
     private const int PenaltyDamage = 10;
 
     [SerializeField] private Sprite _debuffIcon;
+
+    protected override Dictionary<string, string> GetActionDescriptions() =>
+        new Dictionary<string, string>
+        {
+            { "Atk", "직접 공격을 가합니다." },
+            { "Debuf", $"다음 플레이어 턴에 코스트를 {RequiredCost} 이상 사용하지 않으면 체력 {PenaltyDamage}을 잃습니다." },
+        };
 
     // 30% 직접 공격, 70% 몸값 요구
     protected override void RollNextAction()

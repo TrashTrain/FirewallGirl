@@ -1,9 +1,17 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Rootkit : Virus
 {
     private const int SelfDefGain = 8;
+
+    protected override Dictionary<string, string> GetActionDescriptions() =>
+        new Dictionary<string, string>
+        {
+            { "Atk", "플레이어의 방어도를 무시하는 관통 공격을 가합니다." },
+            { "Def", $"방어도를 {SelfDefGain} 획득합니다." },
+        };
 
     // 50% 관통 공격, 50% 방어도 대량 획득
     protected override void RollNextAction()
