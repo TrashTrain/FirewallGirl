@@ -605,6 +605,8 @@ MonoBehaviour:
   - {fileID: 7750796116713643236, guid: ae71dc134fe945b40a5c035a1043964d, type: 3}
   - {fileID: 5368261607086323737, guid: 8686617d91b6cd94ebe01dd85a1682b3, type: 3}
   - {fileID: 7422016813165637500, guid: 4b55001154b3bef46a25427179ae0c77, type: 3}
+  - {fileID: 7477918605917580945, guid: a7d5a9f66ff5f8f4dbc80b059305d71c, type: 3}
+  - {fileID: 1380774503740790372, guid: e86c25e6d95fd524ea1a49e505e9871c, type: 3}
   isBossStage: 0
   bossPrefab: {fileID: 0}
   virusCnt: 0
@@ -4332,10 +4334,18 @@ MonoBehaviour:
   activeModifiers: []
   cannotGainDefenseTurns: 0
   activeAugments: []
+  turnVaccineCount: 0
+  turnPatchCount: 0
+  turnRootCount: 0
+  turnTotalCardCount: 0
+  bonusDrawCount: 0
+  heatStacks: 0
   currentDotDamage: 0
   reducedDrawCount: 0
+  appliedDrawReduction: 0
   defenseMultiplier: 1
   isDefenseRetained: 0
+  pendingFlashCards: []
   hpBar: {fileID: 373234982}
   powerUI: {fileID: 854836676}
   costUI: {fileID: 854836675}
@@ -7099,6 +7109,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2321455606287091471, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2321455606287091471, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2321455606287091471, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2321455606287091471, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2474068459571568973, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
       propertyPath: m_Name
       value: SecondEnemyStatus2
@@ -7109,6 +7135,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2757675771083624697, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3055705288757186640, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3055705288757186640, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3055705288757186640, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3055705288757186640, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
+      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4447319228989723221, guid: bfb183c32b915d1458374cb172a826e9, type: 3}
