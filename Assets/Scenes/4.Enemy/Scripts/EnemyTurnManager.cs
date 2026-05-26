@@ -9,6 +9,9 @@ public class EnemyTurnManager : MonoBehaviour
     // 플레이어 턴 종료 직후 (적 행동 전) 발행되는 이벤트
     public static event System.Action OnPlayerTurnEnded;
 
+    // 적 턴 종료 후 플레이어 턴 시작 직전에 발행되는 이벤트
+    public static event System.Action OnPlayerTurnStarted;
+
     private bool _running = false;
 
     private void Awake()
@@ -82,7 +85,10 @@ public class EnemyTurnManager : MonoBehaviour
         PlayerManager.instance.ResetTurnDeltaStats();
         PlayerManager.instance.currentCost = PlayerManager.instance.TotalCost;
         PlayerManager.instance.UpdateUI();
-        
+
+        // 플레이어 턴 시작 이벤트 발행 (보스 패시브 등 구독자에게 알림)
+        OnPlayerTurnStarted?.Invoke();
+
         Debug.Log("적 턴 종료");
     }
     public void InitEnemyIntents()
