@@ -35,6 +35,8 @@ public class PlayerCard : MonoBehaviour
     private Coroutine hideHoverCoroutine;
 
     [HideInInspector] public int currentCoolTime = 0;
+    
+    public static event Action OnUseClicked;
     public bool isTemporary = false;
 
     public int posValue
@@ -106,17 +108,25 @@ public class PlayerCard : MonoBehaviour
     public void SetPreviewState(bool state)
     {
         IsInPreview = state;
-        string hoverBtnStr = IsInPreview ? "���" : "����";
-        string detailBtnStr = IsInPreview ? "���" : $"���� ({cost})";
+        string hoverBtnStr = IsInPreview ? "취소" : "적용";
+        string detailBtnStr = IsInPreview ? "취소" : $"적용 ({cost})";
 
         if (hoverUseBtnText != null) hoverUseBtnText.text = hoverBtnStr;
         if (detailUseBtnText != null) detailUseBtnText.text = detailBtnStr;
     }
     
+    /// <summary>hoverView의 사용 버튼 클릭 가능 여부를 설정합니다.</summary>
+    public void SetHoverUseBtnInteractable(bool interactable)
+    {
+        if (hoverUseBtn != null) hoverUseBtn.interactable = interactable;
+    }
+
     // '����/���' ��ư�� ������ �� ����Ǵ� �Լ�
     public void TogglePreviewState()
     {
         if (PlayerManager.instance == null) return;
+        
+        if (!IsInPreview) OnUseClicked?.Invoke();
         
         // �Ŵ����� ��ٱ��Ͽ� �ְų� ��
         PlayerManager.instance.ToggleCardInPreview(this);

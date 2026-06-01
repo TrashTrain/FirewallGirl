@@ -94,8 +94,8 @@ public class Virus : MonoBehaviour
         
         Debug.Log($"바이러스 수: {VirusSpawn.instance.virusCnt}");
 
-        InitData();
-        
+        if (virusData == null) InitData();
+
         if (enemyUIController != null)
         {
             enemyUIController.panel.SetActive(true); // Ȥ�� �������� UI �г� ���� Ȱ��ȭ
