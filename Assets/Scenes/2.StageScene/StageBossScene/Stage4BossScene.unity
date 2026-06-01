@@ -592,6 +592,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a124229a51250014bb21cdd702380bd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoSpawnOnStart: 1
+  suppressReward: 0
   spawns:
   - {fileID: 2005105419}
   - {fileID: 863743510}
@@ -4351,6 +4353,7 @@ MonoBehaviour:
   handContainer: {fileID: 409742039}
   masterDeck: []
   handCards: []
+  isTutorialMode: 0
   lagDebuffTurns: 0
   lagDebuffValue: 1
   sequenceContainer: {fileID: 2147289637}
@@ -7855,17 +7858,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2c6c6934908c7b4eb177ba2cdf82f02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  virusObjectSO: {fileID: 0}
+  virusObjectSO: {fileID: 11400000, guid: 4b78cd5729cdba44b836a668bad0d66f, type: 2}
   image: {fileID: 0}
   RandState: 0
   spawnNum: 0
   virusState: 0
   enemyUIController: {fileID: 0}
-  phase1Sprite: {fileID: 0}
-  phase2Sprite: {fileID: 0}
-  phase3Sprite: {fileID: 0}
-  phase4Sprite: {fileID: 0}
-  _decoyPrefab: {fileID: 0}
+  phase1Sprite: {fileID: 21300000, guid: f63c6c61b366ee34281b809e7cd68cda, type: 3}
+  phase2Sprite: {fileID: 21300000, guid: 900303ce17e87fa4fa574d6960cee6ec, type: 3}
+  phase3Sprite: {fileID: 21300000, guid: 326024bbbd0360643a386aed8b93942c, type: 3}
+  phase4Sprite: {fileID: 21300000, guid: 26e25f95a3dc4bf4ab9cd9a0b32447f3, type: 3}
+  _decoyPrefab: {fileID: 2585182014376551471, guid: 06b5f5e74a3e6b5439ec8db37663aa29, type: 3}
   _decoySpawnPoints: []
   _iconGraphicChange: {fileID: 0}
   _iconCopy: {fileID: 0}
