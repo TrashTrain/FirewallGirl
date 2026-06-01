@@ -19,7 +19,7 @@ public class BossUnrendered : Virus
     // ─── 디코이 ──────────────────────────────────────────────────
     [Header("디코이 설정")]
     [SerializeField] private GameObject _decoyPrefab;
-    [SerializeField] private Transform[] _decoySpawnPoints; // Inspector에서 5개 위치 연결
+    private Transform[] _decoySpawnPoints;
 
     // ─── Status Effect Icons ─────────────────────────────────────
     [Header("Status Effect Icons")]
@@ -28,6 +28,7 @@ public class BossUnrendered : Virus
     [SerializeField] private Sprite _iconCooling;
     [SerializeField] private Sprite _iconPermissionRecovery;
     [SerializeField] private Sprite _iconCollapse;
+    [SerializeField] private Sprite _iconImmunity;
 
     // ─── 공통 기믹 static 플래그 ─────────────────────────────────
     /// <summary>2페이즈~: 카드 정보 가리기 활성 (UI TODO)</summary>
@@ -44,7 +45,7 @@ public class BossUnrendered : Virus
     {
         // 1페이즈
         GraphicChaos,       // 그래픽-혼란: 디코이 5기 생성
-        PixelCollapse,      // 픽셀-붕괴: 플레이어 카드 1장 픽셀화 (TODO stub)
+        PixelCollapse,      // 픽셀-붕괴: 플레이어 카드 1장 픽셀화
         GraphicCopy,        // 그래픽-복사: 플레이어 공/방 긍정 변화 2턴 복사
         RenderPunch,        // 렌더 펀치!: ATK × 1 (1페이즈), × 1.5 (2페이즈), × 2 (3페이즈)
         // 2페이즈 추가
@@ -70,10 +71,21 @@ public class BossUnrendered : Virus
 
     // ─── 디코이 상태 ─────────────────────────────────────────────
     private List<UnrenderedDecoy> _activeDecoys = new List<UnrenderedDecoy>();
-    private int _hitboxDecoyIndex = 0;          // 현재 히트박스 디코이 인덱스
-    private int _chaosCooldownTurns = 0;        // 그래픽-혼란 쿨다운 남은 턴 (성공:2, 실패:0)
-    private int _wrongDecoyClickCount = 0;      // 잘못된 디코이 클릭 횟수 (2회 = 자폭)
-    private bool _firstChaosFired = false;       // 최초 혼란 발동 여부 (힌트 팝업용)
+    private int _hitboxDecoyIndex = 0;
+    private int _chaosCooldownTurns = 0;
+    private bool _firstChaosFired = false;
+
+    // ─── 디코이 패턴 진행 상태 ───────────────────────────────────
+    private bool _decoyPatternActive = false;
+    private bool _hasClickedDecoyThisTurn = false;
+    private bool _lastClickedDecoyIsHitbox = false;
+    private int _decoyRetryCount = 0;
+
+    // ─── 픽셀-붕괴 무적 ──────────────────────────────────────────
+    private bool _pixelCollapseImmunity = false;
+
+    // ─── TurnChanger 참조 ────────────────────────────────────────
+    private TurnChanger _turnChanger;
 
     // ─── 그래픽-복사 ─────────────────────────────────────────────
     private int _snapshotAtk = 0;
@@ -87,20 +99,24 @@ public class BossUnrendered : Virus
     private int _coolingTurnsLeft = 0;
 
     // ─── 그래픽-복원 쿨타임 ──────────────────────────────────────
-    private int _restoreCooldown = 0;           // 0이면 사용 가능
+    private int _restoreCooldown = 0;
 
     // ─── 4페이즈 행동불능 ─────────────────────────────────────────
     private int _stunTurns = 0;
 
     // ─── 2페이즈 패시브: 그래픽-붕괴 카운터 ─────────────────────
-    private int _collapseTurnCounter = 0;       // 3마다 붕괴 활성
+    private int _collapseTurnCounter = 0;
 
     // ─── 3페이즈 패시브: 그래픽-분리 카운터 ─────────────────────
     private int _phase3SepTurnCounter = 0;
-    private bool _sepFlipState = false;         // true=뒤집기, false=원복 교대
+    private bool _sepFlipState = false;
 
     // ─── 3페이즈: 그래픽-스킵 (플레이어 턴 5초 타이머) ──────────
     private Coroutine _skipCoroutine = null;
+
+    // ─── 픽셀-붕괴 ───────────────────────────────────────────────
+    private bool _pendingPixelCollapse = false;
+    private List<PixelateEffect> _pixelatedCards = new List<PixelateEffect>();
 
     // ─── 효과 레지스트리 ─────────────────────────────────────────
     private List<ActiveEffect> _bossEffects;
@@ -109,6 +125,7 @@ public class BossUnrendered : Virus
     private ActiveEffect _effectCooling;
     private ActiveEffect _effectPermissionRecovery;
     private ActiveEffect _effectCollapse;
+    private ActiveEffect _effectImmunity;
 
     // ══════════════════════════════════════════════════════════════
     // 초기화
@@ -156,6 +173,18 @@ public class BossUnrendered : Virus
         InitData();
         ChangeSprite(phase1Sprite);
 
+        if (VirusSpawn.instance != null)
+        {
+            Transform root = VirusSpawn.instance.transform;
+            _decoySpawnPoints = new Transform[5];
+            for (int i = 0; i < 5; i++)
+                _decoySpawnPoints[i] = root.Find($"Spawn{i + 1}");
+        }
+
+        _turnChanger = FindObjectOfType<TurnChanger>();
+        if (_turnChanger == null)
+            Debug.LogWarning("[BossUnrendered] TurnChanger를 찾을 수 없습니다.");
+
         if (spawnNum != 3)
             Debug.LogError("[BossUnrendered] 보스는 Spawn3 위치에 스폰되어야 합니다!");
 
@@ -164,12 +193,14 @@ public class BossUnrendered : Virus
 
         // 1페이즈 패시브: GraphicChangeLevel = 1
         GraphicChangeLevel = 1;
-        // TODO: [UI TODO] GraphicChangeLevel=1 적용: 카드 정보 긍/부 수치 가림, 플레이어 공/방 수치 가림
+        PlayerManager.instance?.RefreshHandVisuals();
+        PlayerManager.instance?.UpdateUI();
 
         RegisterStatusEffects();
 
         EnemyTurnManager.OnPlayerTurnEnded   += HandlePlayerTurnEnded;
         EnemyTurnManager.OnPlayerTurnStarted += HandlePlayerTurnStarted;
+        PlayerManager.OnHandRefreshed        += HandleHandRefreshed;
 
         RollNextActionAndUpdateIcon();
     }
@@ -178,7 +209,14 @@ public class BossUnrendered : Virus
     {
         EnemyTurnManager.OnPlayerTurnEnded   -= HandlePlayerTurnEnded;
         EnemyTurnManager.OnPlayerTurnStarted -= HandlePlayerTurnStarted;
+        PlayerManager.OnHandRefreshed        -= HandleHandRefreshed;
         StopSkipTimer();
+
+        if (_decoyPatternActive)
+        {
+            SetEndTurnInteractable(true);
+            ShowBossUI();
+        }
         CleanupAllDecoys();
 
         // static 플래그 초기화
@@ -199,7 +237,7 @@ public class BossUnrendered : Virus
         _effectGraphicChange = new ActiveEffect(
             _iconGraphicChange, false,
             () => GraphicChangeLevel > 0,
-            () => $"그래픽 변화 (레벨 {GraphicChangeLevel})\n카드/스탯 정보 왜곡 효과 적용 중 (UI TODO)"
+            () => $"그래픽 변화 (레벨 {GraphicChangeLevel})\n카드/스탯 정보 왜곡 효과 적용 중"
         );
         _effectCopy = new ActiveEffect(
             _iconCopy, true,
@@ -221,12 +259,18 @@ public class BossUnrendered : Virus
             () => CollapseDebuffActive,
             () => "붕괴 디버프\n카드 효과 절반 (UI TODO)"
         );
+        _effectImmunity = new ActiveEffect(
+            _iconImmunity, true,
+            () => _pixelCollapseImmunity,
+            () => "픽셀-붕괴 예고\n이번 턴 모든 피해 무효"
+        );
 
         enemyUIController.enemyStatusUI?.RegisterEffect(_effectGraphicChange);
         enemyUIController.enemyStatusUI?.RegisterEffect(_effectCopy);
         enemyUIController.enemyStatusUI?.RegisterEffect(_effectCooling);
         enemyUIController.enemyStatusUI?.RegisterEffect(_effectPermissionRecovery);
         enemyUIController.enemyStatusUI?.RegisterEffect(_effectCollapse);
+        enemyUIController.enemyStatusUI?.RegisterEffect(_effectImmunity);
         enemyUIController.enemyStatusUI?.RefreshStatusUI();
     }
 
@@ -238,6 +282,15 @@ public class BossUnrendered : Virus
     {
         if (PlayerManager.instance == null) return;
 
+        // 디코이 패턴 재시도: 클릭 상태 초기화, 턴 종료 버튼 비활성화
+        if (_decoyPatternActive)
+        {
+            _hasClickedDecoyThisTurn = false;
+            _lastClickedDecoyIsHitbox = false;
+            SetEndTurnInteractable(false);
+            return;
+        }
+
         // 그래픽-복사: 플레이어 ATK/DEF 스냅샷 저장
         _snapshotAtk = PlayerManager.instance.AttackPower;
         _snapshotDef = PlayerManager.instance.DefensePower;
@@ -246,10 +299,7 @@ public class BossUnrendered : Virus
         if (_currentPhase >= 2)
         {
             if (Random.value < 0.30f)
-            {
-                // TODO: [UI TODO] 그래픽-페이크 어택 피격 모션 재생
                 Debug.Log("[BossUnrendered] 그래픽-페이크 어택 발동 (피격 모션 TODO)");
-            }
         }
 
         // 4페이즈 패시브: 권한 복구-렌더 — 매 턴 방어도 +10 (→ 소멸형)
@@ -259,7 +309,7 @@ public class BossUnrendered : Virus
             Debug.Log("[BossUnrendered] 권한 복구-렌더: 플레이어 방어도 +10 (이번 턴 소멸)");
         }
 
-        // 3페이즈~: 그래픽-스킵 타이머 시작 (블루스크린 중 비활성화는 TODO stub)
+        // 3페이즈~: 그래픽-스킵 타이머 시작
         if (_currentPhase >= 3)
             StartSkipTimer();
     }
@@ -274,6 +324,37 @@ public class BossUnrendered : Virus
 
         StopSkipTimer();
 
+        // 픽셀-붕괴 무적 해제
+        _pixelCollapseImmunity = false;
+
+        // ─── 디코이 패턴 처리 ─────────────────────────────────────
+        if (_decoyPatternActive)
+        {
+            if (_hasClickedDecoyThisTurn && _lastClickedDecoyIsHitbox)
+            {
+                // 성공: 플레이어 공격력만큼 보스에게 피해
+                Debug.Log("[BossUnrendered] 디코이 패턴 성공 — 보스 피격!");
+                ApplyDamage(PlayerManager.instance.AttackPower);
+                _chaosCooldownTurns = 2;
+                FinishDecoyPattern();
+            }
+            else
+            {
+                _decoyRetryCount++;
+                Debug.Log($"[BossUnrendered] 디코이 패턴 실패 ({_decoyRetryCount}/2)");
+
+                if (_decoyRetryCount >= 2)
+                {
+                    // 2회 실패: 플레이어에게 30 피해, 패턴 종료
+                    Debug.Log("[BossUnrendered] 디코이 2회 실패 → 플레이어 30 피해");
+                    PlayerManager.instance.TakeDamage(30);
+                    _chaosCooldownTurns = 0;
+                    FinishDecoyPattern();
+                }
+                // else: 디코이 유지, HandlePlayerTurnStarted에서 버튼 재비활성화
+            }
+        }
+
         int patches  = PlayerManager.instance.turnPatchCount;
         int roots    = PlayerManager.instance.turnRootCount;
         int vaccines = PlayerManager.instance.turnVaccineCount;
@@ -284,7 +365,6 @@ public class BossUnrendered : Virus
             _copyTurnsLeft--;
             if (_copyTurnsLeft == 0)
             {
-                // 복사 효과 제거
                 if (_copyAppliedAtk > 0) virusData.AtkDmg = Mathf.Max(0, virusData.AtkDmg - _copyAppliedAtk);
                 if (_copyAppliedDef > 0) virusData.DefCnt = Mathf.Max(0, virusData.DefCnt - _copyAppliedDef);
                 _copyAppliedAtk = 0;
@@ -304,12 +384,6 @@ public class BossUnrendered : Virus
                 _coolingTurnsLeft = 0;
                 Debug.Log("[BossUnrendered] 그래픽-냉각 해제");
             }
-        }
-
-        // 디코이 플레이어 턴 종료 시 전체 소멸 (성공/실패 무관)
-        if (_activeDecoys.Count > 0)
-        {
-            CleanupAllDecoys(); // 내부에서 _wrongDecoyClickCount도 초기화
         }
 
         // 그래픽-혼란 쿨다운 카운트다운
@@ -338,7 +412,6 @@ public class BossUnrendered : Virus
         // 2페이즈 패시브: 그래픽-붕괴 (3턴마다 CollapseDebuffActive = true, 1턴 유지)
         if (_currentPhase >= 2)
         {
-            // 이전 턴에 붕괴가 활성화되어 있었으면 이번 턴 종료 시 해제
             if (CollapseDebuffActive)
             {
                 CollapseDebuffActive = false;
@@ -388,10 +461,11 @@ public class BossUnrendered : Virus
             {
                 _phase3SepTurnCounter = 0;
                 _sepFlipState = !_sepFlipState;
-                // TODO: [UI TODO] 그래픽-분리 효과 (뒤집기/원복)
                 Debug.Log($"[BossUnrendered] 그래픽-분리: {(_sepFlipState ? "뒤집기" : "원복")}");
             }
         }
+
+        CleanupPixelatedCards();
 
         UpdateData();
         PlayerManager.instance.UpdateUI();
@@ -424,8 +498,8 @@ public class BossUnrendered : Virus
     private void CheckPhaseTransition()
     {
         if (virusData == null) return;
-        float ratio   = (float)virusData.CurHpCnt / virusData.HpCnt;
-        int   curHP   = virusData.CurHpCnt;
+        float ratio = (float)virusData.CurHpCnt / virusData.HpCnt;
+        int   curHP = virusData.CurHpCnt;
 
         if (_currentPhase == 1 && ratio <= 0.80f)
             EnterPhase2();
@@ -439,14 +513,13 @@ public class BossUnrendered : Virus
 
     private void RollPhase1Action()
     {
-        // 그래픽-혼란 쿨다운 중이면 풀에서 제외
         List<UnrenderedAction> pool = new List<UnrenderedAction>
         {
             UnrenderedAction.PixelCollapse,
             UnrenderedAction.GraphicCopy,
             UnrenderedAction.RenderPunch,
         };
-        if (_chaosCooldownTurns == 0)
+        if (_chaosCooldownTurns == 0 && !_decoyPatternActive)
             pool.Add(UnrenderedAction.GraphicChaos);
 
         _action = pool[Random.Range(0, pool.Count)];
@@ -463,7 +536,7 @@ public class BossUnrendered : Virus
             UnrenderedAction.GraphicCooling,
             UnrenderedAction.GraphicLayerSep,
         };
-        if (_chaosCooldownTurns == 0)
+        if (_chaosCooldownTurns == 0 && !_decoyPatternActive)
             pool.Add(UnrenderedAction.GraphicChaos);
 
         _action = pool[Random.Range(0, pool.Count)];
@@ -481,7 +554,6 @@ public class BossUnrendered : Virus
             UnrenderedAction.RenderPunch,
         };
 
-        // 그래픽-복원: 쿨타임 0이고 HP가 최대가 아닐 때만 풀에 포함
         if (_restoreCooldown == 0 && virusData.CurHpCnt < virusData.HpCnt)
             pool.Add(UnrenderedAction.GraphicRestore);
 
@@ -522,8 +594,6 @@ public class BossUnrendered : Virus
         if (PlayerManager.instance != null) PlayerManager.instance.UpdateUI();
         enemyUIController?.state.OverrideDescriptions(Phase2Descriptions());
 
-        // TODO: [UI TODO] GraphicChangeLevel=2, CardInfoHidingActive=true 적용
-        // TODO: [UI TODO] 그래픽 화질 저하 실시간 5초 반복
         Debug.Log("[BossUnrendered] 2페이즈 진입");
     }
 
@@ -541,8 +611,6 @@ public class BossUnrendered : Virus
         if (PlayerManager.instance != null) PlayerManager.instance.UpdateUI();
         enemyUIController?.state.OverrideDescriptions(Phase3Descriptions());
 
-        // 3페이즈 진입 시 그래픽-분리 첫 발동
-        // TODO: [UI TODO] 그래픽-분리 첫 발동
         Debug.Log("[BossUnrendered] 3페이즈 진입 → 그래픽-분리 첫 발동 (UI TODO)");
     }
 
@@ -562,6 +630,13 @@ public class BossUnrendered : Virus
         _copyAppliedAtk         = 0;
         _copyAppliedDef         = 0;
         StopSkipTimer();
+
+        if (_decoyPatternActive)
+        {
+            _decoyPatternActive = false;
+            SetEndTurnInteractable(true);
+            ShowBossUI();
+        }
         CleanupAllDecoys();
 
         // 그래픽-몰입: 공격력 +20
@@ -571,9 +646,6 @@ public class BossUnrendered : Virus
         if (PlayerManager.instance != null) PlayerManager.instance.UpdateUI();
         enemyUIController?.state.OverrideDescriptions(Phase4Descriptions());
 
-        // TODO: [UI TODO] 4페이즈 전환 연출 (모든 기존 현상 해제)
-        // TODO: [UI TODO] 권한 복구-렌더: 플레이어 긍정효과 +150%
-        // TODO: [UI TODO] 권한 복구-렌더: 모든 카드 부정수치 0
         Debug.Log("[BossUnrendered] 4페이즈 진입 → 공격력 +20, 모든 기존 현상 해제");
     }
 
@@ -592,6 +664,13 @@ public class BossUnrendered : Virus
 
         // 디코이가 살아있으면 매 보스 턴마다 히트박스 이동
         MoveDecoyHitbox();
+
+        // 디코이 패턴 재시도 중: 히트박스 이동만 하고 행동 없음
+        if (_decoyPatternActive)
+        {
+            yield return new WaitForSeconds(0.5f);
+            yield break;
+        }
 
         if (_action == UnrenderedAction.Stunned)
         {
@@ -617,15 +696,12 @@ public class BossUnrendered : Virus
             case UnrenderedAction.GraphicChaos:
                 yield return CoGraphicChaos();
                 break;
-
             case UnrenderedAction.PixelCollapse:
                 yield return CoPixelCollapse();
                 break;
-
             case UnrenderedAction.GraphicCopy:
                 yield return CoGraphicCopy();
                 break;
-
             case UnrenderedAction.RenderPunch:
                 yield return CoRenderPunch(1.0f);
                 break;
@@ -641,19 +717,15 @@ public class BossUnrendered : Virus
             case UnrenderedAction.GraphicChaos:
                 yield return CoGraphicChaos();
                 break;
-
             case UnrenderedAction.RenderPunch:
                 yield return CoRenderPunch(1.5f);
                 break;
-
             case UnrenderedAction.GraphicOverheat:
                 yield return CoGraphicOverheat();
                 break;
-
             case UnrenderedAction.GraphicCooling:
                 yield return CoGraphicCooling();
                 break;
-
             case UnrenderedAction.GraphicLayerSep:
                 yield return CoGraphicLayerSep();
                 break;
@@ -669,19 +741,15 @@ public class BossUnrendered : Virus
             case UnrenderedAction.GraphicBlueScreen:
                 yield return CoGraphicBlueScreen();
                 break;
-
             case UnrenderedAction.GraphicRestore:
                 yield return CoGraphicRestore();
                 break;
-
             case UnrenderedAction.GraphicSystemFake:
                 yield return CoGraphicSystemFake();
                 break;
-
             case UnrenderedAction.GraphicStrike:
                 yield return CoGraphicStrike();
                 break;
-
             case UnrenderedAction.RenderPunch:
                 yield return CoRenderPunch(2.0f);
                 break;
@@ -697,7 +765,6 @@ public class BossUnrendered : Virus
             case UnrenderedAction.GraphicResourceRecovery:
                 yield return CoGraphicResourceRecovery();
                 break;
-
             case UnrenderedAction.GraphicSmash:
                 yield return CoGraphicSmash();
                 break;
@@ -708,17 +775,15 @@ public class BossUnrendered : Virus
     // 개별 행동 코루틴
     // ══════════════════════════════════════════════════════════════
 
-    /// <summary>그래픽-혼란: 디코이 5기 생성 (히트박스 1기 랜덤 배치)</summary>
+    /// <summary>그래픽-혼란: 디코이 5기 생성, End Turn 비활성화, 보스 UI 숨김</summary>
     private IEnumerator CoGraphicChaos()
     {
         if (!_firstChaosFired)
         {
             _firstChaosFired = true;
             // TODO: [UI 출력 로직] 렌더 힌트 팝업 알림창 출력 (10초 지속)
-            // 출력 조건: 최초 그래픽-혼란 발동 시 1회
             // 메시지1: "한 명만 가면을 안쓰고 있는 것 같아요!"
             // 메시지2: "히트박스도 바뀐 것 같아요..."
-            // 구현 방법 미정 (UI 설계 후 작성 예정)
         }
 
         CleanupAllDecoys();
@@ -730,7 +795,6 @@ public class BossUnrendered : Virus
             yield break;
         }
 
-        // 히트박스 인덱스 랜덤 선정
         _hitboxDecoyIndex = Random.Range(0, 5);
 
         for (int i = 0; i < 5; i++)
@@ -744,16 +808,42 @@ public class BossUnrendered : Virus
             _activeDecoys.Add(decoy);
         }
 
+        _decoyPatternActive       = true;
+        _decoyRetryCount          = 0;
+        _hasClickedDecoyThisTurn  = false;
+        _lastClickedDecoyIsHitbox = false;
+
+        SetEndTurnInteractable(false);
+        HideBossUI();
+
         Debug.Log($"[BossUnrendered] 그래픽-혼란: 디코이 5기 생성 (히트박스 인덱스 {_hitboxDecoyIndex})");
         yield return new WaitForSeconds(0.5f);
     }
 
-    /// <summary>픽셀-붕괴: 플레이어 카드 1장 픽셀화 (TODO stub)</summary>
+    /// <summary>픽셀-붕괴: 다음 플레이어 턴 드로우 후 카드 1장 모자이크 예약, 이번 플레이어 턴 무적</summary>
     private IEnumerator CoPixelCollapse()
     {
-        // TODO: [UI/카드 시스템] 플레이어 손패 카드 1장 랜덤 선택 → 픽셀화 효과 적용
-        Debug.Log("[BossUnrendered] 픽셀-붕괴 발동 (카드 픽셀화 TODO)");
+        _pendingPixelCollapse  = true;
+        _pixelCollapseImmunity = true;
+        Debug.Log("[BossUnrendered] 픽셀-붕괴: 다음 플레이어 턴 카드 픽셀화 예정, 이번 턴 무적");
         yield return new WaitForSeconds(0.5f);
+    }
+
+    /// <summary>PreparePlayerTurn 드로우 완료 후 호출 — 픽셀화 예약이 있으면 적용</summary>
+    private void HandleHandRefreshed()
+    {
+        if (!_pendingPixelCollapse) return;
+        _pendingPixelCollapse = false;
+
+        if (PlayerManager.instance == null) return;
+        PlayerCard target = PlayerManager.instance.GetRandomHandCard();
+        if (target == null) return;
+
+        PixelateEffect effect = target.gameObject.AddComponent<PixelateEffect>();
+        effect.Apply(8f);
+        _pixelatedCards.Add(effect);
+
+        Debug.Log($"[BossUnrendered] 픽셀-붕괴 적용: '{target.cardData.cardName}' 픽셀화");
     }
 
     /// <summary>그래픽-복사: 플레이어 ATK/DEF 긍정 변화(스냅샷 대비 증가분)를 2턴간 복사</summary>
@@ -768,11 +858,9 @@ public class BossUnrendered : Virus
         int currentAtk = PlayerManager.instance.AttackPower;
         int currentDef = PlayerManager.instance.DefensePower;
 
-        // 스냅샷 대비 증가분만 복사 (긍정 변화만)
         int gainedAtk = Mathf.Max(0, currentAtk - _snapshotAtk);
         int gainedDef = Mathf.Max(0, currentDef - _snapshotDef);
 
-        // 기존 복사 효과 제거 후 새로 적용
         if (_copyAppliedAtk > 0) virusData.AtkDmg = Mathf.Max(0, virusData.AtkDmg - _copyAppliedAtk);
         if (_copyAppliedDef > 0) virusData.DefCnt = Mathf.Max(0, virusData.DefCnt - _copyAppliedDef);
 
@@ -791,11 +879,10 @@ public class BossUnrendered : Virus
     /// <summary>렌더 펀치!: ATK × multiplier (내림)</summary>
     private IEnumerator CoRenderPunch(float multiplier)
     {
-        int baseDmg = virusData.AtkDmg;
-        int dmg = Mathf.FloorToInt(baseDmg * multiplier);
-
-        // 임시로 ATK 변경 후 공격, 이후 복원
+        int baseDmg     = virusData.AtkDmg;
+        int dmg         = Mathf.FloorToInt(baseDmg * multiplier);
         int originalAtk = virusData.AtkDmg;
+
         virusData.AtkDmg = dmg;
         UpdateData();
 
@@ -819,14 +906,12 @@ public class BossUnrendered : Virus
         int dmg       = cardCount * 5;
 
         if (dmg > 0)
-        {
-            PlayerManager.instance.TakeDamage(dmg);
             Debug.Log($"[BossUnrendered] 그래픽-과열: 카드 {cardCount}장 × 5 = {dmg} 피해");
-        }
         else
-        {
             Debug.Log("[BossUnrendered] 그래픽-과열: 사용 카드 없음, 피해 없음");
-        }
+
+        if (dmg > 0)
+            PlayerManager.instance.TakeDamage(dmg);
 
         yield return new WaitForSeconds(0.5f);
     }
@@ -849,11 +934,10 @@ public class BossUnrendered : Virus
         yield return new WaitForSeconds(0.5f);
     }
 
-    /// <summary>그래픽-블루스크린: 다음 플레이어 턴에 블루스크린 활성, 5초 후 자동 턴 종료 (TODO stub)</summary>
+    /// <summary>그래픽-블루스크린: 다음 플레이어 턴에 블루스크린 활성 (TODO stub)</summary>
     private IEnumerator CoGraphicBlueScreen()
     {
         // TODO: [UI/카드 시스템] 다음 플레이어 턴에 블루스크린 활성
-        // 블루스크린 발동 중 그래픽-스킵 비활성화
         Debug.Log("[BossUnrendered] 그래픽-블루스크린 예약 (다음 플레이어 턴, 5초 자동 종료 TODO)");
         yield return new WaitForSeconds(0.5f);
     }
@@ -892,15 +976,12 @@ public class BossUnrendered : Virus
             yield break;
         }
 
-        int prevDef = PlayerManager.instance.DefensePower;
-        int prevHP  = PlayerManager.instance.currentHP;
+        int prevHP = PlayerManager.instance.currentHP;
 
         yield return CoAttack();
 
-        // 실제 HP 피해 계산
-        int afterHP    = PlayerManager.instance.currentHP;
-        int hpDamage   = Mathf.Max(0, prevHP - afterHP);
-        int selfDmg    = Mathf.FloorToInt(hpDamage * 0.5f);
+        int hpDamage = Mathf.Max(0, prevHP - PlayerManager.instance.currentHP);
+        int selfDmg  = Mathf.FloorToInt(hpDamage * 0.5f);
 
         if (selfDmg > 0)
         {
@@ -922,8 +1003,7 @@ public class BossUnrendered : Virus
 
         yield return CoAttack();
 
-        int afterHP  = PlayerManager.instance.currentHP;
-        int hpDamage = Mathf.Max(0, prevHP - afterHP);
+        int hpDamage = Mathf.Max(0, prevHP - PlayerManager.instance.currentHP);
 
         if (hpDamage > 0)
         {
@@ -949,50 +1029,18 @@ public class BossUnrendered : Virus
     // ══════════════════════════════════════════════════════════════
 
     /// <summary>
-    /// 플레이어가 디코이 클릭 시 호출
-    /// - 히트박스(빛나는 것) 클릭: 보스에게 피해, 전체 디코이 소멸, 2턴 쿨다운
-    /// - 잘못된 디코이 클릭: 클릭 수 누적. 2회째: 전체 자폭 30 피해, 패턴 재사용(쿨다운 없음)
+    /// 플레이어가 디코이 클릭 시 호출 — 마지막 클릭을 기록하고 End Turn 버튼 활성화
     /// </summary>
     public void OnDecoyClicked(UnrenderedDecoy decoy, bool isHitbox)
     {
-        if (isHitbox)
-        {
-            Debug.Log("[BossUnrendered] 히트박스 디코이 클릭 → 본체 공격 성공!");
-            // 플레이어 공격력으로 보스에게 피해
-            if (PlayerManager.instance != null)
-                ApplyDamage(PlayerManager.instance.AttackPower);
+        if (!_decoyPatternActive) return;
 
-            // 전체 디코이 소멸 + 2턴 쿨다운
-            _wrongDecoyClickCount = 0;
-            _chaosCooldownTurns   = 2;
-            CleanupAllDecoys();
-        }
-        else
-        {
-            _wrongDecoyClickCount++;
-            Debug.Log($"[BossUnrendered] 잘못된 디코이 클릭 ({_wrongDecoyClickCount}/2)");
+        _hasClickedDecoyThisTurn  = true;
+        _lastClickedDecoyIsHitbox = isHitbox;
 
-            if (_wrongDecoyClickCount >= 2)
-            {
-                // 2회 실패: 전체 자폭 → 30 피해, 쿨다운 없이 패턴 재사용 가능
-                Debug.Log("[BossUnrendered] 디코이 전체 자폭 → 플레이어 30 피해");
-                if (PlayerManager.instance != null)
-                    PlayerManager.instance.TakeDamage(30);
+        SetEndTurnInteractable(true);
 
-                _wrongDecoyClickCount = 0;
-                _chaosCooldownTurns   = 0;   // 쿨다운 없음: 패턴 재사용 가능
-                CleanupAllDecoys();
-            }
-            else
-            {
-                // 1회 실패 시: 클릭된 디코이만 제거 (자폭 없음)
-                if (decoy != null)
-                {
-                    _activeDecoys.Remove(decoy);
-                    Destroy(decoy.gameObject);
-                }
-            }
-        }
+        Debug.Log($"[BossUnrendered] 디코이 클릭 — {(isHitbox ? "히트박스!" : "페이크")} (턴 종료 가능)");
     }
 
     /// <summary>매 보스 턴 히트박스 이동</summary>
@@ -1000,24 +1048,33 @@ public class BossUnrendered : Virus
     {
         if (_activeDecoys.Count == 0) return;
 
-        // 기존 히트박스를 비히트박스로
         foreach (var d in _activeDecoys)
             if (d != null && d.IsHitbox) d.SetAsNonHitbox();
 
-        // 새 히트박스 랜덤 선택 (살아있는 디코이 중)
         List<UnrenderedDecoy> alive = new List<UnrenderedDecoy>();
         foreach (var d in _activeDecoys)
             if (d != null) alive.Add(d);
 
         if (alive.Count > 0)
         {
-            int newIdx = Random.Range(0, alive.Count);
-            alive[newIdx].SetAsHitbox();
+            alive[Random.Range(0, alive.Count)].SetAsHitbox();
             Debug.Log("[BossUnrendered] 히트박스 이동 완료");
         }
     }
 
-    /// <summary>모든 디코이 파괴 및 잘못된 클릭 수 초기화</summary>
+    /// <summary>디코이 패턴 종료 (성공 또는 최종 실패) — 디코이 제거, 버튼 복원, 보스 UI 복원</summary>
+    private void FinishDecoyPattern()
+    {
+        _decoyPatternActive       = false;
+        _hasClickedDecoyThisTurn  = false;
+        _lastClickedDecoyIsHitbox = false;
+        _decoyRetryCount          = 0;
+        CleanupAllDecoys();
+        SetEndTurnInteractable(true);
+        ShowBossUI();
+    }
+
+    /// <summary>모든 디코이 파괴</summary>
     private void CleanupAllDecoys()
     {
         foreach (var decoy in _activeDecoys)
@@ -1026,8 +1083,29 @@ public class BossUnrendered : Virus
                 Destroy(decoy.gameObject);
         }
         _activeDecoys.Clear();
-        _wrongDecoyClickCount = 0;
         Debug.Log("[BossUnrendered] 모든 디코이 제거");
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // UI 헬퍼
+    // ══════════════════════════════════════════════════════════════
+
+    private void SetEndTurnInteractable(bool interactable)
+    {
+        if (_turnChanger != null)
+            _turnChanger.turnChangeBT.interactable = interactable;
+    }
+
+    private void HideBossUI()
+    {
+        if (enemyUIController != null)
+            enemyUIController.panel.SetActive(false);
+    }
+
+    private void ShowBossUI()
+    {
+        if (enemyUIController != null)
+            enemyUIController.panel.SetActive(true);
     }
 
     // ══════════════════════════════════════════════════════════════
@@ -1051,7 +1129,7 @@ public class BossUnrendered : Virus
 
     /// <summary>
     /// 그래픽-스킵: 플레이어 턴 5초 이상 지속 시 고정 5 피해 (방어도 무시, currentHP 직접 감소)
-    /// 5초마다 반복. 행동으로 취급 안 됨. 블루스크린 발동 중 비활성화 (TODO).
+    /// 5초마다 반복.
     /// </summary>
     private IEnumerator CoSkipTimer()
     {
@@ -1059,7 +1137,6 @@ public class BossUnrendered : Virus
         {
             yield return new WaitForSeconds(5f);
 
-            // TODO: 블루스크린 발동 중이면 비활성화
             if (PlayerManager.instance == null) yield break;
             if (!GameManager.PlayerTurn) yield break;
 
@@ -1081,6 +1158,20 @@ public class BossUnrendered : Virus
 
     public override int ApplyDamage(int damage)
     {
+        // 픽셀-붕괴 예고 턴: 모든 피해 무효
+        if (_pixelCollapseImmunity)
+        {
+            Debug.Log("[BossUnrendered] 픽셀-붕괴 예고 턴 — 피해 무효");
+            return 0;
+        }
+
+        // 디코이 패턴 진행 중: 카드 직접 공격 무효 (디코이 클릭으로만 공격 가능)
+        if (_decoyPatternActive)
+        {
+            Debug.Log("[BossUnrendered] 디코이 패턴 진행 중 — 직접 공격 무효");
+            return 0;
+        }
+
         int remaining = damage;
 
         // 냉각 상태: 피해 50% 감소 (내림)
@@ -1107,10 +1198,7 @@ public class BossUnrendered : Virus
 
         // 3페이즈~: 30% 확률로 사망 페이크 (TODO: 쓰러지는 애니메이션)
         if (_currentPhase >= 3 && Random.value < 0.30f)
-        {
-            // TODO: [UI TODO] 그래픽-사망 페이크: 쓰러지는 애니메이션 재생
             Debug.Log("[BossUnrendered] 그래픽-사망 페이크 발동 (애니메이션 TODO)");
-        }
 
         Debug.Log($"[BossUnrendered] 피해 {damage} → 체력: {virusData.CurHpCnt}");
         return remaining;
@@ -1121,7 +1209,6 @@ public class BossUnrendered : Virus
     {
         int remaining = damage;
 
-        // 방어도 우선 차감
         if (virusData.DefCnt > 0)
         {
             int used = Mathf.Min(virusData.DefCnt, remaining);
@@ -1146,6 +1233,14 @@ public class BossUnrendered : Virus
     // 클린업 / 사망
     // ══════════════════════════════════════════════════════════════
 
+    private void CleanupPixelatedCards()
+    {
+        foreach (var eff in _pixelatedCards)
+            if (eff != null) eff.Remove();
+        _pixelatedCards.Clear();
+        _pendingPixelCollapse = false;
+    }
+
     private void CleanupEffects()
     {
         CardInfoHidingActive    = false;
@@ -1153,6 +1248,14 @@ public class BossUnrendered : Virus
         CollapseDebuffActive    = false;
         GraphicChangeLevel      = 0;
 
+        if (_decoyPatternActive)
+        {
+            _decoyPatternActive = false;
+            SetEndTurnInteractable(true);
+            ShowBossUI();
+        }
+
+        CleanupPixelatedCards();
         StopSkipTimer();
         CleanupAllDecoys();
 

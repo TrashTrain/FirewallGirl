@@ -156,8 +156,11 @@ public class CardDeckController : MonoBehaviour
     
     public void UpdateCardVisuals(GameObject cardObj, CardObject data)
     {
-        string posValueStr = $"<color=#E24E3A>{data.positiveStatValue.ToString("+#;-#;0")}</color>";
-        string negValueStr = $"<color=#4152E5>{data.negativeStatValue.ToString("+#;-#;0")}</color>";
+        bool hideStats = BossUnrendered.GraphicChangeLevel >= 1;
+        string posDisplay = hideStats ? "???" : data.positiveStatValue.ToString("+#;-#;0");
+        string negDisplay = hideStats ? "???" : data.negativeStatValue.ToString("+#;-#;0");
+        string posValueStr = $"<color=#E24E3A>{posDisplay}</color>";
+        string negValueStr = $"<color=#4152E5>{negDisplay}</color>";
         
         // 1. 미니 뷰 (최상위) 업데이트
         TextMeshProUGUI nameText = FindChild<TextMeshProUGUI>(cardObj.transform, "CardName");
@@ -179,11 +182,10 @@ public class CardDeckController : MonoBehaviour
             TextMeshProUGUI hoverStat = FindChild<TextMeshProUGUI>(hoverView, "StatText");
             if (hoverStat != null)
             {
-                // 기획에 맞게 형태 변경 가능 (예: +3 / -1)
                 string dynamicDesc = data.summaryDescription
-                    .Replace("{0}", data.positiveStatValue.ToString("+#;-#;0"))
-                    .Replace("{1}", data.negativeStatValue.ToString("+#;-#;0"));
-                hoverStat.text = dynamicDesc; 
+                    .Replace("{0}", posDisplay)
+                    .Replace("{1}", negDisplay);
+                hoverStat.text = dynamicDesc;
             }
         }
 
@@ -206,7 +208,7 @@ public class CardDeckController : MonoBehaviour
             TextMeshProUGUI detailPosText = FindChild<TextMeshProUGUI>(detailView, "PositiveStat/Text");
             if (detailPosText != null)
             {
-                detailPosText.text = $"{posStatName} <color=#E24E3A>{data.positiveStatValue.ToString("+#;-#;0")}</color>";
+                detailPosText.text = $"{posStatName} <color=#E24E3A>{posDisplay}</color>";
             }
 
             Image detailPosIcon = FindChild<Image>(detailView, "PositiveStat");
@@ -217,7 +219,7 @@ public class CardDeckController : MonoBehaviour
             TextMeshProUGUI detailNegText = FindChild<TextMeshProUGUI>(detailView, "NegativeStat/Text");
             if (detailNegText != null)
             {
-                detailNegText.text = $"{negStatName} <color=#4152E5>{data.negativeStatValue.ToString("+#;-#;0")}</color>";
+                detailNegText.text = $"{negStatName} <color=#4152E5>{negDisplay}</color>";
             }
 
             Image detailNegIcon = FindChild<Image>(detailView, "NegativeStat");
@@ -231,8 +233,8 @@ public class CardDeckController : MonoBehaviour
             if (detailDescText != null)
             {
                 string dynamicDesc = data.description
-                    .Replace("{0}", data.positiveStatValue.ToString("+#;-#;0"))
-                    .Replace("{1}", data.negativeStatValue.ToString("+#;-#;0"));
+                    .Replace("{0}", posDisplay)
+                    .Replace("{1}", negDisplay);
                 detailDescText.text = dynamicDesc;
             }
         }

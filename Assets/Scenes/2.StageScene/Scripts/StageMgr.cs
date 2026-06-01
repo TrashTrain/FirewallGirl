@@ -36,7 +36,7 @@ public class StageMgr : MonoBehaviour
         "Stage1BossScene", // F1
         "Stage2BossScene", // F2
         "Stage3BossScene", // F3 (미구현)
-        "",                // F4 (미구현)
+        "Stage4BossScene", // F4 (미구현)
         "",                // F5 (미구현)
     };
 

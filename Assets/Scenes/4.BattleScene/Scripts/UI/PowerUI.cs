@@ -26,17 +26,17 @@ public class PowerUI : MonoBehaviour
             defensePowerText.text = 1.ToString();
         }
 
-        PlayerManager.instance.powerUI = this; // »õ·Î¿î ¾ÀÀÇ UI¸¦ ÀÎ½ºÅÏ½º¿¡ ¿¬°á
-        PlayerManager.instance.UpdateUI();      // ¿¬°áµÇÀÚ¸¶ÀÚ ÃÖ½Å µ¥ÀÌÅÍ·Î UI °»½Å
+        PlayerManager.instance.powerUI = this; // ï¿½ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ UIï¿½ï¿½ ï¿½Î½ï¿½ï¿½Ï½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        PlayerManager.instance.UpdateUI();      // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¸ï¿½ï¿½ï¿½ ï¿½Ö½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½ UI ï¿½ï¿½ï¿½ï¿½
     }
 
     public void UpdateAttackPowerUI(int value)
     {
-        attackPowerText.text = value.ToString();
+        attackPowerText.text = BossUnrendered.GraphicChangeLevel >= 1 ? "???" : value.ToString();
     }
-    
+
     public void UpdateDefensePowerUI(int value)
     {
-        defensePowerText.text = value.ToString();
+        defensePowerText.text = BossUnrendered.GraphicChangeLevel >= 1 ? "???" : value.ToString();
     }
 }

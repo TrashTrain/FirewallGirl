@@ -22,12 +22,26 @@ public class UnrenderedDecoy : MonoBehaviour
 
     public void Setup(BossUnrendered boss, bool isHitbox)
     {
-        _boss     = boss;
-        IsHitbox  = isHitbox;
-        _sr       = GetComponent<SpriteRenderer>();
+        _boss    = boss;
+        IsHitbox = isHitbox;
+        _sr      = GetComponent<SpriteRenderer>();
 
         if (_sr != null)
             _sr.color = isHitbox ? HitboxColor : NonHitboxColor;
+
+        // OnMouseDown 작동에 Collider 필요 — 없으면 자동 추가
+        if (GetComponent<Collider2D>() == null && GetComponent<Collider>() == null)
+        {
+            if (_sr != null)
+            {
+                var col = gameObject.AddComponent<BoxCollider2D>();
+                col.size = _sr.bounds.size;
+            }
+            else
+            {
+                gameObject.AddComponent<BoxCollider2D>();
+            }
+        }
     }
 
     /// <summary>비히트박스로 전환 (히트박스 이동 시 기존 히트박스 호출)</summary>

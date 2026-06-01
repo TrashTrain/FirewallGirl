@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Random = UnityEngine.Random;
 
 // 여러 턴 동안 유지되는 상태 이상을 관리하기 위한 클래스
 [System.Serializable]
@@ -44,6 +45,8 @@ public class PlayerManager : MonoBehaviour
     public static event Action OnCombinationExecuted;
     /// <summary>플레이어가 턴 종료 버튼을 눌러 공격 시퀀스가 끝나면 발행.</summary>
     public static event Action OnPlayerTurnEnded;
+    /// <summary>PreparePlayerTurn에서 모든 드로우가 완료된 직후 발행.</summary>
+    public static event Action OnHandRefreshed;
     // Player info
     public int maxHP;
     public int currentHP;
@@ -315,12 +318,19 @@ public class PlayerManager : MonoBehaviour
         
         sb.Append($"<color=#FFFFFF>현재 조합: {comboSequence}</color>\n");
         sb.Append("<color=#FFFF00>[적용 예정 효과]</color>\n");
-        
-        foreach (var stat in totalDeltas)
+
+        if (BossUnrendered.GraphicChangeLevel >= 1)
         {
-            if (stat.Value == 0) continue;
-            string sign = stat.Value > 0 ? "+" : "";
-            sb.Append($"{GetStatNameKorean(stat.Key)} {sign}{stat.Value}  ");
+            sb.Append("???");
+        }
+        else
+        {
+            foreach (var stat in totalDeltas)
+            {
+                if (stat.Value == 0) continue;
+                string sign = stat.Value > 0 ? "+" : "";
+                sb.Append($"{GetStatNameKorean(stat.Key)} {sign}{stat.Value}  ");
+            }
         }
 
         string costColor = (currentCost < previewTotalCost) ? "#FF0000" : "#00FF00";
@@ -710,6 +720,7 @@ public class PlayerManager : MonoBehaviour
         DrawCards(drawCount);
 
         UpdateUI();
+        OnHandRefreshed?.Invoke();
     }
 
     /// <summary>튜토리얼 전용: drawPile과 무관하게 지정 카드를 손에 올림.</summary>
@@ -895,6 +906,19 @@ public class PlayerManager : MonoBehaviour
 
         // 💡 [추가] 턴 종료/시작 등으로 스탯 변경이 끝난 후 상태 아이콘을 1번만 갱신합니다.
         if (PlayerStatusUI.instance != null) PlayerStatusUI.instance.RefreshStatusUI();
+    }
+
+    public void RefreshHandVisuals()
+    {
+        if (CardDeckController.instance == null) return;
+        foreach (var card in handCards)
+            if (card != null) CardDeckController.instance.UpdateCardVisuals(card.gameObject, card.cardData);
+    }
+
+    public PlayerCard GetRandomHandCard()
+    {
+        if (handCards.Count == 0) return null;
+        return handCards[Random.Range(0, handCards.Count)];
     }
     
     // 1. 증강체를 새로 획득했을 때 호출할 함수
