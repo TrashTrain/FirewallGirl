@@ -30,6 +30,35 @@ public class StageMgr : MonoBehaviour
 
     GameObject player;
 
+    // ─── 개발자 단축키: F1~F5 → 각 스테이지 보스씬 직행 ────────
+    private static readonly string[] BossSceneNames =
+    {
+        "Stage1BossScene", // F1
+        "Stage2BossScene", // F2
+        "Stage3BossScene", // F3 (미구현)
+        "",                // F4 (미구현)
+        "",                // F5 (미구현)
+    };
+
+    private void Update()
+    {
+        for (int i = 0; i < BossSceneNames.Length; i++)
+        {
+            if (Input.GetKeyDown(KeyCode.F1 + i))
+            {
+                string sceneName = BossSceneNames[i];
+                if (string.IsNullOrEmpty(sceneName))
+                {
+                    Debug.LogWarning($"[Dev] F{i + 1} 보스씬이 아직 등록되지 않았습니다.");
+                    return;
+                }
+                Debug.Log($"[Dev] F{i + 1} → {sceneName}");
+                SceneManager.LoadScene(sceneName);
+                return;
+            }
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {

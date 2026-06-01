@@ -37,6 +37,7 @@ public class PlayerCard : MonoBehaviour
     [HideInInspector] public int currentCoolTime = 0;
     
     public static event Action OnUseClicked;
+    public bool isTemporary = false;
 
     public int posValue
     {

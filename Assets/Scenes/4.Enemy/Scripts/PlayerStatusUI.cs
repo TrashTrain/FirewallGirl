@@ -21,11 +21,11 @@ public class PlayerStatusUI : MonoBehaviour
     public Sprite defaultBuffIconSprite;
     public Sprite defaultDebuffIconSprite;
 
-    // 하드코딩된 특정 디버프용 아이콘 (카운트 체크용이 아니므로 그대로 유지)
     [Header("Specific Debuff Icons")]
     public Sprite iconDefenseBan;
     public Sprite iconLag;
     public Sprite iconDotDamage;
+
 
     // 현재 보유 중인 상태 목록
     private List<StatusInfo> currentBuffs = new List<StatusInfo>();
@@ -62,6 +62,17 @@ public class PlayerStatusUI : MonoBehaviour
 
         if (PlayerManager.instance.currentDotDamage > 0)
             currentDebuffs.Add(new StatusInfo(iconDotDamage, $"지속 피해\n(매턴 {PlayerManager.instance.currentDotDamage} 피해)"));
+
+        // ========================================================
+        // 1-B. 등록된 효과 (보스 등 외부 소스) 체크
+        // ========================================================
+        foreach (var effect in PlayerManager.instance.RegisteredEffects)
+        {
+            if (!effect.isActive()) continue;
+            var info = new StatusInfo(effect.icon, effect.getText());
+            if (effect.isBuff) currentBuffs.Add(info);
+            else currentDebuffs.Add(info);
+        }
 
         // ========================================================
         // 2. 💡 [수정] activeModifiers 리스트 기반 버프/디버프 자동 분류

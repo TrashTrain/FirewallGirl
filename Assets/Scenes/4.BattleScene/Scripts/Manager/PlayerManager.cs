@@ -15,10 +15,27 @@ public class StatModifier
     public int durationTurns; // 남은 유지 턴 수
 
     [Header("UI Display")]
-    public Sprite statusIcon;     // 이 효과에 매핑될 범용 아이콘 (AtkUp, AtkDown 등)
-    public bool isBuff = false;     // true면 버프 패널, false면 디버프 패널에 표기
+    public Sprite statusIcon;
+    public bool isBuff = false;
     [TextArea]
-    public string descriptionText; // "공격력 감소" 등 플레이어에게 보여줄 실제 설명
+    public string descriptionText;
+}
+
+// 보스 등 외부 소스가 등록하는 지속 효과 — PlayerStatusUI가 순회하며 표시
+public class ActiveEffect
+{
+    public Sprite icon;
+    public bool isBuff;
+    public Func<bool> isActive;   // 현재 유효한지 판단
+    public Func<string> getText;  // 표시 텍스트 (동적)
+
+    public ActiveEffect(Sprite icon, bool isBuff, Func<bool> isActive, Func<string> getText)
+    {
+        this.icon = icon;
+        this.isBuff = isBuff;
+        this.isActive = isActive;
+        this.getText = getText;
+    }
 }
 
 public class PlayerManager : MonoBehaviour
@@ -52,8 +69,47 @@ public class PlayerManager : MonoBehaviour
     // 플레이어가 현재 보유 중인 증강체 리스트
     public List<AugmentBase> activeAugments = new List<AugmentBase>();
 
+    [Header("Turn Card Tracking")]
+    public int turnVaccineCount = 0;
+    public int turnPatchCount = 0;
+    public int turnRootCount = 0;
+    public int turnTotalCardCount = 0;
+
+    [Header("Draw Bonus (오버클럭-과열)")]
+    public int bonusDrawCount = 0;
+
+    [Header("Heat Stacks (오버클럭-열기)")]
+    public int heatStacks = 0;
+
     [Header("Debuffs")]
-    public int currentDotDamage = 0; // 현재 턴당 입는 지속 피해량 (0이면 디버프 없음)
+    public int currentDotDamage = 0;
+
+    [Header("Boss Debuffs")]
+    public int reducedDrawCount = 0;        // 다음 턴 드로우 감소량 (패킷손실, 보스 공격 후 적용 예정)
+    public int appliedDrawReduction = 0;    // 이번 플레이어 턴에 실제 적용된 드로우 감소량 (UI 표시용)
+    public float defenseMultiplier = 1.0f;  // 방어도 획득 배율 (3페이즈 0.5, 발악 5.0)
+    public bool isDefenseRetained = false;  // 발악 페이즈: 방어도 유지 여부
+
+    [Header("Pending Flash Cards")]
+    public List<CardObject> pendingFlashCards = new List<CardObject>(); // 다음 플레이어 턴 지급 예정 임시 카드
+
+    // ─── 효과 레지스트리 ───────────────────────────────────────
+    private readonly List<ActiveEffect> _registeredEffects = new List<ActiveEffect>();
+    public IReadOnlyList<ActiveEffect> RegisteredEffects => _registeredEffects;
+
+    public void RegisterEffect(ActiveEffect effect) => _registeredEffects.Add(effect);
+    public void UnregisterEffect(ActiveEffect effect) => _registeredEffects.Remove(effect);
+
+    public void RecordCardUsed(CardType type)
+    {
+        turnTotalCardCount++;
+        switch (type)
+        {
+            case CardType.Vaccine: turnVaccineCount++; break;
+            case CardType.Patch:   turnPatchCount++;   break;
+            case CardType.Root:    turnRootCount++;    break;
+        }
+    }
 
     private Vector3 _originPos;
 
@@ -308,10 +364,16 @@ public class PlayerManager : MonoBehaviour
             int finalPos = Mathf.RoundToInt(card.posValue * mult);
             int finalNeg = Mathf.RoundToInt(card.negValue * mult);
 
+            // 오버클럭-열기: 카드 부정수치를 열기 스택만큼 악화
+            if (heatStacks > 0 && finalNeg < 0)
+                finalNeg -= heatStacks;
+
             // 실제 스탯 반영
             AddTurnStatDelta(card.cardData.positiveStatType, finalPos);
             AddTurnStatDelta(card.cardData.negativeStatType, finalNeg);
-            
+
+            RecordCardUsed(card.cardData.cardType);
+
             // 카드 소모 처리
             OnCardUsed(card);
         }
@@ -412,6 +474,9 @@ public class PlayerManager : MonoBehaviour
         // 💡 [추가] 쿨타임 증가(Lag) 디버프 턴 감소
         if (lagDebuffTurns > 0) lagDebuffTurns--;
 
+        // 이번 턴 적용된 드로우 감소 초기화 (플레이어 턴 종료 시)
+        appliedDrawReduction = 0;
+
         // 역순으로 순회하며 기간이 다 된 디버프 제거
         for (int i = activeModifiers.Count - 1; i >= 0; i--)
         {
@@ -437,8 +502,10 @@ public class PlayerManager : MonoBehaviour
 
     public void ResetTurnDeltaStats()
     {
+        int defIndex = (int)StatType.Defense;
         for (int i = 0; i < turnDeltaStats.Length; i++)
         {
+            if (i == defIndex && isDefenseRetained) continue;
             turnDeltaStats[i] = 0;
         }
     }
@@ -453,12 +520,13 @@ public class PlayerManager : MonoBehaviour
                 break;
 
             case StatType.Defense:
-                // [수정] 방어력 획득 불가 상태라면 긍정적인(증가) 효과를 무시합니다.
                 if (value > 0 && cannotGainDefenseTurns > 0)
                 {
                     Debug.Log("방어력 획득 불가 상태로 인해 방어도 증가가 차단되었습니다.");
                     break;
                 }
+                if (value > 0 && defenseMultiplier != 1.0f)
+                    value = Mathf.RoundToInt(value * defenseMultiplier);
                 turnDeltaStats[(int)stat] += value;
                 break;
 
@@ -622,6 +690,24 @@ public class PlayerManager : MonoBehaviour
             Shuffle(drawPile);
             DrawCards(3);
         }
+        turnVaccineCount = 0;
+        turnPatchCount = 0;
+        turnRootCount = 0;
+        turnTotalCardCount = 0;
+
+        ClearHand();
+        Shuffle(drawPile);
+
+        appliedDrawReduction = reducedDrawCount;
+        int drawCount = Mathf.Max(1, 3 - reducedDrawCount + bonusDrawCount);
+        reducedDrawCount = 0;
+
+        // 발악 페이즈 등에서 예약된 임시 카드를 ClearHand 이후 지급
+        foreach (var flashCard in pendingFlashCards)
+            DrawFlashCard(flashCard);
+        pendingFlashCards.Clear();
+
+        DrawCards(drawCount);
 
         UpdateUI();
     }
@@ -687,18 +773,16 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    // 카드를 사용하거나 턴이 끝날 때 호출
     public void OnCardUsed(PlayerCard card)
     {
         if (handCards.Contains(card))
         {
-            // [핵심] 사용한 카드 데이터를 버리지 않고 덱에 바로 다시 넣습니다.
-            drawPile.Add(card.cardData); 
-            
+            if (!card.isTemporary)
+                drawPile.Add(card.cardData);
+
             handCards.Remove(card);
             Destroy(card.gameObject);
 
-            // 레이아웃 갱신
             if (CardDeckController.instance != null)
             {
                 CardDeckController.instance.RefreshHandLayout(handCards);
@@ -709,23 +793,38 @@ public class PlayerManager : MonoBehaviour
 
     private void ClearHand()
     {
-        // 리스트를 역순으로 순회하며 오브젝트 파괴 및 덱 복구
         for (int i = handCards.Count - 1; i >= 0; i--)
         {
             if (handCards[i] != null)
             {
-                // 사용하지 않은 카드 데이터를 다시 덱에 넣음
-                drawPile.Add(handCards[i].cardData);
+                if (!handCards[i].isTemporary)
+                    drawPile.Add(handCards[i].cardData);
                 Destroy(handCards[i].gameObject);
             }
         }
         handCards.Clear();
 
-        // [중요] 패가 비었음을 레이아웃 컨트롤러에 알림
         if (CardDeckController.instance != null)
         {
             CardDeckController.instance.RefreshHandLayout(handCards);
         }
+    }
+
+    // 보스 발악 페이즈 전용: 임시 카드를 손에 직접 추가 (덱에 들어가지 않음)
+    public void DrawFlashCard(CardObject cardData)
+    {
+        if (cardData == null || cardPrefab == null || handContainer == null) return;
+
+        GameObject cardObj = Instantiate(cardPrefab, handContainer);
+        PlayerCard pCard = cardObj.GetComponent<PlayerCard>();
+        if (pCard == null) return;
+
+        pCard.isTemporary = true;
+        pCard.SetCardData(cardData);
+        handCards.Add(pCard);
+
+        if (CardDeckController.instance != null)
+            CardDeckController.instance.RefreshHandLayout(handCards);
     }
 
     private IEnumerator CoPlayerTurnSequence()

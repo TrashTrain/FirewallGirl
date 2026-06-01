@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2e223d516d3e7d4ba86a8783867daa6, type: 3}
+  m_Name: BossCard_Stage2
+  m_EditorClassIdentifier: 
+  cardIndex: 1001
+  cardName: "\uB370\uC774\uD130 \uC804\uC1A1 - \uD50C\uB798\uC2DC"
+  cardNameEng: Data Transfer - Flash
+  cardImage: {fileID: 0}
+  positiveStatType: 1
+  negativeStatType: 0
+  cardType: 0
+  positiveStatValue: 5
+  negativeStatValue: 0
+  cost: 0
+  coolTime: 0
+  summaryDescription: "\uBC29\uC5B4\uB825 <color=#E24E3A>{0}</color>"
+  description: "\uD50C\uB798\uC2DC\uC758 \uB3C4\uC6C0\uC73C\uB85C \uBC29\uC5B4\uB825\uC744
+    5 \uC5BB\uB294\uB2E4."
