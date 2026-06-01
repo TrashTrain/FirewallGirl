@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,25 @@ using TMPro;
 
 public class DeckManager : MonoBehaviour
 {
+    /// <summary>덱 10장 확인 완료 시 발행. TutorialManager가 구독하여 다음 단계로 진행.</summary>
+    public static event Action OnDeckConfirmed;
+
+    private void Awake()
+    {
+        // DontDestroyOnLoad로 이전된 스테일 DeckManager 컴포넌트 제거.
+        // CardDatabaseManager와 같은 GameObject에 있어 함께 DontDestroyOnLoad로 이동되는 경우를 처리.
+        // Destroy(dm)은 컴포넌트만 파괴하므로 같은 오브젝트의 CardDatabaseManager는 유지된다.
+        foreach (DeckManager dm in FindObjectsOfType<DeckManager>())
+        {
+            if (dm != this)
+                Destroy(dm);
+        }
+    }
+    /// <summary>카드 클릭 시 발행 (선택/해제 무관). TutorialManager 1단계에서 구독.</summary>
+    public static event Action OnAnyCardClicked;
+
+    /// <summary>덱이 maxDeckSize(10장)에 도달할 때 발행. TutorialManager DeckBuilding 단계에서 구독.</summary>
+    public static event Action OnDeckFull;
     [Header("Configuration")]
     public int maxDeckSize = 10; // 최대 선택 가능한 카드 수
     public GameObject cardPrefab; // 카드 prefab
@@ -61,7 +81,7 @@ public class DeckManager : MonoBehaviour
             CardController cardCtrl = cardObj.GetComponent<CardController>();
             if (cardCtrl != null)
             {
-                cardCtrl.currentMode = CardController.CardMode.DeckBuilding;
+                cardCtrl.SetupForDeckBuilding(this);
                 cardCtrl.SetCollectionState(true);
             }
             
@@ -181,6 +201,7 @@ public class DeckManager : MonoBehaviour
     // CardController의 OnPointerClick에서 호출됨
     public void OnCardClicked(CardController card)
     {
+        OnAnyCardClicked?.Invoke();
         if (card.isClone)
         {
             // 이미 선택된 상태 -> 컬렉션으로 반환
@@ -244,11 +265,12 @@ public class DeckManager : MonoBehaviour
 
         if (selectedCtrl != null)
         {
-            selectedCtrl.currentMode = CardController.CardMode.DeckBuilding;
+            selectedCtrl.SetupForDeckBuilding(this);
             selectedCtrl.isSelected = true;
             selectedCtrl.isClone = true;
             selectedCtrl.originalCard = card;
             selectedCards.Add(selectedCtrl);
+            if (selectedCards.Count == maxDeckSize) OnDeckFull?.Invoke();
         }
 
         selectedObj.transform.localScale = Vector3.one * selectedScale;
@@ -336,20 +358,32 @@ public class DeckManager : MonoBehaviour
         foreach (CardController cardCtrl in selectedCards)
         {
             CardObject cardData = cardCtrl.GetComponent<PlayerCard>().cardData;
-        
+
             if (cardCtrl.originalCard != null && cardData != null)
             {
                 finalDeck.Add(cardData);
             }
+            else
+            {
+                Debug.LogWarning($"[DeckManager] 카드 필터링됨 — originalCard: {cardCtrl.originalCard != null}, cardData: {cardData != null}");
+            }
         }
+
+        Debug.Log($"[DeckManager] finalDeck.Count = {finalDeck.Count} / selectedCards.Count = {selectedCards.Count}");
 
         if (CardDatabaseManager.instance != null)
         {
             CardDatabaseManager.instance.SetCurrentDeck(finalDeck);
             Debug.Log($"덱 저장 완료: {finalDeck.Count}장");
-        
-            Debug.Log(nextSceneName);
-            SceneManager.LoadScene(nextSceneName);
+
+            OnDeckConfirmed?.Invoke();
+
+            // 튜토리얼 씬에서는 TutorialManager가 씬 전환을 담당
+            if (TutorialManager.instance == null)
+            {
+                Debug.Log(nextSceneName);
+                SceneManager.LoadScene(nextSceneName);
+            }
         }
         else
         {

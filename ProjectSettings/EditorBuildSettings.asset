@@ -20,4 +20,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/2.StageScene/Stage1BossScene.unity
     guid: 54f82bbfcc15b6943a5f9522971f492d
+  - enabled: 1
+    path: Assets/Scenes/9. PrologueScene/PrologueScene.unity
+    guid: de3ef036ecdbc7d4b99af9a98b9594ef
+  - enabled: 1
+    path: Assets/Scenes/10. TutorialScene/TutorialScene.unity
+    guid: 650cfb1fbca2d914fa4df8963d549f7f
   m_configObjects: {}

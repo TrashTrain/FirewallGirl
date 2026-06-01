@@ -22,6 +22,7 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     private Vector3 originScale;
     private bool isHoveringDeckBuilder = false;
     private bool isInteractable = true;
+    [HideInInspector] public bool isLockedByTutorial = false;
     
     private RectTransform rect;
     public bool isDragging = false;
@@ -44,6 +45,8 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     // 추가: 원래 렌더 순서(형제 인덱스) 저장
     private int originalSiblingIndex;
     
+    public static event Action OnCardClicked;
+    
     private void Awake()
     {
         playerCard = GetComponent<PlayerCard>();
@@ -65,7 +68,7 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     {
         originScale = transform.localScale;
 
-        if (currentMode == CardMode.DeckBuilding)
+        if (currentMode == CardMode.DeckBuilding && deckManager == null)
         {
             deckManager = FindObjectOfType<DeckManager>();
         }
@@ -145,8 +148,10 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     {
         if (currentMode == CardMode.Battle)
         {
+            if (isLockedByTutorial) return;
             if (playerCard != null)
             {
+                OnCardClicked?.Invoke();
                 playerCard.ShowDetailView();
             }
         }
@@ -163,6 +168,7 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     {
         if (currentMode == CardMode.Battle && playerCard != null)
         {
+            if (isLockedByTutorial) return;
             playerCard.ToggleHover(true); // HoverView 애니메이션과 함께 켜기
             return;
         }
@@ -193,6 +199,11 @@ public class CardController : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     {
         if (currentMode == CardMode.Battle)
         {
+            if (isLockedByTutorial)
+            {
+                if (playerCard != null) playerCard.ToggleHover(false);
+                return;
+            }
             if (!isDragging && playerCard != null)
             {
                 playerCard.ToggleHover(false); // HoverView 부드럽게 끄기
