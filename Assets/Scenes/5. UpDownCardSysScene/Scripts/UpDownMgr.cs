@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -26,6 +27,8 @@ public enum ValueType
 
 public class UpDownMgr : MonoBehaviour
 {
+    /// <summary>증강체 카드를 선택했을 때 발행. TutorialManager가 구독하여 다음 단계로 진행.</summary>
+    public static event Action OnAugmentSelected;
     [Header("카드 UI")]
     public Image[] Card;
 
@@ -112,8 +115,8 @@ public class UpDownMgr : MonoBehaviour
             throw new System.Exception("사용 가능한 속성 조합이 부족합니다.");
 
         // 가능한 스탯 중 무작위로 selectedStat로 지정
-        StatType selectedStat = availableStats[Random.Range(0, availableStats.Count)];
-        int selectValueAmount = Random.Range(1, 4); // +1~+3 또는 -1~-3 의 절댓값
+        StatType selectedStat = availableStats[UnityEngine.Random.Range(0, availableStats.Count)];
+        int selectValueAmount = UnityEngine.Random.Range(1, 4); // +1~+3 또는 -1~-3 의 절댓값
         // 제외할 스탯을 전부 재외하고 스탯을 하나 생성
         return new GenerateCard(selectedStat, value, selectValueAmount);
     }
@@ -215,7 +218,7 @@ public class UpDownMgr : MonoBehaviour
             }
 
             // ✅ 3. 추첨 및 중복 방지 로직
-            int randomIndex = Random.Range(0, augmentPool.Count);
+            int randomIndex = UnityEngine.Random.Range(0, augmentPool.Count);
             AugmentBase originalAugment = augmentPool[randomIndex];
             
             if (originalAugment is PlayerStatRandomizeAugment)
@@ -270,15 +273,19 @@ public class UpDownMgr : MonoBehaviour
     
     void OnCardClicked(int index)
     {
-        // 1. 내가 클릭한 증강체 가져오기
         AugmentBase selectedAugment = currentAugmentRewards[index];
         Debug.Log($"선택한 증강체: {selectedAugment.augmentName}");
 
         PlayerManager.instance.AcquireAugment(selectedAugment);
 
-        // 3. 씬 전환
-        StageSaveManager.ClearStage(StageSaveManager.CurrentStageIdx);
-        SceneManager.LoadScene("StageScene");
+        OnAugmentSelected?.Invoke();
+
+        // 튜토리얼 씬에서는 TutorialManager가 씬 전환을 담당
+        if (TutorialManager.instance == null)
+        {
+            StageSaveManager.ClearStage(StageSaveManager.CurrentStageIdx);
+            SceneManager.LoadScene("StageScene");
+        }
     }
 
     // 스프라이트 매칭 

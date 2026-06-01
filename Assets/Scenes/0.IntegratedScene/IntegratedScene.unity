@@ -597,6 +597,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a124229a51250014bb21cdd702380bd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  autoSpawnOnStart: 1
+  suppressReward: 0
   spawns:
   - {fileID: 2005105419}
   - {fileID: 863743510}
@@ -708,19 +710,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 143173790}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1217457104}
-        m_TargetAssemblyTypeName: PlayerManager, Assembly-CSharp
-        m_MethodName: ExecuteCombination
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &143173790
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4369,12 +4359,13 @@ MonoBehaviour:
   handContainer: {fileID: 409742039}
   masterDeck: []
   handCards: []
+  isTutorialMode: 0
   lagDebuffTurns: 0
   lagDebuffValue: 1
-  sequenceContainer: {fileID: 2147289637}
+  sequenceContainer: {fileID: 0}
   sequenceQueue: []
-  sequenceSummaryText: {fileID: 2106197726}
-  executeCombinationBtn: {fileID: 143173789}
+  sequenceSummaryText: {fileID: 0}
+  executeCombinationBtn: {fileID: 0}
 --- !u!4 &1217457105
 Transform:
   m_ObjectHideFlags: 0
@@ -6992,7 +6983,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 512
+  m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -7269,6 +7260,7 @@ GameObject:
   - component: {fileID: 2147289637}
   - component: {fileID: 2147289639}
   - component: {fileID: 2147289638}
+  - component: {fileID: 2147289640}
   m_Layer: 5
   m_Name: SequenceContainer
   m_TagString: Untagged
@@ -7335,6 +7327,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2147289636}
   m_CullTransparentMesh: 1
+--- !u!114 &2147289640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2147289636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0f8a16af31a52745abd1c97ac594751, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sequenceSummaryText: {fileID: 2106197726}
+  executeCombinationBtn: {fileID: 143173789}
 --- !u!1001 &2025717282747470461
 PrefabInstance:
   m_ObjectHideFlags: 0

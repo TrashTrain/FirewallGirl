@@ -1,9 +1,19 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class VirusSpawn : MonoBehaviour
 {
+    /// <summary>virusCnt가 0이 되어 보상 흐름이 시작될 때 발행. TutorialManager가 구독.</summary>
+    public static event Action OnAllEnemiesDefeated;
+
+    /// <summary>튜토리얼에서 자동 스폰 없이 TutorialManager가 직접 스폰을 제어할 때 true로 설정.</summary>
+    [Header("Tutorial Settings")]
+    public bool autoSpawnOnStart = true;
+
+    /// <summary>true이면 보상(증강체 선택) 패널을 표시하지 않음. 튜토리얼 중간 단계에서 사용.</summary>
+    [HideInInspector] public bool suppressReward = false;
     public List<Transform> spawns = new();
     public List<EnemyUIController> enemyUIController = new();
 
@@ -29,8 +39,11 @@ public class VirusSpawn : MonoBehaviour
             Destroy(gameObject);
         }
 
-        OnButtonSpawnVirus();
-        GetVirusCount();
+        if (autoSpawnOnStart)
+        {
+            OnButtonSpawnVirus();
+            GetVirusCount();
+        }
     }
 
     // [수정] 특정 프리팹을 지정해서 소환할 수 있도록 매개변수(specificPrefab) 추가
@@ -41,7 +54,7 @@ public class VirusSpawn : MonoBehaviour
         // 특정 프리팹이 지정되지 않았다면 기존처럼 랜덤 일반 몬스터 선택
         if (targetPrefab == null)
         {
-            int rand = Random.Range(0, prefabVirus.Length);
+            int rand = UnityEngine.Random.Range(0, prefabVirus.Length);
             targetPrefab = prefabVirus[rand];
         }
 
@@ -128,10 +141,16 @@ public class VirusSpawn : MonoBehaviour
         return --virusCnt;
     }
 
+    /// <summary>virusCnt를 0으로 리셋. 튜토리얼에서 적을 교체할 때 사용.</summary>
+    public void ResetVirusCount() => virusCnt = 0;
+
     public IEnumerator GetReward()
     {
-        yield return new WaitForSeconds(1f);
+        OnAllEnemiesDefeated?.Invoke();
 
+        if (suppressReward) yield break;
+
+        yield return new WaitForSeconds(1f);
         UIManager.Ins.choicePanel.ShowPanel();
     }
 }

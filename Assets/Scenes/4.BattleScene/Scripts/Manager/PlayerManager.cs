@@ -40,6 +40,10 @@ public class ActiveEffect
 
 public class PlayerManager : MonoBehaviour
 {
+    /// <summary>효과 적용 버튼 클릭 후 조합 실행 완료 시 발행.</summary>
+    public static event Action OnCombinationExecuted;
+    /// <summary>플레이어가 턴 종료 버튼을 눌러 공격 시퀀스가 끝나면 발행.</summary>
+    public static event Action OnPlayerTurnEnded;
     // Player info
     public int maxHP;
     public int currentHP;
@@ -126,6 +130,9 @@ public class PlayerManager : MonoBehaviour
 
     private bool _running = false;
 
+    /// <summary>true이면 PreparePlayerTurn에서 드로우를 건너뜀. 튜토리얼 전용.</summary>
+    [HideInInspector] public bool isTutorialMode = false;
+
     [Header("Debuff States")]
     public int lagDebuffTurns = 0; // Lag 디버프 유지 턴 수 (0이면 안 걸린 상태)
     public int lagDebuffValue = 1; // 쿨타임을 얼마나 증가시킬 것인가 (기본 1)
@@ -140,6 +147,17 @@ public class PlayerManager : MonoBehaviour
 
     private void Awake()
     {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         int statCount = Enum.GetNames(typeof(StatType)).Length;
 
         baseStats = new int[statCount];
@@ -158,17 +176,6 @@ public class PlayerManager : MonoBehaviour
         UpdateUI();
 
         _originPos = transform.position;
-
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
     }
     
     public void SetSceneReferences(Transform container)
@@ -329,6 +336,15 @@ public class PlayerManager : MonoBehaviour
         }
     }
     
+    /// <summary>대기열의 모든 카드 프리뷰 상태를 해제하고 큐를 비웁니다.</summary>
+    public void ClearSequenceQueue()
+    {
+        foreach (var card in sequenceQueue)
+            card.SetPreviewState(false);
+        sequenceQueue.Clear();
+        UpdateSequenceSummaryUI();
+    }
+
     // '효과 적용' 버튼을 눌렀을 때 1회 한정으로 실제 적용하는 함수
     public void ExecuteCombination()
     {
@@ -367,6 +383,7 @@ public class PlayerManager : MonoBehaviour
         UpdateSequenceSummaryUI();
         UpdateUI();
 
+        OnCombinationExecuted?.Invoke();
         Debug.Log("조합 효과 적용 완료!");
     }
 
@@ -449,8 +466,7 @@ public class PlayerManager : MonoBehaviour
     public void OnTurnEndProcess()
     {
         isCombinationUsedThisTurn = false;
-        sequenceQueue.Clear();
-        UpdateSequenceSummaryUI();
+        ClearSequenceQueue();
         
         // 방어 불가 턴 감소
         if (cannotGainDefenseTurns > 0) cannotGainDefenseTurns--;
@@ -663,10 +679,17 @@ public class PlayerManager : MonoBehaviour
     
     public void PreparePlayerTurn()
     {
+        Debug.Log("턴 준비!");
         isCombinationUsedThisTurn = false;
         sequenceQueue.Clear();
         UpdateSequenceSummaryUI();
 
+        if (!isTutorialMode)
+        {
+            ClearHand();
+            Shuffle(drawPile);
+            DrawCards(3);
+        }
         turnVaccineCount = 0;
         turnPatchCount = 0;
         turnRootCount = 0;
@@ -689,11 +712,34 @@ public class PlayerManager : MonoBehaviour
         UpdateUI();
     }
 
+    /// <summary>튜토리얼 전용: drawPile과 무관하게 지정 카드를 손에 올림.</summary>
+    public void DrawTutorialHand(List<CardObject> specificCards)
+    {
+        ClearHand();
+        foreach (CardObject cardData in specificCards)
+        {
+            if (cardData == null) continue;
+            GameObject cardObj = Instantiate(cardPrefab, handContainer);
+            PlayerCard pCard = cardObj.GetComponent<PlayerCard>();
+            if (pCard != null)
+            {
+                pCard.SetCardData(cardData);
+                handCards.Add(pCard);
+            }
+        }
+        if (CardDeckController.instance != null)
+        {
+            CardDeckController.instance.RefreshHandLayout(handCards);
+            CardDeckController.instance.UpdateDeckUI(drawPile.Count, 0);
+        }
+    }
+
     public void StartPlayerTurn()
     {
         if (_running) return;
         if (!GameManager.PlayerTurn) return;
 
+        ClearSequenceQueue();
         UpdateUI();
 
         StartCoroutine(CoPlayerTurnSequence());
@@ -806,6 +852,7 @@ public class PlayerManager : MonoBehaviour
 
         _running = false;
         GameManager.PlayerTurn = false;
+        OnPlayerTurnEnded?.Invoke();
 
         Debug.Log("플레이어 턴 종료");
     }
@@ -899,7 +946,36 @@ public class PlayerManager : MonoBehaviour
             augment.OnVirusKilled(context);
         }
     }
-    
+
+    /// <summary>
+    /// 튜토리얼 종료 후 실제 런 시작 전 플레이어 상태를 Inspector 초기값으로 되돌린다.
+    /// </summary>
+    public void ResetForNewRun()
+    {
+        baseStats[(int)StatType.Attack]  = attackPower;
+        baseStats[(int)StatType.Defense] = defensePower;
+        baseStats[(int)StatType.Cost]    = totalCost;
+        baseStats[(int)StatType.Health]  = maxHP;
+        baseStats[(int)StatType.Evasion] = 0;
+
+        currentHP   = baseStats[(int)StatType.Health];
+        currentCost = baseStats[(int)StatType.Cost];
+
+        ResetTurnDeltaStats();
+
+        activeAugments.Clear();
+        activeModifiers.Clear();
+        cannotGainDefenseTurns = 0;
+        lagDebuffTurns         = 0;
+        currentDotDamage       = 0;
+
+        masterDeck.Clear();
+        drawPile.Clear();
+        handCards.Clear();
+        sequenceQueue.Clear();
+        isCombinationUsedThisTurn = false;
+    }
+
     public void AddCardToDeck(CardObject originalCardData)
     {
         CardObject clonedCard = Instantiate(originalCardData);
