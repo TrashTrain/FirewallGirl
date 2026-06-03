@@ -232,6 +232,9 @@ public class PlayerCard : MonoBehaviour
         {
             Debug.Log("코스트 부족으로 사용 불가");
         }
+
+        // ---- DefUpHpDownOnCardAugment용 카드 "세는" 용
+        playerManager.TriggerCardUsed(this);
     }
     
     public void DecreaseCooldown()
@@ -241,4 +244,7 @@ public class PlayerCard : MonoBehaviour
             currentCoolTime--;
         }
     }
+
+     
+
 }

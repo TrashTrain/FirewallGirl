@@ -63,6 +63,16 @@ public class PlayerManager : MonoBehaviour
     public int lagDebuffTurns = 0; // Lag 디버프 유지 턴 수 (0이면 안 걸린 상태)
     public int lagDebuffValue = 1; // 쿨타임을 얼마나 증가시킬 것인가 (기본 1)
 
+    // ------ ChargeAttackAugment용 변수 
+    // = 현재 차지 공격 증강체 보유 여부
+    [HideInInspector]
+    public bool chargeAttackMode = false;
+
+    // = 이번 턴이 공격 턴인지 여부
+    [HideInInspector]
+    public bool chargeTurnReady = false;
+    // ------ ChargeAttackAugment용 변수 
+
     private void Awake()
     {
         int statCount = Enum.GetNames(typeof(StatType)).Length;
@@ -334,12 +344,48 @@ public class PlayerManager : MonoBehaviour
         StartCoroutine(CoPlayerTurnSequence());
     }
 
+
+
     private IEnumerator CoPlayerTurnSequence()
     {
         Debug.Log("플레이어 턴 시작");
         _running = true;
 
+        // ------ ChargeAttackAugment용 증강체 처리
+        if (chargeAttackMode)
+        {
+            // 첫 턴 : 충전
+            if (!chargeTurnReady)
+            {
+                chargeTurnReady = true;
+
+                Debug.Log(
+                    $"<color=yellow>[차지 공격]</color> " +
+                    $"에너지를 충전중입니다..."
+                );
+
+                _running = false;
+                GameManager.PlayerTurn = false;
+
+                yield break;
+            }
+        }
+        // ------ ChargeAttackAugment용 증강체 처리
+
+
         int remainingDamage = AttackPower;
+
+        // ------ ChargeAttackAugment용 증강체 처리
+        if (chargeAttackMode)
+        {
+            chargeTurnReady = false;
+
+            Debug.Log(
+                $"<color=orange>[차지 공격 발동]</color> " +
+                $"최종 공격력 : {remainingDamage}"
+            );
+        }
+        // ------ ChargeAttackAugment용 증강체 처리
 
         Virus[] enemies = FindObjectsOfType<Virus>();
         System.Array.Sort(enemies, (a, b) => a.spawnNum.CompareTo(b.spawnNum));
@@ -487,6 +533,22 @@ public class PlayerManager : MonoBehaviour
                 totalCost = Mathf.Max(0, totalCost + amount);
                 currentCost = Mathf.Clamp(currentCost + amount, 0, totalCost);
                 break;
+        }
+    }
+
+    // DefUpHpDownOnCardAugment용 카드를 "몇장 썼는지 추적"하는 함수 
+    public void TriggerCardUsed(PlayerCard usedCard)
+    {
+        BattleContext context = new BattleContext
+        {
+            player = this,
+            cards = null,
+            viruses = null
+        };
+
+        foreach (var augment in activeAugments)
+        {
+            augment.OnCardUsed(context, usedCard);
         }
     }
 }

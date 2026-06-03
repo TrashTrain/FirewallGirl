@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb017928a358a87409abc3dbf3a31aba, type: 3}
+  m_Name: AUG_008
+  m_EditorClassIdentifier: 
+  augmentName: "\uC789\uC5EC \uB9AC\uC18C\uC2A4"
+  description: "\uD134 \uC885\uB8CC \uC2DC \uB0A8\uC740 \uCF54\uC2A4\uD2B8\uB2F9
+    \uBC29\uC5B4\uB825 2\uB97C \uC81C\uACF5\uD569\uB2C8\uB2E4. \n\uB0A8\uC740 \uCF54\uC2A4\uD2B8\uAC00
+    \uC5C6\uB2E4\uBA74 \uACF5\uACA9\uB825\uC774 2 \uAC10\uC18C\uD569\uB2C8\uB2E4."
+  icon: {fileID: 0}
+  defensePerRemainingCost: 2
+  attackDecreaseAmount: 2
