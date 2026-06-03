@@ -298,6 +298,9 @@ public class PlayerManager : MonoBehaviour
             typeStrings.Add(formattedType);
 
             // 배율이 적용된 최종 수치 계산
+            if (BossUnrendered.CollapseDebuffActive)
+                mult *= 0.5f;
+
             int finalPos = Mathf.RoundToInt(c.posValue * mult);
             int finalNeg = Mathf.RoundToInt(c.negValue * mult);
             previewTotalCost += c.cost;
@@ -371,6 +374,11 @@ public class PlayerManager : MonoBehaviour
         foreach (var card in cardsToExecute)
         {
             float mult = multipliers[card];
+
+            // 그래픽-붕괴: 긍/부 수치 모두 절반 (내림)
+            if (BossUnrendered.CollapseDebuffActive)
+                mult *= 0.5f;
+
             int finalPos = Mathf.RoundToInt(card.posValue * mult);
             int finalNeg = Mathf.RoundToInt(card.negValue * mult);
 

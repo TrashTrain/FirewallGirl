@@ -80,6 +80,8 @@ public class BossUnrendered : Virus
     private bool _hasClickedDecoyThisTurn = false;
     private bool _lastClickedDecoyIsHitbox = false;
     private int _decoyRetryCount = 0;
+    private bool _skipBossTurnAfterDecoy = false;
+    private bool _decoyHitActive = false;
 
     // ─── 픽셀-붕괴 무적 ──────────────────────────────────────────
     private bool _pixelCollapseImmunity = false;
@@ -202,6 +204,13 @@ public class BossUnrendered : Virus
         EnemyTurnManager.OnPlayerTurnStarted += HandlePlayerTurnStarted;
         PlayerManager.OnHandRefreshed        += HandleHandRefreshed;
 
+        // 첫 번째 보스 턴 전에는 OnPlayerTurnStarted가 발행되지 않으므로 직접 초기화
+        if (PlayerManager.instance != null)
+        {
+            _snapshotAtk = PlayerManager.instance.AttackPower;
+            _snapshotDef = PlayerManager.instance.DefensePower;
+        }
+
         RollNextActionAndUpdateIcon();
     }
 
@@ -261,8 +270,10 @@ public class BossUnrendered : Virus
         );
         _effectImmunity = new ActiveEffect(
             _iconImmunity, true,
-            () => _pixelCollapseImmunity,
-            () => "픽셀-붕괴 예고\n이번 턴 모든 피해 무효"
+            () => _pixelCollapseImmunity || _action == UnrenderedAction.GraphicChaos,
+            () => _pixelCollapseImmunity
+                ? "픽셀-붕괴 예고\n이번 턴 모든 피해 무효"
+                : "디코이 준비/진행 중\n직접 공격 무효"
         );
 
         enemyUIController.enemyStatusUI?.RegisterEffect(_effectGraphicChange);
@@ -332,11 +343,14 @@ public class BossUnrendered : Virus
         {
             if (_hasClickedDecoyThisTurn && _lastClickedDecoyIsHitbox)
             {
-                // 성공: 플레이어 공격력만큼 보스에게 피해
+                // 성공: 플레이어 공격력만큼 보스에게 피해 (면역 체크 우회)
                 Debug.Log("[BossUnrendered] 디코이 패턴 성공 — 보스 피격!");
-                ApplyDamage(PlayerManager.instance.AttackPower);
+                int decoyDmg = PlayerManager.instance.AttackPower;
                 _chaosCooldownTurns = 2;
                 FinishDecoyPattern();
+                _decoyHitActive = true;
+                ApplyDamage(decoyDmg);
+                _decoyHitActive = false;
             }
             else
             {
@@ -477,9 +491,13 @@ public class BossUnrendered : Virus
 
     public override void RollNextActionAndUpdateIcon()
     {
+        // 디코이 진행 중엔 행동 갱신 안 함 — _action을 GraphicChaos로 유지
+        if (_decoyPatternActive) return;
+
         RollNextAction();
         if (enemyUIController != null)
             enemyUIController.state.UpdateStateImage(_action.ToString());
+        UpdateData();
     }
 
     protected override void RollNextAction()
@@ -672,6 +690,14 @@ public class BossUnrendered : Virus
             yield break;
         }
 
+        // 디코이 패턴 종료 직후: 플레이어 턴 1회 보장 후 행동
+        if (_skipBossTurnAfterDecoy)
+        {
+            _skipBossTurnAfterDecoy = false;
+            yield return new WaitForSeconds(0.5f);
+            yield break;
+        }
+
         if (_action == UnrenderedAction.Stunned)
         {
             yield return new WaitForSeconds(0.5f);
@@ -804,7 +830,7 @@ public class BossUnrendered : Virus
             if (decoy == null) decoy = obj.AddComponent<UnrenderedDecoy>();
 
             bool isHitbox = (i == _hitboxDecoyIndex);
-            decoy.Setup(this, isHitbox);
+            decoy.Setup(this, isHitbox, GetCurrentPhaseSprite());
             _activeDecoys.Add(decoy);
         }
 
@@ -1069,6 +1095,7 @@ public class BossUnrendered : Virus
         _hasClickedDecoyThisTurn  = false;
         _lastClickedDecoyIsHitbox = false;
         _decoyRetryCount          = 0;
+        _skipBossTurnAfterDecoy   = true;
         CleanupAllDecoys();
         SetEndTurnInteractable(true);
         ShowBossUI();
@@ -1165,10 +1192,10 @@ public class BossUnrendered : Virus
             return 0;
         }
 
-        // 디코이 패턴 진행 중: 카드 직접 공격 무효 (디코이 클릭으로만 공격 가능)
-        if (_decoyPatternActive)
+        // 디코이 패턴 예고(준비) 또는 진행 중: 직접 공격 무효 (디코이 성공 피해는 예외)
+        if (!_decoyHitActive && (_action == UnrenderedAction.GraphicChaos || _decoyPatternActive))
         {
-            Debug.Log("[BossUnrendered] 디코이 패턴 진행 중 — 직접 공격 무효");
+            Debug.Log("[BossUnrendered] 디코이 패턴 예고/진행 중 — 피해 무효");
             return 0;
         }
 
@@ -1284,5 +1311,16 @@ public class BossUnrendered : Virus
         if (sp == null) return;
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
         if (sr != null) sr.sprite = sp;
+    }
+
+    private Sprite GetCurrentPhaseSprite()
+    {
+        return _currentPhase switch
+        {
+            1 => phase1Sprite,
+            2 => phase2Sprite,
+            3 => phase3Sprite,
+            _ => phase4Sprite,
+        };
     }
 }

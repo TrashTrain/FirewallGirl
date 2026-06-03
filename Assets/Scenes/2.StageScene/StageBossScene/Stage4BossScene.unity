@@ -4504,7 +4504,7 @@ MonoBehaviour:
   currentHP: 100
   currentCost: 5
   totalCost: 5
-  attackPower: 30
+  attackPower: 15
   defensePower: 5
   activeModifiers: []
   cannotGainDefenseTurns: 0

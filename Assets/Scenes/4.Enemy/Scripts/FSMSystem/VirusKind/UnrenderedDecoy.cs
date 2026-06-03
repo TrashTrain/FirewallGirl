@@ -20,14 +20,17 @@ public class UnrenderedDecoy : MonoBehaviour
     private static readonly Color HitboxColor    = new Color(1f, 0.85f, 0f, 1f); // 황금/노란색 glow
     private static readonly Color NonHitboxColor = Color.white;
 
-    public void Setup(BossUnrendered boss, bool isHitbox)
+    public void Setup(BossUnrendered boss, bool isHitbox, Sprite sprite = null)
     {
         _boss    = boss;
         IsHitbox = isHitbox;
         _sr      = GetComponent<SpriteRenderer>();
 
         if (_sr != null)
+        {
+            if (sprite != null) _sr.sprite = sprite;
             _sr.color = isHitbox ? HitboxColor : NonHitboxColor;
+        }
 
         // OnMouseDown 작동에 Collider 필요 — 없으면 자동 추가
         if (GetComponent<Collider2D>() == null && GetComponent<Collider>() == null)
