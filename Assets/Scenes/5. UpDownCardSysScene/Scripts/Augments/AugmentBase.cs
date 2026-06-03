@@ -20,7 +20,5 @@ public abstract class AugmentBase : ScriptableObject
     public virtual void OnEquip(BattleContext context) { } // 증강체 획득 시 발동
     public virtual void OnBattleStart(BattleContext context) { } // 전투 시작 시 발동
     public virtual void OnVirusKilled(BattleContext context) { } // 몬스터 처치 시 발동
-
-    public virtual void OnCardUsed(BattleContext context, PlayerCard usedCard) { } // 카드 몇장 썼는지 체크 
-
+    
 }

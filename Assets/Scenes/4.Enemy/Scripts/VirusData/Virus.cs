@@ -317,15 +317,6 @@ public class Virus : MonoBehaviour
         // ���� UI�� ���� ���� �Ѵٸ�:
         if (enemyUIController != null) enemyUIController.panel.SetActive(false);
 
-
-        // -----------------------------------------------------------------
-        // [증강체 (VirusHealCostDownAugment를 위한) 추가] 바이러스가 씬에서 파괴되기 직전, 플레이어에게 처치 신호를 보냄
-        if (PlayerManager.instance != null)
-        {
-            PlayerManager.instance.TriggerVirusKilled(this);
-        }
-        // -----------------------------------------------------------------
-
         Destroy(gameObject);
     }
 
