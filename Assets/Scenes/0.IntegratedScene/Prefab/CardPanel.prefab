@@ -115,6 +115,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6ae0e3b78c26914ea5044338012eb10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  drawPileText: {fileID: 0}
+  discardPileText: {fileID: 0}
+  cardSpacing: 230
+  moveSpeed: 15
   cardPrefab: {fileID: 502786108912653076, guid: 44fbe9c26dd39244cb133899a97abbb4, type: 3}
   cardScale: 1
   attackIcon: {fileID: 21300000, guid: c5f2406129fc0644089047d425f2fa2a, type: 3}

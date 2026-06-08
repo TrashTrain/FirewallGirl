@@ -284,6 +284,10 @@ public class UpDownMgr : MonoBehaviour
         if (TutorialManager.instance == null)
         {
             StageSaveManager.ClearStage(StageSaveManager.CurrentStageIdx);
+            // 클리어 후 자동 저장 (기존 PlayerPrefs 저장과 동일 시점)
+            PlayerStateSaveManager.instance.Save(
+                PlayerStateSaveManager.instance.BuildSaveData(StageSaveManager.CurrentStageIdx)
+            );
             SceneManager.LoadScene("StageScene");
         }
     }

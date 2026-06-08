@@ -14,30 +14,45 @@ public class GameManager : MonoBehaviour
     public GameObject gameClearPanel;
 
    // private bool checkTurn;
-    // Start is called before the first frame update
     void Awake()
     {
         Instance = this;
         PlayerTurn = true;
-        
-        // ���� ���� �� ù �� ��ó��
-        if (PlayerManager.instance != null)
-        {
-            PlayerManager.instance.InitializeBattleDeck();
-            PlayerManager.instance.OnTurnEndProcess();
-        }
-        
-
-        //checkTurn = PlayerTurn;
+        // UI 의존 초기화는 모든 Awake() 완료 후 Start()에서 처리 (CardDeckController, PlayerStatusUI 등)
     }
 
     private void Start()
     {
+        if (PlayerManager.instance != null)
+        {
+            PlayerSaveData pending = PlayerStateSaveManager.instance.PendingRestoreData;
+            if (pending != null)
+            {
+                // 이어하기 경로: 스탯·증강체·덱 복원
+                PlayerManager.instance.RestoreFromSave(pending);
+                PlayerManager.instance.RestoreAugments(pending.augmentIds);
+
+                if (CardDatabaseManager.instance == null)
+                {
+                    // DeckBuildingScene을 거치지 않으므로 CDM이 없음 — 동적 생성
+                    // AddComponent 즉시 Awake()가 실행되어 카드 딕셔너리가 채워짐
+                    var go = new GameObject("CardDatabaseManager");
+                    go.AddComponent<CardDatabaseManager>();
+                }
+                CardDatabaseManager.instance.RestoreDeckFromSave(pending.deck);
+                PlayerStateSaveManager.instance.ClearPendingRestore();
+            }
+
+            // 이어하기/일반 경로 공통: Start()에서 실행하므로 handContainer·PlayerStatusUI 재연결 완료 보장
+            PlayerManager.instance.InitializeBattleDeck();
+            PlayerManager.instance.OnTurnEndProcess();
+        }
+
         if (EnemyTurnManager.Instance != null)
         {
             EnemyTurnManager.Instance.InitEnemyIntents();
         }
-        
+
         // 튜토리얼 중에는 TutorialManager가 타이밍을 제어하므로 자동 드로우를 건너뜀
         if (PlayerManager.instance != null && TutorialManager.instance == null)
         {
@@ -186,6 +201,22 @@ public class GameManager : MonoBehaviour
     
     public void QuitGame()
     {
+        // 스테이지 진입 시점 스냅샷으로 저장 (진행 중 변화는 버리고 직전 상태 보존)
+        PlayerSaveData snapshot = PlayerStateSaveManager.instance.StageEntrySnapshot;
+        if (snapshot != null)
+        {
+            PlayerSaveData quitData = new PlayerSaveData
+            {
+                currentHP       = snapshot.currentHP,
+                fullHP          = snapshot.fullHP,
+                baseStats       = snapshot.baseStats,
+                augmentIds      = new List<string>(snapshot.augmentIds),
+                deck            = new List<CardSaveData>(snapshot.deck),
+                clearedStageIds = new List<int>(snapshot.clearedStageIds),
+                resumeStageIndex = StageSaveManager.CurrentStageIdx
+            };
+            PlayerStateSaveManager.instance.Save(quitData);
+        }
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else

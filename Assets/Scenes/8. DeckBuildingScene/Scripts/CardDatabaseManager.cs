@@ -85,6 +85,31 @@ public class CardDatabaseManager : MonoBehaviour
     {
         return new List<CardObject>(cardDictionary.Values);
     }
+
+    /// <summary>세이브 데이터로부터 덱을 복원한다. 증강체 적용 후 최종 스탯이 반영된다.</summary>
+    public void RestoreDeckFromSave(List<CardSaveData> savedDeck)
+    {
+        masterDeck.Clear();
+        if (savedDeck == null) return;
+
+        foreach (CardSaveData cardSave in savedDeck)
+        {
+            CardObject original = GetCardById(cardSave.cardIndex);
+            if (original == null)
+            {
+                Debug.LogWarning($"[CardDatabaseManager] 알 수 없는 카드 ID: {cardSave.cardIndex} — 스킵");
+                continue;
+            }
+            CardObject clone = Instantiate(original);
+            clone.name = original.cardName;
+            clone.positiveStatValue = cardSave.positiveStatValue;
+            clone.negativeStatValue = cardSave.negativeStatValue;
+            clone.cost              = cardSave.cost;
+            clone.coolTime          = cardSave.coolTime;
+            masterDeck.Add(clone);
+        }
+        Debug.Log($"[CardDatabaseManager] 덱 복원 완료: {masterDeck.Count}장");
+    }
     
     // 테스트용
     private void Start()
