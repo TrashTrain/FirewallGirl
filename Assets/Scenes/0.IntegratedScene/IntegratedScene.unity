@@ -6621,13 +6621,13 @@ RectTransform:
   - {fileID: 1525040784}
   - {fileID: 843590750}
   - {fileID: 854836677}
-  - {fileID: 1301447414}
   - {fileID: 678049685}
   - {fileID: 1207680869}
   - {fileID: 1663036512}
   - {fileID: 658299192}
   - {fileID: 710939167}
   - {fileID: 2147289637}
+  - {fileID: 1301447414}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}

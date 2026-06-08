@@ -33,8 +33,12 @@ public class PlayerStatusUI : MonoBehaviour
 
     private void Awake()
     {
-        if (instance == null) instance = this;
-        else Destroy(gameObject);
+        instance = this; // 항상 현재 씬의 인스턴스 사용
+    }
+
+    private void OnDestroy()
+    {
+        if (instance == this) instance = null;
     }
 
     private void Start()
@@ -48,6 +52,8 @@ public class PlayerStatusUI : MonoBehaviour
 
     public void RefreshStatusUI()
     {
+        if (buffIcon == null || debuffIcon == null) return;
+
         currentBuffs.Clear();
         currentDebuffs.Clear();
 

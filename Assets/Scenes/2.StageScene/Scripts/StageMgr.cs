@@ -69,9 +69,35 @@ public class StageMgr : MonoBehaviour
         Application.targetFrameRate = 60;
         QualitySettings.vSyncCount = 0;
 
+        // 이어하기 버튼에서 진입한 경우 세이브 파일로 복원
+        if (PlayerStateSaveManager.instance.IsLoadingFromSave)
+        {
+            RestoreFromSaveFile();
+            PlayerStateSaveManager.instance.IsLoadingFromSave = false;
+        }
+
         OnViewStageIndex();
         SetStageScene();
         OnViewStageCnt();
+    }
+
+    private void RestoreFromSaveFile()
+    {
+        PlayerSaveData saveData = PlayerStateSaveManager.instance.Load();
+        if (saveData == null)
+        {
+            Debug.LogWarning("[StageMgr] 세이브 파일 불러오기 실패 — 새 게임 상태 유지");
+            return;
+        }
+
+        // PlayerPrefs 재구성 (매니저 없이 처리 가능)
+        StageSaveManager.ResetStage();
+        foreach (int stageId in saveData.clearedStageIds)
+            StageSaveManager.ClearStage(stageId);
+
+        // 스탯·덱·증강체 복원은 IntegratedScene(GameManager.Start)에서 처리
+        PlayerStateSaveManager.instance.SetPendingRestore(saveData);
+        Debug.Log($"[StageMgr] PlayerPrefs 재구성 완료, 복원 예약 (재개 스테이지: {saveData.resumeStageIndex})");
     }
 
     private void OnViewStageCnt()

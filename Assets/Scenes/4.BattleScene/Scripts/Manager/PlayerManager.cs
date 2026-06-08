@@ -394,6 +394,18 @@ public class PlayerManager : MonoBehaviour
     
     public void InitializeBattleDeck()
     {
+        // 이전 전투 디버프/상태이상 초기화 (DontDestroyOnLoad로 인해 씬 전환 후에도 유지되는 값들)
+        activeModifiers.Clear();
+        cannotGainDefenseTurns = 0;
+        lagDebuffTurns         = 0;
+        currentDotDamage       = 0;
+        reducedDrawCount       = 0;
+        bonusDrawCount         = 0;
+        heatStacks             = 0;
+        defenseMultiplier      = 1.0f;
+        isDefenseRetained      = false;
+        _registeredEffects.Clear();
+
         masterDeck.Clear(); // 기존 리스트 초기화
 
         // 1. CardDatabaseManager에서 확정된 덱 데이터 가져오기
@@ -424,6 +436,11 @@ public class PlayerManager : MonoBehaviour
         
         drawPile.Clear();
         drawPile.AddRange(masterDeck);
+
+        Debug.Log($"[InitializeBattleDeck] masterDeck={masterDeck.Count}장, drawPile={drawPile.Count}장");
+
+        // 스테이지 진입 시점 스냅샷 저장 (ShutdownBtn 종료 저장에 사용)
+        PlayerStateSaveManager.instance.TakeSnapshot();
     }
     
     // 리스트 셔플 (Fisher-Yates 알고리즘)
@@ -440,6 +457,67 @@ public class PlayerManager : MonoBehaviour
 
     public int GetBaseStat(StatType type) => baseStats[(int)type];
     public void SetBaseStat(StatType type, int value) => baseStats[(int)type] = value;
+
+    public int[] GetBaseStats()
+    {
+        int[] copy = new int[baseStats.Length];
+        Array.Copy(baseStats, copy, baseStats.Length);
+        return copy;
+    }
+
+    public void SetBaseStats(int[] stats)
+    {
+        if (stats == null || stats.Length != baseStats.Length) return;
+        Array.Copy(stats, baseStats, baseStats.Length);
+    }
+
+    /// <summary>세이브 파일에서 불러온 데이터로 플레이어 스탯을 복원한다.</summary>
+    public void RestoreFromSave(PlayerSaveData data)
+    {
+        if (data == null) return;
+
+        SetBaseStats(data.baseStats);
+
+        // Inspector 노출 필드 동기화
+        maxHP        = baseStats[(int)StatType.Health];
+        attackPower  = baseStats[(int)StatType.Attack];
+        defensePower = baseStats[(int)StatType.Defense];
+        totalCost    = baseStats[(int)StatType.Cost];
+        currentCost  = baseStats[(int)StatType.Cost];
+
+        // currentHP 복원 (fullHP 초과 방지)
+        int maxAllowed = data.fullHP > 0 ? data.fullHP : maxHP;
+        currentHP = Mathf.Clamp(data.currentHP, 0, maxAllowed);
+
+        // 턴 임시 스탯·디버프 초기화
+        ResetTurnDeltaStats();
+        activeModifiers.Clear();
+        cannotGainDefenseTurns = 0;
+        lagDebuffTurns         = 0;
+        currentDotDamage       = 0;
+
+        UpdateUI();
+    }
+
+    /// <summary>저장된 증강체 ID 목록으로 activeAugments를 재구성한다. OnEquip은 재호출하지 않는다.</summary>
+    public void RestoreAugments(List<string> augmentIds)
+    {
+        activeAugments.Clear();
+        if (augmentIds == null) return;
+
+        foreach (string augId in augmentIds)
+        {
+            AugmentBase original = Resources.Load<AugmentBase>("Augments/" + augId);
+            if (original == null)
+            {
+                Debug.LogWarning($"[PlayerManager] 알 수 없는 증강체 ID: {augId} — 스킵");
+                continue;
+            }
+            AugmentBase clone = Instantiate(original);
+            clone.name = original.name;
+            activeAugments.Add(clone);
+        }
+    }
 
     public int GetFinalStat(StatType type)
     {
@@ -747,6 +825,7 @@ public class PlayerManager : MonoBehaviour
     
     public void DrawCards(int count)
     {
+        Debug.Log($"[DrawCards] 요청={count}, drawPile={drawPile.Count}, handContainer={(handContainer != null ? handContainer.name : "NULL")}, cardPrefab={(cardPrefab != null ? "OK" : "NULL")}");
         for (int i = 0; i < count; i++)
         {
             // 뽑을 카드가 없으면 버린 더미를 다시 섞음

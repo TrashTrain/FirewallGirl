@@ -64,6 +64,11 @@ public class CardChoicePanel : MonoBehaviour
 
     private void SaveStageClear()
     {
-        StageSaveManager.ClearStage(StageMgr.Instance.clearStageCnt++);
+        int clearedId = StageMgr.Instance.clearStageCnt++;
+        StageSaveManager.ClearStage(clearedId);
+        // 클리어 후 자동 저장 (기존 PlayerPrefs 저장과 동일 시점)
+        PlayerStateSaveManager.instance.Save(
+            PlayerStateSaveManager.instance.BuildSaveData(clearedId)
+        );
     }
 }
