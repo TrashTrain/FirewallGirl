@@ -35,9 +35,16 @@ public class PlayerCard : MonoBehaviour
     private Coroutine hideHoverCoroutine;
 
     [HideInInspector] public int currentCoolTime = 0;
-    
+
     public static event Action OnUseClicked;
     public bool isTemporary = false;
+    [HideInInspector] public bool isFakeCard = false;
+
+    public void SetAsFakeCard()
+    {
+        isFakeCard = true;
+        CardDeckController.instance?.ApplyFakeCardVisuals(gameObject);
+    }
 
     public int posValue
     {

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="adaf6a7d-69f6-4e26-b87e-080a70e0a37d" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Assets/Scenes/4.BattleScene/Scripts/UI/BattleNoticeUI.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scenes/4.BattleScene/Scripts/UI/BattleNoticeUI.cs.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scenes/4.BattleScene/Scripts/UI/BluescreenPanel.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Scenes/4.BattleScene/Scripts/UI/BluescreenPanel.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/2.StageScene/StageBossScene/Stage4BossScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/2.StageScene/StageBossScene/Stage4BossScene.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/4.BattleScene/Scripts/Manager/PlayerManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/4.BattleScene/Scripts/Manager/PlayerManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/4.BattleScene/Scripts/UI/CardDeckController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/4.BattleScene/Scripts/UI/CardDeckController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/4.BattleScene/Scripts/UI/PlayerCard.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/4.BattleScene/Scripts/UI/PlayerCard.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/4.Enemy/Scripts/FSMSystem/VirusKind/BossUnrendered.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/4.Enemy/Scripts/FSMSystem/VirusKind/BossUnrendered.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/4.Enemy/Scripts/VirusData/Virus.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/4.Enemy/Scripts/VirusData/Virus.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/TextMesh Pro/Fonts/NanumGothic SDF.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TextMesh Pro/Fonts/NanumGothic SDF.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="3ErGb42hCwIJUsVGiOgTCmw3FhA" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "cidr.known.project.marker": "true"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="adaf6a7d-69f6-4e26-b87e-080a70e0a37d" name="Changes" comment="" />
+      <created>1780929343484</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1780929343484</updated>
+    </task>
+    <servers />
+  </component>
+</project>

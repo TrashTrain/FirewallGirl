@@ -156,90 +156,149 @@ public class CardDeckController : MonoBehaviour
     
     public void UpdateCardVisuals(GameObject cardObj, CardObject data)
     {
+        // 페이크 카드는 ApplyFakeCardVisuals로만 관리
+        PlayerCard pCard = cardObj.GetComponent<PlayerCard>();
+        if (pCard != null && pCard.isFakeCard) return;
+
         bool hideStats = BossUnrendered.GraphicChangeLevel >= 1;
-        string posDisplay = hideStats ? "???" : data.positiveStatValue.ToString("+#;-#;0");
-        string negDisplay = hideStats ? "???" : data.negativeStatValue.ToString("+#;-#;0");
-        string posValueStr = $"<color=#E24E3A>{posDisplay}</color>";
-        string negValueStr = $"<color=#4152E5>{negDisplay}</color>";
-        
+        bool hideInfo  = BossUnrendered.CardInfoHidingActive;
+        bool swapStats = BossUnrendered.CardInfoDeceptionActive && !hideStats;
+
+        // 긍/부 반전: 실제 값은 그대로지만 표시되는 수치를 교차
+        int shownPosValue = swapStats ? data.negativeStatValue : data.positiveStatValue;
+        int shownNegValue = swapStats ? data.positiveStatValue : data.negativeStatValue;
+        StatType shownPosType = swapStats ? data.negativeStatType : data.positiveStatType;
+        StatType shownNegType = swapStats ? data.positiveStatType : data.negativeStatType;
+
+        string posDisplay = hideStats ? "???" : shownPosValue.ToString("+#;-#;0");
+        string negDisplay = hideStats ? "???" : shownNegValue.ToString("+#;-#;0");
+
+        string nameDisplay    = hideInfo ? "???" : data.cardName;
+        string nameEngDisplay = hideInfo ? "???" : data.cardNameEng;
+
         // 1. 미니 뷰 (최상위) 업데이트
         TextMeshProUGUI nameText = FindChild<TextMeshProUGUI>(cardObj.transform, "CardName");
-        if (nameText != null) nameText.text = data.cardName;
-
-        // Image iconImg = FindChild<Image>(cardObj.transform, "Content");
-        // if (iconImg != null) iconImg.sprite = data.cardImage;
+        if (nameText != null) nameText.text = nameDisplay;
 
         // 2. 호버 뷰 업데이트
         Transform hoverView = cardObj.transform.Find("HoverView");
         if (hoverView != null)
         {
             TextMeshProUGUI hoverName = FindChild<TextMeshProUGUI>(hoverView, "CardName");
-            if (hoverName != null) hoverName.text = data.cardName;
-            
-            // Image hoverIconImg = FindChild<Image>(hoverView, "CardIcon");
-            // if (hoverIconImg != null) hoverIconImg.sprite = data.cardImage;
+            if (hoverName != null) hoverName.text = nameDisplay;
 
             TextMeshProUGUI hoverStat = FindChild<TextMeshProUGUI>(hoverView, "StatText");
             if (hoverStat != null)
             {
-                string dynamicDesc = data.summaryDescription
-                    .Replace("{0}", posDisplay)
-                    .Replace("{1}", negDisplay);
-                hoverStat.text = dynamicDesc;
+                if (hideInfo)
+                {
+                    hoverStat.text = "???";
+                }
+                else
+                {
+                    hoverStat.text = data.summaryDescription
+                        .Replace("{0}", posDisplay)
+                        .Replace("{1}", negDisplay);
+                }
             }
         }
 
-        // 3. 디테일 뷰(기존 구조) 업데이트
+        // 3. 디테일 뷰 업데이트
         Transform detailView = cardObj.transform.Find("Card");
         if (detailView != null)
         {
             Transform useBtn = FindChild<Transform>(detailView, "UseBtn");
             TextMeshProUGUI useBtnText = FindChild<TextMeshProUGUI>(useBtn, "Text");
-            if (useBtnText != null) useBtnText.text = $"적용 ({data.cost.ToString()})";
-            
-            TextMeshProUGUI detailNameText = FindChild<TextMeshProUGUI>(detailView, "CardName/Text");
-            if (detailNameText != null) detailNameText.text = data.cardNameEng;
-            
-            TextMeshProUGUI detailNameTextBody = FindChild<TextMeshProUGUI>(detailView, "CardNameBody/Text");
-            if (detailNameTextBody != null) detailNameTextBody.text = $"{data.cardNameEng}\n{data.cardName}";
+            if (useBtnText != null) useBtnText.text = $"적용 ({data.cost})";
 
-            // ✅ 긍정 스탯 텍스트 및 아이콘 변경 (한글 스탯 이름 + 색상 수치)
-            string posStatName = GetStatNameKorean(data.positiveStatType);
+            TextMeshProUGUI detailNameText = FindChild<TextMeshProUGUI>(detailView, "CardName/Text");
+            if (detailNameText != null) detailNameText.text = nameEngDisplay;
+
+            TextMeshProUGUI detailNameTextBody = FindChild<TextMeshProUGUI>(detailView, "CardNameBody/Text");
+            if (detailNameTextBody != null)
+                detailNameTextBody.text = hideInfo ? "???" : $"{data.cardNameEng}\n{data.cardName}";
+
+            string posStatName = hideInfo ? "???" : GetStatNameKorean(shownPosType);
             TextMeshProUGUI detailPosText = FindChild<TextMeshProUGUI>(detailView, "PositiveStat/Text");
             if (detailPosText != null)
-            {
                 detailPosText.text = $"{posStatName} <color=#E24E3A>{posDisplay}</color>";
-            }
 
             Image detailPosIcon = FindChild<Image>(detailView, "PositiveStat");
-            if (detailPosIcon != null) detailPosIcon.sprite = GetStatIcon(data.positiveStatType);
+            if (detailPosIcon != null) detailPosIcon.sprite = hideInfo ? null : GetStatIcon(shownPosType);
 
-            // ✅ 부정 스탯 텍스트 및 아이콘 변경 (한글 스탯 이름 + 색상 수치)
-            string negStatName = GetStatNameKorean(data.negativeStatType);
+            string negStatName = hideInfo ? "???" : GetStatNameKorean(shownNegType);
             TextMeshProUGUI detailNegText = FindChild<TextMeshProUGUI>(detailView, "NegativeStat/Text");
             if (detailNegText != null)
-            {
                 detailNegText.text = $"{negStatName} <color=#4152E5>{negDisplay}</color>";
-            }
 
             Image detailNegIcon = FindChild<Image>(detailView, "NegativeStat");
-            if (detailNegIcon != null) detailNegIcon.sprite = GetStatIcon(data.negativeStatType);
+            if (detailNegIcon != null) detailNegIcon.sprite = hideInfo ? null : GetStatIcon(shownNegType);
 
-            // TextMeshProUGUI detailCostText = FindChild<TextMeshProUGUI>(detailView, "Cost/CostText");
-            // if (detailCostText != null) detailCostText.text = data.cost.ToString();
-
-            // 설명 텍스트 치환 (색상 적용)
             TextMeshProUGUI detailDescText = FindChild<TextMeshProUGUI>(detailView, "Description");
             if (detailDescText != null)
             {
-                string dynamicDesc = data.description
-                    .Replace("{0}", posDisplay)
-                    .Replace("{1}", negDisplay);
-                detailDescText.text = dynamicDesc;
+                if (hideInfo)
+                {
+                    detailDescText.text = "???";
+                }
+                else
+                {
+                    detailDescText.text = data.description
+                        .Replace("{0}", posDisplay)
+                        .Replace("{1}", negDisplay);
+                }
             }
         }
     }
     
+    /// <summary>카드 오브젝트의 모든 텍스트를 "???"로, 일러스트 이미지를 검은색으로 변경.</summary>
+    public void ApplyFakeCardVisuals(GameObject cardObj)
+    {
+        const string mask = "???";
+
+        // 미니 뷰
+        TextMeshProUGUI miniName = FindChild<TextMeshProUGUI>(cardObj.transform, "CardName");
+        if (miniName != null) miniName.text = mask;
+
+        Image miniContent = FindChild<Image>(cardObj.transform, "Content");
+        if (miniContent != null) miniContent.color = Color.black;
+
+        // 호버 뷰
+        Transform hoverView = cardObj.transform.Find("HoverView");
+        if (hoverView != null)
+        {
+            TextMeshProUGUI hoverName = FindChild<TextMeshProUGUI>(hoverView, "CardName");
+            if (hoverName != null) hoverName.text = mask;
+            TextMeshProUGUI hoverStat = FindChild<TextMeshProUGUI>(hoverView, "StatText");
+            if (hoverStat != null) hoverStat.text = mask;
+            Image hoverIcon = FindChild<Image>(hoverView, "CardIcon");
+            if (hoverIcon != null) hoverIcon.color = Color.black;
+        }
+
+        // 디테일 뷰
+        Transform detailView = cardObj.transform.Find("Card");
+        if (detailView != null)
+        {
+            var dn = FindChild<TextMeshProUGUI>(detailView, "CardName/Text");
+            if (dn != null) dn.text = mask;
+            var dnb = FindChild<TextMeshProUGUI>(detailView, "CardNameBody/Text");
+            if (dnb != null) dnb.text = mask;
+            var pos = FindChild<TextMeshProUGUI>(detailView, "PositiveStat/Text");
+            if (pos != null) pos.text = mask;
+            var neg = FindChild<TextMeshProUGUI>(detailView, "NegativeStat/Text");
+            if (neg != null) neg.text = mask;
+            var desc = FindChild<TextMeshProUGUI>(detailView, "Description");
+            if (desc != null) desc.text = mask;
+
+            // 카드 일러스트 → 검은색
+            foreach (string illustName in new[] { "Content", "CardIcon", "CardImage", "Illustration" })
+            {
+                Image illust = FindChild<Image>(detailView, illustName);
+                if (illust != null) { illust.color = Color.black; break; }
+            }
+        }
+    }
+
     private T FindChild<T>(Transform parent, string name) where T : Component
     {
         // Transform child = parent.Find(name);

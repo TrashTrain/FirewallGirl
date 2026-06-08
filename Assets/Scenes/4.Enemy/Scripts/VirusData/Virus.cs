@@ -56,7 +56,7 @@ public class Virus : MonoBehaviour
     }
 
     
-    public void UpdateData()
+    public virtual void UpdateData()
     {
         enemyUIController.atk.text = virusData.AtkDmg.ToString();
         enemyUIController.def.text = virusData.DefCnt.ToString();

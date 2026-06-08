@@ -95,6 +95,7 @@ public class PlayerManager : MonoBehaviour
 
     [Header("Pending Flash Cards")]
     public List<CardObject> pendingFlashCards = new List<CardObject>(); // 다음 플레이어 턴 지급 예정 임시 카드
+    public int pendingFakeCardCount = 0; // 다음 플레이어 턴에 추가할 페이크 카드 수
 
     // ─── 효과 레지스트리 ───────────────────────────────────────
     private readonly List<ActiveEffect> _registeredEffects = new List<ActiveEffect>();
@@ -371,29 +372,51 @@ public class PlayerManager : MonoBehaviour
         // 복사본 리스트를 만들어 순회 (OnCardUsed에서 리스트가 파괴될 수 있으므로)
         List<PlayerCard> cardsToExecute = new List<PlayerCard>(sequenceQueue);
 
+        // 페이크 카드가 포함되면 이번 조합 전체 효과 무효화
+        bool hasFakeCard = cardsToExecute.Exists(c => c.isFakeCard);
+        if (hasFakeCard)
+            Debug.Log("[FakeCard] 페이크 카드 감지 — 이번 조합 효과 전부 무효, 공격력·방어도 0");
+
         foreach (var card in cardsToExecute)
         {
-            float mult = multipliers[card];
+            if (!hasFakeCard && card.cardData != null)
+            {
+                float mult = multipliers.ContainsKey(card) ? multipliers[card] : 1f;
 
-            // 그래픽-붕괴: 긍/부 수치 모두 절반 (내림)
-            if (BossUnrendered.CollapseDebuffActive)
-                mult *= 0.5f;
+                // 그래픽-붕괴: 긍/부 수치 모두 절반 (내림)
+                if (BossUnrendered.CollapseDebuffActive)
+                    mult *= 0.5f;
 
-            int finalPos = Mathf.RoundToInt(card.posValue * mult);
-            int finalNeg = Mathf.RoundToInt(card.negValue * mult);
+                int finalPos = Mathf.RoundToInt(card.posValue * mult);
+                int finalNeg = Mathf.RoundToInt(card.negValue * mult);
 
-            // 오버클럭-열기: 카드 부정수치를 열기 스택만큼 악화
-            if (heatStacks > 0 && finalNeg < 0)
-                finalNeg -= heatStacks;
+                // 권한복구-렌더: 긍정수치 ×1.5, 부정수치 0
+                if (BossUnrendered.PermissionRecoveryActive)
+                {
+                    finalPos = Mathf.RoundToInt(finalPos * 1.5f);
+                    finalNeg = 0;
+                }
 
-            // 실제 스탯 반영
-            AddTurnStatDelta(card.cardData.positiveStatType, finalPos);
-            AddTurnStatDelta(card.cardData.negativeStatType, finalNeg);
+                // 오버클럭-열기: 카드 부정수치를 열기 스택만큼 악화
+                if (heatStacks > 0 && finalNeg < 0)
+                    finalNeg -= heatStacks;
 
-            RecordCardUsed(card.cardData.cardType);
+                // 실제 스탯 반영
+                AddTurnStatDelta(card.cardData.positiveStatType, finalPos);
+                AddTurnStatDelta(card.cardData.negativeStatType, finalNeg);
 
-            // 카드 소모 처리
+                RecordCardUsed(card.cardData.cardType);
+            }
+
+            // 카드 소모 처리 (페이크 포함 모든 카드 제거)
             OnCardUsed(card);
+        }
+
+        // 페이크 카드 효과: 현재 공격력·방어도를 델타에서 상쇄 → 최종값 0
+        if (hasFakeCard)
+        {
+            turnDeltaStats[(int)StatType.Attack]  -= AttackPower;
+            turnDeltaStats[(int)StatType.Defense] -= DefensePower;
         }
 
         currentCost -= previewTotalCost;
@@ -412,6 +435,19 @@ public class PlayerManager : MonoBehaviour
     
     public void InitializeBattleDeck()
     {
+        // 이전 전투 디버프/상태이상 초기화 (DontDestroyOnLoad로 인해 씬 전환 후에도 유지되는 값들)
+        activeModifiers.Clear();
+        cannotGainDefenseTurns = 0;
+        lagDebuffTurns         = 0;
+        currentDotDamage       = 0;
+        reducedDrawCount       = 0;
+        bonusDrawCount         = 0;
+        heatStacks             = 0;
+        defenseMultiplier      = 1.0f;
+        isDefenseRetained      = false;
+        pendingFakeCardCount   = 0;
+        _registeredEffects.Clear();
+
         masterDeck.Clear(); // 기존 리스트 초기화
 
         // 1. CardDatabaseManager에서 확정된 덱 데이터 가져오기
@@ -725,6 +761,11 @@ public class PlayerManager : MonoBehaviour
             DrawFlashCard(flashCard);
         pendingFlashCards.Clear();
 
+        // 그래픽-시스템 페이크: 페이크 카드 지급
+        for (int i = 0; i < pendingFakeCardCount; i++)
+            DrawFakeCard();
+        pendingFakeCardCount = 0;
+
         DrawCards(drawCount);
 
         UpdateUI();
@@ -792,6 +833,18 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+    /// <summary>손패 카드 전체의 사용 버튼 활성/비활성. false 시 조합 실행 버튼도 함께 차단.</summary>
+    public void SetHandCardsInteractable(bool interactable)
+    {
+        foreach (PlayerCard card in handCards)
+        {
+            if (card != null)
+                card.SetHoverUseBtnInteractable(interactable);
+        }
+        if (!interactable && executeCombinationBtn != null)
+            executeCombinationBtn.interactable = false;
+    }
+
     public void OnCardUsed(PlayerCard card)
     {
         if (handCards.Contains(card))
@@ -846,28 +899,78 @@ public class PlayerManager : MonoBehaviour
             CardDeckController.instance.RefreshHandLayout(handCards);
     }
 
+    private static CardObject _fakeCardData;
+
+    private static CardObject GetOrCreateFakeCardData()
+    {
+        if (_fakeCardData != null) return _fakeCardData;
+        _fakeCardData = ScriptableObject.CreateInstance<CardObject>();
+        _fakeCardData.cardName    = "???";
+        _fakeCardData.cardNameEng = "???";
+        _fakeCardData.cost        = 0;
+        _fakeCardData.summaryDescription = "???";
+        _fakeCardData.description        = "???";
+        return _fakeCardData;
+    }
+
+    private void DrawFakeCard()
+    {
+        if (cardPrefab == null || handContainer == null) return;
+
+        GameObject cardObj = Instantiate(cardPrefab, handContainer);
+        PlayerCard pCard = cardObj.GetComponent<PlayerCard>();
+        if (pCard == null) { Destroy(cardObj); return; }
+
+        pCard.isTemporary = true;
+        pCard.SetCardData(GetOrCreateFakeCardData());
+        pCard.SetAsFakeCard();
+        handCards.Add(pCard);
+
+        if (CardDeckController.instance != null)
+            CardDeckController.instance.RefreshHandLayout(handCards);
+    }
+
     private IEnumerator CoPlayerTurnSequence()
     {
         Debug.Log("플레이어 턴 시작");
         _running = true;
 
-        int remainingDamage = AttackPower;
-
-        Virus[] enemies = FindObjectsOfType<Virus>();
-        System.Array.Sort(enemies, (a, b) => a.spawnNum.CompareTo(b.spawnNum));
-
-        for (int i = 0; i < enemies.Length; i++)
+        // 블루스크린 예고/활성 중: 플레이어 공격 불가
+        if (!BossUnrendered.BluescreenAttackBlocked)
         {
-            if (remainingDamage <= 0) break;
+            int remainingDamage = AttackPower;
 
-            Virus enemy = enemies[i];
-            if (enemy == null) continue;
-            if (enemy.virusData.CurHpCnt <= 0) continue;
+            Virus[] enemies = FindObjectsOfType<Virus>();
+            System.Array.Sort(enemies, (a, b) => a.spawnNum.CompareTo(b.spawnNum));
 
-            yield return StartCoroutine(CoAttack(enemy));
+            for (int i = 0; i < enemies.Length; i++)
+            {
+                if (remainingDamage <= 0) break;
 
-            remainingDamage = enemy.ApplyDamage(remainingDamage);
+                Virus enemy = enemies[i];
+                if (enemy == null) continue;
+                if (enemy.virusData.CurHpCnt <= 0) continue;
+
+                yield return StartCoroutine(CoAttack(enemy));
+                remainingDamage = enemy.ApplyDamage(remainingDamage);
+            }
         }
+        else
+        {
+            Debug.Log("[PlayerManager] 블루스크린 차단 — 플레이어 공격 스킵");
+        }
+
+        // 사용하지 않은 페이크 카드 제거
+        for (int i = handCards.Count - 1; i >= 0; i--)
+        {
+            if (handCards[i] != null && handCards[i].isFakeCard)
+            {
+                Destroy(handCards[i].gameObject);
+                handCards.RemoveAt(i);
+            }
+        }
+        if (CardDeckController.instance != null)
+            CardDeckController.instance.RefreshHandLayout(handCards);
 
         _running = false;
         GameManager.PlayerTurn = false;
@@ -908,6 +1011,9 @@ public class PlayerManager : MonoBehaviour
     public void UpdateUI()
     {
         if (hpBar != null) hpBar.UpdateHPBar(currentHP, MaxHP);
+        // 2페이즈~: 플레이어 체력 수치 가리기
+        if (BossUnrendered.PlayerHPHiddenActive && hpBar?.hpText != null)
+            hpBar.hpText.text = "???";
         if (powerUI != null) powerUI.UpdateAttackPowerUI(AttackPower);
         if (powerUI != null) powerUI.UpdateDefensePowerUI(DefensePower);
         if (costUI != null) costUI.UpdateCostUI(currentCost, TotalCost);
@@ -920,7 +1026,8 @@ public class PlayerManager : MonoBehaviour
     {
         if (CardDeckController.instance == null) return;
         foreach (var card in handCards)
-            if (card != null) CardDeckController.instance.UpdateCardVisuals(card.gameObject, card.cardData);
+            if (card != null && !card.isFakeCard)
+                CardDeckController.instance.UpdateCardVisuals(card.gameObject, card.cardData);
     }
 
     public PlayerCard GetRandomHandCard()
